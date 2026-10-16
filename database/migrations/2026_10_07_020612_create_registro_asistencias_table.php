@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('sesion_clase_id')->constrained('sesion_clases')->onDelete('cascade');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); // Refiere al alumno
             $table->timestamp('timestamp_escaneo')->nullable(); // Marca de tiempo del escaneo
-            $table->enum('estado_incidencia', ['asistencia', 'retardo', 'falta_justificada', 'falta_injustificada', 'sin_registro'])->default('sin_registro'); // Estado de asistencia
+            $table->enum('estado_incidencia', ['asistencia', 'retardo', 'falta', 'permiso', 'sin_registro'])->default('sin_registro'); // Estado de asistencia
             $table->text('observaciones')->nullable(); // Observaciones adicionales
             $table->timestamps();
         });

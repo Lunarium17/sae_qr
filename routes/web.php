@@ -2,8 +2,13 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-
-// rutas de autenticación
+// Sprint 4
+use App\Http\Controllers\MateriaController;
+use App\Http\Controllers\GrupoController;
+use App\Http\Controllers\MatriculaController;
+// Sprint 5
+use App\Http\Controllers\SesionClaseController;
+use App\Http\Controllers\Api\QrController;
 
 // Rutas públicas de autenticación
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -15,16 +20,36 @@ Route::get('/', function () {
     return redirect('/login');
 });
 
-// Panel protegido exclusívamente para PROFESORES
+// Panel protegido exclusivamente para PROFESORES
 Route::middleware(['auth', \App\Http\Middleware\CheckRol::class . ':profesor'])->group(function () {
     Route::get('/profesor/dashboard', function () {
         return view('profesor.dashboard');
-    });
+    })->name('profesor.dashboard');
+
+    // Rutas para gestión académica (Sprint 4)
+    Route::resource('/profesor/materias', MateriaController::class);
+    Route::resource('/profesor/grupos', GrupoController::class);
+    Route::get('/profesor/solicitudes', [MatriculaController::class, 'indexSolicitudes'])->name('profesor.solicitudes');
+    Route::patch('/profesor/solicitudes/{matricula}', [MatriculaController::class, 'actualizarEstado'])->name('profesor.solicitudes.actualizar');
+
+    // Rutas de Sesiones de Clase y Escaneo QR (Sprint 5)
+    Route::get('/profesor/sesiones', [SesionClaseController::class, 'index'])->name('sesiones.index');
+    Route::post('/profesor/sesiones/iniciar', [SesionClaseController::class, 'iniciarSesion'])->name('sesiones.iniciar');
+    Route::post('/profesor/sesiones/{sesion}/finalizar', [SesionClaseController::class, 'finalizarSesion'])->name('sesiones.finalizar');
+    Route::patch('/profesor/asistencias/{registro}', [SesionClaseController::class, 'cambiarEstadoManual'])->name('asistencias.manual');
+    Route::post('/profesor/qr/validar', [QrController::class, 'validarEscaneo'])->name('qr.validar');
 });
 
-// Panel protegido exclusívamente para ALUMNOS
+// Panel protegido exclusivamente para ALUMNOS
 Route::middleware(['auth', \App\Http\Middleware\CheckRol::class . ':alumno'])->group(function () {
     Route::get('/alumno/dashboard', function () {
         return view('alumno.dashboard');
-    });
+    })->name('alumno.dashboard');
+
+    // Rutas de solicitud de grupo (Sprint 4)
+    Route::get('/alumno/solicitar-grupo', [MatriculaController::class, 'crearSolicitud'])->name('alumno.solicitar');
+    Route::post('/alumno/solicitar-grupo', [MatriculaController::class, 'guardarSolicitud'])->name('alumno.solicitar.guardar');
+
+    // Ruta para generar el QR dinámico en la pantalla del alumno (Sprint 5)
+    Route::get('/alumno/qr/generar', [QrController::class, 'generarTokenQR'])->name('qr.generar');
 });

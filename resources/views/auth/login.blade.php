@@ -52,7 +52,7 @@
                         </form>
 
                         <div class="text-center mt-4">
-                            <small class="text-muted">¿Problemas con tu acceso? Contacta al administrador escolar.</small>
+                            <small class="text-muted">¿Problemas con tu acceso? Contacta al catministrador escolar.</small>
                         </div>
 
                     </div>

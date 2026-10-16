@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('grupo_id')->constrained('grupos')->onDelete('cascade');
             $table->foreignId('materia_id')->constrained('materias')->onDelete('cascade');
+            $table->enum('estado', ['pendiente', 'aceptado', 'rechazado'])->default('pendiente');
             $table->timestamps();
         });
     }
