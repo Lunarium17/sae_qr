@@ -83,17 +83,24 @@
                 <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
                     <h5 class="fw-bold text-dark"><i class="bi bi-file-earmark-pdf me-2"></i>Exportación y Reportes</h5>
                     <p class="text-muted small">Genera consolidados de asistencia semanales o mensuales.</p>
-                    <div class="d-flex gap-2 mt-auto">
-                        <button class="btn btn-outline-danger btn-sm rounded-3 w-50" disabled><i class="bi bi-file-pdf me-1"></i>Exportar PDF</button>
-                        <button class="btn btn-outline-success btn-sm rounded-3 w-50" disabled><i class="bi bi-file-excel me-1"></i>Exportar CSV</button>
-                    </div>
+
+                    <!-- Botón para ir al módulo de reportes (sprint 6) -->
+                    <a href="{{ route('profesor.reportes') }}" class="btn btn-outline-primary btn-sm rounded-3 mt-auto">
+                        <i class="bi bi-bar-chart-line me-1"></i>Ver y Exportar Reportes (PDF / Excel)
+                    </a>
+
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
                     <h5 class="fw-bold text-dark"><i class="bi bi-envelope-paper me-2"></i>Permisos y Justificantes</h5>
                     <p class="text-muted small">Revisa la carga digital de comprobantes para realizar el ajuste manual de inasistencias.</p>
-                    <button class="btn btn-outline-info btn-sm rounded-3 mt-auto" disabled>Revisar Justificantes Pendientes</button>
+
+                    <!-- Botón para revisar justificantes (sprint 6) -->
+                    <a href="{{ route('profesor.justificantes') }}" class="btn btn-outline-info btn-sm rounded-3 mt-auto">
+                        <i class="bi bi-envelope-paper me-1"></i>Revisar Justificantes Pendientes
+                    </a>
+
                 </div>
             </div>
         </div>

@@ -9,6 +9,10 @@ use App\Http\Controllers\MatriculaController;
 // Sprint 5
 use App\Http\Controllers\SesionClaseController;
 use App\Http\Controllers\Api\QrController;
+// Sprint 6
+use App\Http\Controllers\JustificanteController;
+use App\Http\Controllers\ReporteController;
+use App\Http\Controllers\HistorialAlumnoController;
 
 // Rutas públicas de autenticación
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -38,6 +42,14 @@ Route::middleware(['auth', \App\Http\Middleware\CheckRol::class . ':profesor'])-
     Route::post('/profesor/sesiones/{sesion}/finalizar', [SesionClaseController::class, 'finalizarSesion'])->name('sesiones.finalizar');
     Route::patch('/profesor/asistencias/{registro}', [SesionClaseController::class, 'cambiarEstadoManual'])->name('asistencias.manual');
     Route::post('/profesor/qr/validar', [QrController::class, 'validarEscaneo'])->name('qr.validar');
+
+    // Rutas para gestión de justificantes (Sprint 6)
+    Route::get('/profesor/justificantes', [JustificanteController::class, 'indexProfesor'])->name('profesor.justificantes');
+    Route::patch('/profesor/justificantes/{id}/estado', [JustificanteController::class, 'actualizarEstado'])->name('profesor.justificantes.estado');
+
+    // Rutas para reportes de asistencias (Sprint 6)
+    Route::get('/profesor/reportes', [ReporteController::class, 'index'])->name('profesor.reportes');
+    Route::get('/profesor/reportes/csv', [ReporteController::class, 'exportarCsv'])->name('profesor.reportes.csv');
 });
 
 // Panel protegido exclusivamente para ALUMNOS
@@ -52,4 +64,11 @@ Route::middleware(['auth', \App\Http\Middleware\CheckRol::class . ':alumno'])->g
 
     // Ruta para generar el QR dinámico en la pantalla del alumno (Sprint 5)
     Route::get('/alumno/qr/generar', [QrController::class, 'generarTokenQR'])->name('qr.generar');
+
+    // Rutas para gestión de justificantes (Sprint 6)
+    Route::get('/alumno/justificantes', [JustificanteController::class, 'indexAlumno'])->name('alumno.justificantes');
+    Route::post('/alumno/justificantes', [JustificanteController::class, 'store'])->name('alumno.justificantes.store');
+
+    // Rutas para calendario e historial de asistencia (Sprint 6)
+    Route::get('/alumno/calendario', [HistorialAlumnoController::class, 'index'])->name('alumno.calendario');
 });

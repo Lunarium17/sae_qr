@@ -90,14 +90,17 @@
 
                     <hr class="my-4">
                     <div class="d-grid gap-3">
-                        <button class="btn btn-primary rounded-3 text-start d-flex justify-content-between align-items-center" disabled>
+
+                        <!-- Botón para ver el calendario (sprint 6) -->
+                        <a href="{{ route('alumno.calendario') }}" class="btn btn-outline-primary rounded-3 text-start d-flex justify-content-between align-items-center">
                             <span><i class="bi bi-calendar3 me-2"></i>Ver Calendario Mensual</span>
                             <i class="bi bi-chevron-right"></i>
-                        </button>
-                        <button class="btn btn-outline-secondary rounded-3 text-start d-flex justify-content-between align-items-center" disabled>
+                        </a>
+                        <!-- Botón para cargar justificantes (sprint 6)-->
+                        <a href="{{ route('alumno.justificantes') }}" class="btn btn-outline-secondary rounded-3 text-start d-flex justify-content-between align-items-center">
                             <span><i class="bi bi-upload me-2"></i>Carga Digital de Justificante</span>
                             <i class="bi bi-chevron-right"></i>
-                        </button>
+                        </a>
                     </div>
                 </div>
             </div>

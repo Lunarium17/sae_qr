@@ -28,4 +28,9 @@ class RegistroAsistencia extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function justificante()
+    {
+        return $this->hasOne(Justificante::class, 'registro_id');
+    }
 }
