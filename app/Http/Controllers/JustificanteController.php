@@ -4,15 +4,17 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 use App\Models\Justificante;
 use App\Models\RegistroAsistencia;
 
 class JustificanteController extends Controller
 {
     // 1. Vista del Alumno: Ver sus faltas/retardos y subir justificante (RF-15)
-    public function indexAlumno()
+    public function indexAlumno(Request $request)
     {
         $alumnoId = Auth::id();
+        $registroSeleccionado = $request->query('registro_id');
 
         // Obtenemos las faltas o retardos del alumno (sin pedir 'sesion.grupo')
         $incidencias = RegistroAsistencia::with(['sesion.materia', 'justificante'])
@@ -29,20 +31,39 @@ class JustificanteController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('alumno.justificantes', compact('incidencias', 'misJustificantes'));
+        return view('alumno.justificantes', compact('incidencias', 'misJustificantes', 'registroSeleccionado'));
     }
 
-    // 2. Guardar el justificante subido por el Alumno
+    // 2. Guardar el justificante subido por el Alumno (con validación anti-IDOR de pertenencia)
     public function store(Request $request)
     {
+        $alumnoId = Auth::id();
+
         $request->validate([
-            'registro_id' => 'required|exists:registro_asistencias,id',
+            'registro_id' => [
+                'required',
+                Rule::exists('registro_asistencias', 'id')->where(function ($query) use ($alumnoId) {
+                    return $query->where('user_id', $alumnoId)
+                                 ->whereIn('estado_incidencia', ['falta', 'retardo']);
+                }),
+            ],
             'motivo'      => 'required|string|max:500',
-            'documento'   => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120', // Máx 5MB
+            'documento'   => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120', // Opcional, máx 5MB
+        ], [
+            'registro_id.required' => 'Debes seleccionar la sesión o incidencia que deseas justificar.',
+            'registro_id.exists'   => 'La incidencia seleccionada no es válida o no pertenece a tu historial.',
+            'motivo.required'      => 'Debes escribir el motivo de la inasistencia o retardo.',
+            'motivo.max'           => 'El motivo no puede exceder los 500 caracteres.',
+            'documento.file'       => 'El archivo subido no es válido.',
+            'documento.mimes'      => 'El justificante solo puede ser un archivo en formato PDF, JPG, JPEG o PNG.',
+            'documento.max'        => 'El archivo del justificante no debe superar el tamaño máximo de 5 MB.',
+            'documento.uploaded'   => 'No se pudo subir el archivo. Verifica que sea formato PDF, JPG, JPEG o PNG y que no supere los 5 MB.',
         ]);
 
-        // Guardamos el archivo en storage/app/public/justificantes
-        $rutaArchivo = $request->file('documento')->store('justificantes', 'public');
+        // Guardamos el archivo en storage/app/public/justificantes si se adjuntó uno
+        $rutaArchivo = $request->hasFile('documento')
+            ? $request->file('documento')->store('justificantes', 'public')
+            : null;
 
         Justificante::updateOrCreate(
             ['registro_id' => $request->registro_id],
@@ -75,14 +96,20 @@ class JustificanteController extends Controller
         return view('profesor.justificantes', compact('justificantes'));
     }
 
-    // 4. Profesor aprueba o rechaza el justificante
+    // 4. Profesor aprueba o rechaza el justificante (verificando que la sesión pertenezca al profesor)
     public function actualizarEstado(Request $request, $id)
     {
         $request->validate([
             'estado_aprobacion' => 'required|in:aceptado,rechazado'
         ]);
 
-        $justificante = Justificante::with('registroAsistencia')->findOrFail($id);
+        $profesorId = Auth::id();
+        $justificante = Justificante::with('registroAsistencia.sesion')
+            ->whereHas('registroAsistencia.sesion', function ($q) use ($profesorId) {
+                $q->where('profesor_id', $profesorId);
+            })
+            ->findOrFail($id);
+
         $justificante->estado_aprobacion = $request->estado_aprobacion;
         $justificante->save();
 

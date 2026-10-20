@@ -27,8 +27,8 @@
         @endif
 
         <div class="mb-4">
-            <h2 class="fw-bold text-dark mb-0">Validación de Alumnos en Grupos</h2>
-            <p class="text-muted mt-1">Aprueba o rechaza las solicitudes de los estudiantes para habilitar su pase de lista con QR.</p>
+            <h2 class="fw-bold text-dark mb-0">Validación y Gestión de Alumnos en Grupos</h2>
+            <p class="text-muted mt-1">Aprueba, rechaza o da de baja las inscripciones de los estudiantes para controlar su pase de lista con QR.</p>
         </div>
 
         <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
@@ -57,8 +57,16 @@
                                 <tr>
                                     <td class="ps-4 fw-bold text-dark">{{ $sol->alumno->name }}</td>
                                     <td class="text-muted">{{ $sol->alumno->email }}</td>
-                                    <td><span class="badge bg-primary bg-opacity-10 text-primary border border-primary">{{ $sol->grupo->nombre_grupo }}</span></td>
-                                    <td>{{ $sol->materia->nombre_materia }}</td>
+                                    <td>
+                                        <a href="{{ route('grupos.show', $sol->grupo_id) }}" class="badge bg-primary bg-opacity-10 text-primary border border-primary text-decoration-none">
+                                            {{ $sol->grupo->nombre_grupo }} ({{ $sol->grupo->turno }})
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="{{ route('materias.show', $sol->materia_id) }}" class="text-dark fw-semibold text-decoration-none">
+                                            {{ $sol->materia->nombre_materia }}
+                                        </a>
+                                    </td>
                                     <td class="text-center">
                                         @if($sol->estado === 'pendiente')
                                             <span class="badge bg-warning text-dark">Pendiente</span>
@@ -84,8 +92,17 @@
                                             @csrf
                                             @method('PATCH')
                                             <input type="hidden" name="estado" value="rechazado">
-                                            <button type="submit" class="btn btn-sm btn-outline-danger rounded-3" {{ $sol->estado === 'rechazado' ? 'disabled' : '' }}>
+                                            <button type="submit" class="btn btn-sm btn-outline-warning text-dark rounded-3 me-1" {{ $sol->estado === 'rechazado' ? 'disabled' : '' }}>
                                                 <i class="bi bi-x-lg me-1"></i>Rechazar
+                                            </button>
+                                        </form>
+
+                                        <!-- Botón Dar de Baja -->
+                                        <form action="{{ route('profesor.matriculas.destroy', $sol->id) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Seguro que deseas dar de baja a este alumno de la materia?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-outline-danger rounded-3" title="Dar de baja (eliminar inscripción)">
+                                                <i class="bi bi-person-dash"></i>
                                             </button>
                                         </form>
                                     </td>

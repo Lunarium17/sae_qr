@@ -18,13 +18,21 @@
     </nav>
 
     <div class="container my-5">
-        <!-- Alerta de porcentaje crítico de faltas (RF-14) -->
+        <!-- Alerta de límite crítico de faltas (RF-14: máximo 3 faltas sin justificar) -->
         @if($alertaCritica)
             <div class="alert alert-danger d-flex align-items-center rounded-4 shadow-sm mb-4" role="alert">
                 <i class="bi bi-exclamation-triangle-fill fs-3 me-3"></i>
                 <div>
-                    <h6 class="fw-bold mb-1">¡Alerta de Porcentaje Crítico de Inasistencias!</h6>
-                    <p class="mb-0 small">Has acumulado un <strong>{{ $porcentajeFaltas }}%</strong> de faltas en el periodo seleccionado. Recuerda subir tus justificantes a tiempo para evitar afectar tu derecho a evaluación.</p>
+                    <h6 class="fw-bold mb-1">¡Alerta Crítica: Límite de Faltas sin Justificar Alcanzado ({{ $faltas }} / 3)!</h6>
+                    <p class="mb-0 small">Has acumulado <strong>{{ $faltas }} faltas sin justificar</strong> en el periodo seleccionado (el máximo permitido es de 3). Sube tu justificante a la brevedad para no perder derecho a evaluación.</p>
+                </div>
+            </div>
+        @elseif(!empty($alertaPreventiva))
+            <div class="alert alert-warning d-flex align-items-center rounded-4 shadow-sm mb-4" role="alert">
+                <i class="bi bi-exclamation-circle-fill fs-3 me-3"></i>
+                <div>
+                    <h6 class="fw-bold mb-1">Aviso Preventivo de Inasistencias (2 / 3 faltas)</h6>
+                    <p class="mb-0 small">Llevas <strong>2 faltas sin justificar</strong>. Recuerda que el límite máximo permitido es de <strong>3 faltas sin justificar</strong>.</p>
                 </div>
             </div>
         @endif
@@ -78,7 +86,7 @@
             <div class="col-6 col-md-3">
                 <div class="card border-0 shadow-sm rounded-4 p-3 bg-danger bg-opacity-10 border-start border-danger border-4">
                     <h3 class="fw-bold text-danger mb-0">{{ $faltas }}</h3>
-                    <small class="text-muted fw-semibold">Faltas (Rojo)</small>
+                    <small class="text-muted fw-semibold">Faltas ({{ $faltas }} / 3 Máx.)</small>
                 </div>
             </div>
         </div>
@@ -111,7 +119,7 @@
                                     <span class="badge bg-{{ $colorBadge }} text-uppercase">{{ $reg->estado_incidencia }}</span>
                                 </div>
                                 <h6 class="fw-bold mb-1">{{ $reg->sesion->materia->nombre_materia }}</h6>
-                                <p class="text-muted small mb-0">Hora pase: {{ $reg->hora_pase ?? '--:--' }}</p>
+                                <p class="text-muted small mb-0">Hora pase: {{ $reg->timestamp_escaneo ?? $reg->hora_pase ?? '--:--' }}</p>
                                 @if($reg->observaciones)
                                     <p class="small text-secondary mt-2 mb-0 fst-italic">"{{ $reg->observaciones }}"</p>
                                 @endif

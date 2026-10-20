@@ -13,8 +13,10 @@ return new class extends Migration
     {
         Schema::create('materias', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('grupo_id')->nullable()->constrained('grupos')->onDelete('cascade');
             $table->string('nombre_materia');
-            $table->string('codigo_materia')->unique();
+            $table->string('codigo_materia');
+            $table->unique(['grupo_id', 'codigo_materia'], 'materias_grupo_codigo_unique');
             $table->timestamps();
         });
     }

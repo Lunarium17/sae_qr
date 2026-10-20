@@ -38,13 +38,13 @@
             <div class="col-md-5">
                 <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
                     <h5 class="fw-bold text-dark mb-1">Solicitar Pertenencia a Grupo</h5>
-                    <p class="text-muted small mb-4">Selecciona tu grupo y asignatura. El profesor validará tu solicitud.</p>
+                    <p class="text-muted small mb-4">Selecciona tu grupo y se mostrarán las asignaturas disponibles para ese grupo. El profesor validará tu solicitud.</p>
 
                     <form action="{{ route('alumno.solicitar.guardar') }}" method="POST">
                         @csrf
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Selecciona el Grupo</label>
-                            <select name="grupo_id" class="form-select rounded-3" required>
+                            <select id="select-grupo" name="grupo_id" class="form-select rounded-3" required>
                                 <option value="" selected disabled>Elige un grupo...</option>
                                 @foreach($grupos as $grupo)
                                     <option value="{{ $grupo->id }}">{{ $grupo->nombre_grupo }} - {{ $grupo->grado }} ({{ $grupo->turno }})</option>
@@ -54,15 +54,20 @@
 
                         <div class="mb-4">
                             <label class="form-label fw-semibold">Selecciona la Materia</label>
-                            <select name="materia_id" class="form-select rounded-3" required>
-                                <option value="" selected disabled>Elige una materia...</option>
+                            <select id="select-materia" name="materia_id" class="form-select rounded-3" required disabled>
+                                <option id="placeholder-materia" value="" selected disabled>Primero selecciona un grupo...</option>
                                 @foreach($materias as $materia)
-                                    <option value="{{ $materia->id }}">[{{ $materia->codigo_materia }}] {{ $materia->nombre_materia }}</option>
+                                    <option value="{{ $materia->id }}" data-grupo-id="{{ $materia->grupo_id }}">
+                                        [{{ $materia->codigo_materia }}] {{ $materia->nombre_materia }}
+                                    </option>
                                 @endforeach
                             </select>
+                            <div id="ayuda-materia" class="form-text text-danger d-none mt-1">
+                                Este grupo aún no tiene materias registradas.
+                            </div>
                         </div>
 
-                        <button type="submit" class="btn btn-primary w-100 rounded-3 py-2 fw-semibold">
+                        <button id="btn-enviar" type="submit" class="btn btn-primary w-100 rounded-3 py-2 fw-semibold">
                             <i class="bi bi-send-fill me-2"></i>Enviar Solicitud
                         </button>
                     </form>
@@ -113,5 +118,42 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const selectGrupo = document.getElementById('select-grupo');
+        const selectMateria = document.getElementById('select-materia');
+        const placeholderMateria = document.getElementById('placeholder-materia');
+        const ayudaMateria = document.getElementById('ayuda-materia');
+        const opcionesMateria = Array.from(selectMateria.querySelectorAll('option[data-grupo-id]'));
+
+        selectGrupo.addEventListener('change', function () {
+            const grupoId = this.value;
+            let disponibles = 0;
+
+            selectMateria.value = '';
+
+            opcionesMateria.forEach(opcion => {
+                const materiaGrupoId = opcion.getAttribute('data-grupo-id');
+                // Mostrar si pertenece al grupo seleccionado o si no tiene grupo asignado (compatibilidad)
+                if (materiaGrupoId === grupoId || materiaGrupoId === '') {
+                    opcion.hidden = false;
+                    opcion.disabled = false;
+                    disponibles++;
+                } else {
+                    opcion.hidden = true;
+                    opcion.disabled = true;
+                }
+            });
+
+            if (disponibles > 0) {
+                selectMateria.disabled = false;
+                placeholderMateria.textContent = 'Elige una materia de este grupo...';
+                ayudaMateria.classList.add('d-none');
+            } else {
+                selectMateria.disabled = true;
+                placeholderMateria.textContent = 'Sin materias en este grupo';
+                ayudaMateria.classList.remove('d-none');
+            }
+        });
+    </script>
 </body>
 </html>

@@ -12,9 +12,16 @@ class Materia extends Model
     protected $table = 'materias';
 
     protected $fillable = [
+        'grupo_id',
         'nombre_materia',
         'codigo_materia',
     ];
+
+    // Relación con el grupo al que pertenece la materia
+    public function grupo()
+    {
+        return $this->belongsTo(Grupo::class, 'grupo_id');
+    }
 
     // Relación con matrículas
     public function matriculas()

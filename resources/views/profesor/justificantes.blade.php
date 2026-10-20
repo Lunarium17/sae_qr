@@ -53,6 +53,8 @@
                                         <a href="{{ asset('storage/' . $just->documento_url) }}" target="_blank" class="btn btn-sm btn-outline-primary">
                                             <i class="bi bi-eye me-1"></i>Abrir Archivo
                                         </a>
+                                    @else
+                                        <span class="text-muted small">Sin archivo adjunto</span>
                                     @endif
                                 </td>
                                 <td>

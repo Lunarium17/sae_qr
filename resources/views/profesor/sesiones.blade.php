@@ -31,16 +31,18 @@
             <!-- Formulario para Abrir Nueva Sesión de Clase -->
             <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
                 <h4 class="fw-bold text-dark mb-1">Abrir Nueva Sesión de Clase</h4>
-                <p class="text-muted small mb-4">Selecciona la materia y el tiempo de tolerancia para habilitar la lectura de códigos QR.</p>
+                <p class="text-muted small mb-4">Selecciona la materia (junto con su grupo) y el tiempo de tolerancia para habilitar la lectura de códigos QR.</p>
 
                 <form action="{{ route('sesiones.iniciar') }}" method="POST" class="row g-3 align-items-end">
                     @csrf
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold">Materia a Impartir</label>
+                        <label class="form-label fw-semibold">Materia y Grupo a Impartir</label>
                         <select name="materia_id" class="form-select rounded-3" required>
-                            <option value="" selected disabled>Selecciona una asignatura...</option>
+                            <option value="" disabled {{ empty($materiaSeleccionada) ? 'selected' : '' }}>Selecciona una asignatura...</option>
                             @foreach($materias as $materia)
-                                <option value="{{ $materia->id }}">[{{ $materia->codigo_materia }}] {{ $materia->nombre_materia }}</option>
+                                <option value="{{ $materia->id }}" {{ (isset($materiaSeleccionada) && (int) $materiaSeleccionada === (int) $materia->id) ? 'selected' : '' }}>
+                                    [{{ $materia->codigo_materia }}] {{ $materia->nombre_materia }}{{ $materia->grupo ? ' — Grupo: ' . $materia->grupo->nombre_grupo . ' (' . $materia->grupo->turno . ')' : '' }}
+                                </option>
                             @endforeach
                         </select>
                     </div>
@@ -63,7 +65,14 @@
                         <span class="badge bg-success mb-2 align-self-center px-3 py-2 rounded-pill">
                             <i class="bi bi-broadcast me-1"></i>SESIÓN ACTIVA EN CURSO
                         </span>
-                        <h4 class="fw-bold text-dark">{{ $sesionActiva->materia->nombre_materia }}</h4>
+                        <h4 class="fw-bold text-dark mb-1">{{ $sesionActiva->materia->nombre_materia }}</h4>
+                        @if($sesionActiva->materia->grupo)
+                            <div class="mb-1">
+                                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary rounded-pill px-3 py-1">
+                                    Grupo: {{ $sesionActiva->materia->grupo->nombre_grupo }} ({{ $sesionActiva->materia->grupo->turno }})
+                                </span>
+                            </div>
+                        @endif
                         <p class="text-muted small">Inicio: {{ $sesionActiva->hora_inicio }} | Tolerancia: {{ $sesionActiva->tolerancia_minutos }} min</p>
 
                         <!-- Visor de Cámara -->

@@ -19,6 +19,12 @@ class Grupo extends Model
         'profesor_id', // Si tu migración vincula el grupo al profesor creador
     ];
 
+    // Relación con las materias que pertenecen a este grupo
+    public function materias()
+    {
+        return $this->hasMany(Materia::class, 'grupo_id');
+    }
+
     // Relación con matrículas
     public function matriculas()
     {

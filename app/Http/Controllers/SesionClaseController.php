@@ -13,23 +13,24 @@ use Carbon\Carbon;
 class SesionClaseController extends Controller
 {
     // Mostrar panel de sesiones de clase y escáner en vivo
-    public function index()
+    public function index(Request $request)
     {
-        $materias = Materia::all();
+        $materias = Materia::with('grupo')->orderBy('grupo_id')->get();
+        $materiaSeleccionada = $request->query('materia_id');
         
         // Buscar si el profesor tiene una sesión activa en este momento
-        $sesionActiva = SesionClase::with(['materia', 'asistencias.alumno'])
+        $sesionActiva = SesionClase::with(['materia.grupo', 'asistencias.alumno'])
             ->where('profesor_id', Auth::id())
             ->where('estado', 'activa')
             ->first();
 
         // Historial de sesiones anteriores
-        $historialSesiones = SesionClase::with(['materia', 'asistencias'])
+        $historialSesiones = SesionClase::with(['materia.grupo', 'asistencias'])
             ->where('profesor_id', Auth::id())
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('profesor.sesiones', compact('materias', 'sesionActiva', 'historialSesiones'));
+        return view('profesor.sesiones', compact('materias', 'sesionActiva', 'historialSesiones', 'materiaSeleccionada'));
     }
 
     // Abrir una nueva sesión de clase

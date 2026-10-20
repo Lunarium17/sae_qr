@@ -37,17 +37,19 @@
             <div class="col-lg-5">
                 <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
                     <h5 class="fw-bold text-dark mb-3"><i class="bi bi-upload me-2 text-primary"></i>Subir Comprobante</h5>
-                    <p class="text-muted small">Selecciona la inasistencia o retardo que deseas justificar y adjunta tu documento médico o institucional (PDF, JPG o PNG).</p>
+                    <p class="text-muted small">Selecciona la inasistencia o retardo que deseas justificar y adjunta tu documento médico o institucional si aplica (PDF, JPG o PNG).</p>
 
-                    <form action="{{ route('alumno.justificantes.store') }}" method="POST" enctype="multipart/form-data">
+                    <form id="form-justificante" action="{{ route('alumno.justificantes.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
+                        <div id="alerta-archivo" class="alert alert-danger rounded-3 shadow-sm d-none mb-3"></div>
+
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Incidencia a justificar</label>
                             <select name="registro_id" class="form-select" required>
                                 <option value="">-- Selecciona una sesión --</option>
                                 @foreach($incidencias as $inc)
                                     @if(!$inc->justificante || $inc->justificante->estado_aprobacion !== 'aceptado')
-                                        <option value="{{ $inc->id }}">
+                                        <option value="{{ $inc->id }}" {{ (isset($registroSeleccionado) && (int) $registroSeleccionado === (int) $inc->id) ? 'selected' : '' }}>
                                             {{ $inc->sesion->fecha }} - {{ $inc->sesion->materia->nombre_materia }} ({{ strtoupper($inc->estado_incidencia) }})
                                         </option>
                                     @endif
@@ -57,12 +59,12 @@
 
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Motivo de la inasistencia</label>
-                            <textarea name="motivo" rows="3" class="form-control" placeholder="Describe brevemente el motivo médico o académico..." required></textarea>
+                            <textarea name="motivo" rows="3" class="form-control" placeholder="Describe brevemente el motivo médico o académico..." required>{{ old('motivo') }}</textarea>
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label fw-semibold">Archivo comprobante (PDF / Imagen)</label>
-                            <input type="file" name="documento" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required>
+                            <label class="form-label fw-semibold">Subir Justificante <span class="text-muted fw-normal">(Opcional - PDF, JPG, JPEG, PNG | Máx. 5 MB)</span></label>
+                            <input type="file" id="input-documento" name="documento" class="form-control" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png">
                         </div>
 
                         <button type="submit" class="btn btn-primary w-100 rounded-3 py-2 fw-semibold">
@@ -98,6 +100,8 @@
                                                 <a href="{{ asset('storage/' . $just->documento_url) }}" target="_blank" class="btn btn-sm btn-outline-dark">
                                                     <i class="bi bi-file-earmark-text"></i> Ver
                                                 </a>
+                                            @else
+                                                <span class="text-muted small">Sin archivo</span>
                                             @endif
                                         </td>
                                         <td>
@@ -122,5 +126,48 @@
             </div>
         </div>
     </div>
+
+    <script>
+        const inputDocumento = document.getElementById('input-documento');
+        const alertaArchivo = document.getElementById('alerta-archivo');
+        const extensionesPermitidas = ['pdf', 'jpg', 'jpeg', 'png'];
+        const maxBytes = 5 * 1024 * 1024; // 5 MB
+
+        function validarArchivo() {
+            alertaArchivo.classList.add('d-none');
+            alertaArchivo.innerText = '';
+
+            if (!inputDocumento.files || inputDocumento.files.length === 0) {
+                return true;
+            }
+
+            const archivo = inputDocumento.files[0];
+            const nombrePartes = archivo.name.split('.');
+            const extension = nombrePartes.length > 1 ? nombrePartes.pop().toLowerCase() : '';
+
+            if (!extensionesPermitidas.includes(extension)) {
+                alertaArchivo.innerText = 'Formato no válido. Solo se permiten archivos PDF, JPG, JPEG o PNG.';
+                alertaArchivo.classList.remove('d-none');
+                inputDocumento.value = '';
+                return false;
+            }
+
+            if (archivo.size > maxBytes) {
+                alertaArchivo.innerText = 'El archivo seleccionado supera el tamaño máximo permitido de 5 MB.';
+                alertaArchivo.classList.remove('d-none');
+                inputDocumento.value = '';
+                return false;
+            }
+
+            return true;
+        }
+
+        inputDocumento.addEventListener('change', validarArchivo);
+        document.getElementById('form-justificante').addEventListener('submit', function (e) {
+            if (!validarArchivo()) {
+                e.preventDefault();
+            }
+        });
+    </script>
 </body>
 </html>

@@ -14,11 +14,15 @@ class ReporteController extends Controller
     public function index(Request $request)
     {
         $profesorId = Auth::id();
-        $materiaId  = $request->input('materia_id');
-        $mes        = $request->input('mes');
 
-        // Obtenemos el catálogo general de materias (no lleva profesor_id)
-        $materias = Materia::all();
+        $rawMateriaId = $request->input('materia_id');
+        $materiaId    = (is_numeric($rawMateriaId) && (int) $rawMateriaId > 0) ? (int) $rawMateriaId : null;
+
+        $rawMes = $request->input('mes');
+        $mes    = (is_string($rawMes) && preg_match('/^\d{4}-\d{2}$/', $rawMes)) ? $rawMes : null;
+
+        // Obtenemos el catálogo general de materias
+        $materias = Materia::with('grupo')->get();
 
         $query = RegistroAsistencia::with(['alumno', 'sesion.materia'])
             ->whereHas('sesion', function ($q) use ($profesorId, $materiaId, $mes) {
@@ -36,12 +40,16 @@ class ReporteController extends Controller
         return view('profesor.reportes', compact('registros', 'materias', 'materiaId', 'mes'));
     }
 
-    // Descarga directa en formato CSV (Excel)
+    // Descarga directa en formato CSV (Excel) con protección contra CSV Formula Injection
     public function exportarCsv(Request $request)
     {
         $profesorId = Auth::id();
-        $materiaId  = $request->input('materia_id');
-        $mes        = $request->input('mes');
+
+        $rawMateriaId = $request->input('materia_id');
+        $materiaId    = (is_numeric($rawMateriaId) && (int) $rawMateriaId > 0) ? (int) $rawMateriaId : null;
+
+        $rawMes = $request->input('mes');
+        $mes    = (is_string($rawMes) && preg_match('/^\d{4}-\d{2}$/', $rawMes)) ? $rawMes : null;
 
         $registros = RegistroAsistencia::with(['alumno', 'sesion.materia'])
             ->whereHas('sesion', function ($q) use ($profesorId, $materiaId, $mes) {
@@ -68,14 +76,14 @@ class ReporteController extends Controller
 
             foreach ($registros as $reg) {
                 fputcsv($handle, [
-                    $reg->sesion->fecha,
-                    $reg->sesion->materia->codigo_materia,
-                    $reg->sesion->materia->nombre_materia,
-                    $reg->alumno->name,
-                    $reg->alumno->email,
-                    $reg->timestamp_escaneo ?? $reg->hora_pase ?? '--:--',
-                    strtoupper($reg->estado_incidencia),
-                    $reg->observaciones ?? ''
+                    $this->sanitizarCeldaCsv($reg->sesion->fecha ?? ''),
+                    $this->sanitizarCeldaCsv($reg->sesion->materia->codigo_materia ?? ''),
+                    $this->sanitizarCeldaCsv($reg->sesion->materia->nombre_materia ?? ''),
+                    $this->sanitizarCeldaCsv($reg->alumno->name ?? ''),
+                    $this->sanitizarCeldaCsv($reg->alumno->email ?? ''),
+                    $this->sanitizarCeldaCsv($reg->timestamp_escaneo ?? $reg->hora_pase ?? '--:--'),
+                    $this->sanitizarCeldaCsv(strtoupper($reg->estado_incidencia ?? '')),
+                    $this->sanitizarCeldaCsv($reg->observaciones ?? ''),
                 ]);
             }
 
@@ -84,5 +92,15 @@ class ReporteController extends Controller
             'Content-Type'        => 'text/csv; charset=UTF-8',
             'Content-Disposition' => 'attachment; filename="' . $filename . '"',
         ]);
+    }
+
+    // Evita que Excel ejecute fórmulas si una celda inicia con =, +, -, @, tab o retorno de carro
+    private function sanitizarCeldaCsv(?string $valor): string
+    {
+        $texto = (string) $valor;
+        if ($texto !== '' && in_array($texto[0], ['=', '+', '-', '@', "\t", "\r"], true)) {
+            return "'" . $texto;
+        }
+        return $texto;
     }
 }

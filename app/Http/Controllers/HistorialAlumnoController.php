@@ -13,8 +13,14 @@ class HistorialAlumnoController extends Controller
     public function index(Request $request)
     {
         $alumnoId = Auth::id();
-        $mesActual = $request->input('mes', Carbon::now()->format('Y-m'));
-        $materiaFiltro = $request->input('materia_id');
+
+        $rawMes = $request->input('mes');
+        $mesActual = (is_string($rawMes) && preg_match('/^\d{4}-\d{2}$/', $rawMes))
+            ? $rawMes
+            : Carbon::now()->format('Y-m');
+
+        $rawMateria = $request->input('materia_id');
+        $materiaFiltro = (is_numeric($rawMateria) && (int) $rawMateria > 0) ? (int) $rawMateria : null;
 
         // Materias en las que el alumno está aceptado
         $misMaterias = Matricula::with('materia')
@@ -36,7 +42,7 @@ class HistorialAlumnoController extends Controller
             return $reg->sesion->fecha;
         });
 
-        // Contadores para resumen y alerta de inasistencias (RF-14)
+        // Contadores para resumen y alerta de inasistencias (RF-14: máximo 3 faltas sin justificar)
         $totalSesiones = $registros->count();
         $asistencias   = $registros->where('estado_incidencia', 'asistencia')->count();
         $retardos      = $registros->where('estado_incidencia', 'retardo')->count();
@@ -44,7 +50,8 @@ class HistorialAlumnoController extends Controller
         $faltas        = $registros->where('estado_incidencia', 'falta')->count();
 
         $porcentajeFaltas = $totalSesiones > 0 ? round(($faltas / $totalSesiones) * 100, 1) : 0;
-        $alertaCritica    = $porcentajeFaltas >= 20; // Alerta si supera o iguala el 20% de faltas
+        $alertaCritica    = $faltas >= 3; // Alerta crítica si alcanza o supera el límite de 3 faltas sin justificar
+        $alertaPreventiva = $faltas === 2; // Advertencia preventiva al acumular 2 faltas
 
         return view('alumno.calendario', compact(
             'registros',
@@ -57,7 +64,8 @@ class HistorialAlumnoController extends Controller
             'permisos',
             'faltas',
             'porcentajeFaltas',
-            'alertaCritica'
+            'alertaCritica',
+            'alertaPreventiva'
         ));
     }
 }

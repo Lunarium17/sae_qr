@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\QrController;
 use App\Http\Controllers\JustificanteController;
 use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\HistorialAlumnoController;
+use App\Http\Controllers\PerfilAlumnoController;
 
 // Rutas públicas de autenticación
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -34,7 +35,9 @@ Route::middleware(['auth', \App\Http\Middleware\CheckRol::class . ':profesor'])-
     Route::resource('/profesor/materias', MateriaController::class);
     Route::resource('/profesor/grupos', GrupoController::class);
     Route::get('/profesor/solicitudes', [MatriculaController::class, 'indexSolicitudes'])->name('profesor.solicitudes');
+    Route::post('/profesor/solicitudes/manual', [MatriculaController::class, 'inscribirManual'])->name('profesor.matriculas.manual');
     Route::patch('/profesor/solicitudes/{matricula}', [MatriculaController::class, 'actualizarEstado'])->name('profesor.solicitudes.actualizar');
+    Route::delete('/profesor/solicitudes/{matricula}', [MatriculaController::class, 'destroy'])->name('profesor.matriculas.destroy');
 
     // Rutas de Sesiones de Clase y Escaneo QR (Sprint 5)
     Route::get('/profesor/sesiones', [SesionClaseController::class, 'index'])->name('sesiones.index');
@@ -50,6 +53,10 @@ Route::middleware(['auth', \App\Http\Middleware\CheckRol::class . ':profesor'])-
     // Rutas para reportes de asistencias (Sprint 6)
     Route::get('/profesor/reportes', [ReporteController::class, 'index'])->name('profesor.reportes');
     Route::get('/profesor/reportes/csv', [ReporteController::class, 'exportarCsv'])->name('profesor.reportes.csv');
+
+    // Rutas para ver y editar perfil / datos personales del profesor
+    Route::get('/profesor/perfil', [PerfilAlumnoController::class, 'editProfesor'])->name('profesor.perfil');
+    Route::put('/profesor/perfil', [PerfilAlumnoController::class, 'updateProfesor'])->name('profesor.perfil.update');
 });
 
 // Panel protegido exclusivamente para ALUMNOS
@@ -71,4 +78,8 @@ Route::middleware(['auth', \App\Http\Middleware\CheckRol::class . ':alumno'])->g
 
     // Rutas para calendario e historial de asistencia (Sprint 6)
     Route::get('/alumno/calendario', [HistorialAlumnoController::class, 'index'])->name('alumno.calendario');
+
+    // Rutas para ver y editar perfil / datos personales del alumno
+    Route::get('/alumno/perfil', [PerfilAlumnoController::class, 'edit'])->name('alumno.perfil');
+    Route::put('/alumno/perfil', [PerfilAlumnoController::class, 'update'])->name('alumno.perfil.update');
 });
