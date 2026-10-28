@@ -13,21 +13,28 @@ class Grupo extends Model
 
     protected $fillable = [
         'nombre_grupo',
+        'carrera',
         'grado',
         'turno',
         'periodo_lectivo',
-        'profesor_id', // Si tu migración vincula el grupo al profesor creador
+        'profesor_id',
     ];
 
-    // Relación con las materias que pertenecen a este grupo
+    // Relación con las materias que se imparten en este grupo (por distintos docentes)
     public function materias()
     {
         return $this->hasMany(Materia::class, 'grupo_id');
     }
 
-    // Relación con matrículas
+    // Relación con matrículas individuales vinculadas a este grupo
     public function matriculas()
     {
         return $this->hasMany(Matricula::class, 'grupo_id');
+    }
+
+    // Relación con sesiones de clase impartidas en este grupo
+    public function sesiones()
+    {
+        return $this->hasMany(SesionClase::class, 'grupo_id');
     }
 }

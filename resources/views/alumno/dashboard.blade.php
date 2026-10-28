@@ -65,19 +65,28 @@
             $faltM   = $regsMat->where('estado_incidencia', 'falta')->count();
             $efecM   = $asistM + $retM + $permM;
 
-            $mat->asistencias_mat = $asistM;
-            $mat->retardos_mat    = $retM;
-            $mat->permisos_mat    = $permM;
-            $mat->faltas_mat      = $faltM;
-            $mat->total_sesiones  = $totMat;
-            $mat->porcentaje_mat  = $totMat > 0 ? round(($efecM / $totMat) * 100) : null;
+            // Regla Universitaria: Cada 3 retardos acumulados en una misma asignatura equivalen a 1 falta
+            $faltasPorRetM  = intdiv($retM, 3);
+            $faltasTotalesM = $faltM + $faltasPorRetM;
 
-            if ($faltM >= 2) {
+            $mat->asistencias_mat     = $asistM;
+            $mat->retardos_mat        = $retM;
+            $mat->permisos_mat        = $permM;
+            $mat->faltas_mat          = $faltM;
+            $mat->faltas_retardos_mat = $faltasPorRetM;
+            $mat->faltas_totales_mat  = $faltasTotalesM;
+            $mat->total_sesiones      = $totMat;
+            $mat->porcentaje_mat      = $totMat > 0 ? round(($efecM / $totMat) * 100) : null;
+
+            if ($faltasTotalesM >= 2) {
                 $alertasMateriasFaltas[] = [
-                    'materia' => $mat->materia->nombre_materia,
-                    'grupo'   => $mat->grupo->nombre_grupo ?? '-',
-                    'faltas'  => $faltM,
-                    'critico' => $faltM >= 3,
+                    'materia'         => $mat->materia->nombre_materia,
+                    'grupo'           => $mat->grupo->nombre_grupo ?? '-',
+                    'faltas'          => $faltasTotalesM,
+                    'faltas_directas' => $faltM,
+                    'retardos'        => $retM,
+                    'faltas_retardos' => $faltasPorRetM,
+                    'critico'         => $faltasTotalesM >= 3,
                 ];
             }
         }
@@ -154,15 +163,15 @@
                 </div>
             @endforeach
 
-            <!-- Aviso B: Alertas de límite de 3 faltas sin justificar por materia -->
+            <!-- Aviso B: Alertas de Derecho a Examen Ordinario y límite de 3 faltas (3 retardos = 1 falta) -->
             @foreach ($alertasMateriasFaltas as $alertaFalta)
                 <div class="alert {{ $alertaFalta['critico'] ? 'alert-danger border-danger' : 'alert-warning border-warning' }} border-start border-4 d-flex flex-wrap justify-content-between align-items-center rounded-3 mb-2 py-2">
                     <div>
                         <i class="bi {{ $alertaFalta['critico'] ? 'bi-exclamation-octagon-fill' : 'bi-exclamation-triangle-fill' }} me-2"></i>
                         @if ($alertaFalta['critico'])
-                            <strong>¡Límite de Faltas Alcanzado ({{ $alertaFalta['faltas'] }} / 3)!</strong> En <strong>{{ $alertaFalta['materia'] }}</strong> (Grupo {{ $alertaFalta['grupo'] }}) has alcanzado el máximo permitido de 3 faltas sin justificar.
+                            <strong>¡Sin Derecho a Examen Ordinario ({{ $alertaFalta['faltas'] }} / 3 faltas)!</strong> En <strong>{{ $alertaFalta['materia'] }}</strong> (Grupo {{ $alertaFalta['grupo'] }}) acumulas {{ $alertaFalta['faltas_directas'] }} falta(s) directa(s) + {{ $alertaFalta['faltas_retardos'] }} por {{ $alertaFalta['retardos'] }} retardo(s).
                         @else
-                            <strong>Aviso Preventivo (2 / 3 faltas):</strong> Llevas 2 faltas sin justificar en <strong>{{ $alertaFalta['materia'] }}</strong> (Grupo {{ $alertaFalta['grupo'] }}). Estás a 1 falta del límite permitido.
+                            <strong>Aviso Preventivo (2 / 3 faltas):</strong> Llevas 2 faltas computadas en <strong>{{ $alertaFalta['materia'] }}</strong> (Grupo {{ $alertaFalta['grupo'] }}: {{ $alertaFalta['faltas_directas'] }} directa(s) + {{ $alertaFalta['faltas_retardos'] }} por {{ $alertaFalta['retardos'] }} retardo(s)). Estás a 1 falta de perder derecho a examen ordinario.
                         @endif
                     </div>
                     <a href="{{ route('alumno.justificantes') }}" class="btn btn-sm {{ $alertaFalta['critico'] ? 'btn-danger' : 'btn-dark' }} rounded-3">
@@ -212,9 +221,24 @@
             <div class="col-md-5">
                 <div class="card border-0 shadow-sm rounded-4 p-4 bg-white text-center h-100">
                     <h5 class="text-dark mb-3 fw-bold">Mi Código QR Temporal</h5>
+
+                    <!-- Confirmación en Tiempo Real cuando el QR del Alumno es escaneado -->
+                    <div id="qr-confirmacion-escaneo" data-estado-url="{{ route('qr.estado') }}" class="alert alert-success border-success border-2 rounded-4 py-2 px-3 mb-3 d-none shadow-sm text-start">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-patch-check-fill fs-3 text-success me-2"></i>
+                            <div class="small">
+                                <div class="fw-bold text-success">¡Pase de Lista Confirmado Hoy!</div>
+                                <div id="qr-confirmacion-detalle" class="text-dark"></div>
+                            </div>
+                        </div>
+                    </div>
                     
-                    <div class="p-3 bg-white border rounded-4 d-inline-flex align-items-center justify-content-center mx-auto mb-3 shadow-sm" style="width: 230px; height: 230px;">
-                        <div id="qrcode"></div>
+                    <div class="p-3 bg-white border rounded-4 d-inline-flex align-items-center justify-content-center mx-auto mb-3 shadow-sm" style="width: 246px; height: 246px;">
+                        <div id="qrcode" data-qr-url="{{ route('qr.generar') }}"></div>
+                    </div>
+
+                    <div id="qr-error-sesion" class="alert alert-warning small py-2 px-3 d-none mb-2">
+                        Tu sesión de Alumno cambió porque iniciaste sesión como Profesor en otra pestaña del mismo navegador. Abre el perfil de Profesor o Alumno en una <strong>ventana de incógnito</strong> o en otro dispositivo.
                     </div>
 
                     <div class="mb-2">
@@ -227,7 +251,12 @@
                         <i class="bi bi-arrow-clockwise me-1"></i>Renovar QR ahora
                     </button>
 
-                    <p class="text-muted small mt-3 mb-0">Presenta esta pantalla frente a la cámara de tu profesor durante la clase activa.</p>
+                    <div class="mt-3 pt-2 border-top">
+                        <small class="text-muted d-block mb-1">Código de respaldo (para pruebas en la misma PC):</small>
+                        <code id="qr-token-respaldo" class="user-select-all bg-light px-2 py-1 rounded border small text-dark">—</code>
+                    </div>
+
+                    <p class="text-muted small mt-2 mb-0">Presenta esta pantalla frente a la cámara de tu profesor durante la clase activa.</p>
                 </div>
             </div>
             
@@ -275,14 +304,16 @@
             </div>
         </div>
 
-        <!-- 4. Tabla de Mis Materias Inscritas y Estado por Asignatura -->
+        <!-- 4. Tabla de Mis Materias Inscritas, Regla Universitaria (3 Retardos = 1 Falta) y Derecho a Examen -->
         <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
-            <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
                 <div>
                     <h5 class="fw-bold text-dark mb-0">
-                        <i class="bi bi-journal-check me-2 text-primary"></i>Mis Materias Inscritas y Límite de Faltas (Máx. 3)
+                        <i class="bi bi-journal-check me-2 text-primary"></i>Mis Materias Inscritas y Derecho a Examen Ordinario
                     </h5>
-                    <p class="text-muted small mb-0">Consulta tu porcentaje de asistencia y cuántas faltas llevas en cada asignatura.</p>
+                    <p class="text-muted small mb-0">
+                        Regla universitaria: <strong>cada 3 retardos acumulados en una misma asignatura equivalen a 1 falta</strong> (Máx. permitido: 3 faltas).
+                    </p>
                 </div>
                 <span class="badge bg-primary rounded-pill">{{ $matriculasAceptadas->count() }} Materias Aceptadas</span>
             </div>
@@ -291,11 +322,12 @@
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th>Grupo / Turno</th>
+                            <th>Grupo / Carrera</th>
                             <th>Materia</th>
                             <th class="text-center">Registro (A / R / P / F)</th>
-                            <th style="min-width: 160px;">% Asistencia</th>
-                            <th class="text-center">Límite de Faltas (Máx. 3)</th>
+                            <th style="min-width: 155px;">% Asistencia</th>
+                            <th class="text-center">Faltas Computadas</th>
+                            <th class="text-center">Derecho a Examen</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -309,6 +341,11 @@
                                     <span class="badge bg-primary bg-opacity-10 text-primary border border-primary">
                                         {{ $mat->grupo->nombre_grupo ?? '-' }} ({{ $mat->grupo->turno ?? '-' }})
                                     </span>
+                                    @if (!empty($mat->grupo->carrera) || !empty($mat->grupo->grado))
+                                        <div class="small text-muted mt-1">
+                                            {{ $mat->grupo->carrera ? $mat->grupo->carrera . ' — ' : '' }}{{ $mat->grupo->grado ?? '' }}
+                                        </div>
+                                    @endif
                                 </td>
                                 <td>
                                     @if ($mat->materia)
@@ -338,24 +375,32 @@
                                     @endif
                                 </td>
                                 <td class="text-center">
-                                    @if ($mat->faltas_mat >= 3)
+                                    <div class="fw-bold {{ $mat->faltas_totales_mat >= 3 ? 'text-danger' : ($mat->faltas_totales_mat === 2 ? 'text-warning text-dark' : 'text-success') }}">
+                                        {{ $mat->faltas_totales_mat }} / 3 faltas
+                                    </div>
+                                    <div class="text-muted" style="font-size: 0.75rem;">
+                                        {{ $mat->faltas_mat }} dir. + {{ $mat->faltas_retardos_mat }} por {{ $mat->retardos_mat }} ret.
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    @if ($mat->faltas_totales_mat >= 3)
                                         <span class="badge bg-danger">
-                                            <i class="bi bi-x-octagon-fill me-1"></i>{{ $mat->faltas_mat }} / 3 (Límite Alcanzado)
+                                            <i class="bi bi-x-octagon-fill me-1"></i>Sin Derecho a Examen (SD)
                                         </span>
-                                    @elseif ($mat->faltas_mat === 2)
+                                    @elseif ($mat->faltas_totales_mat === 2)
                                         <span class="badge bg-warning text-dark">
-                                            <i class="bi bi-exclamation-triangle-fill me-1"></i>2 / 3 (A 1 falta del límite)
+                                            <i class="bi bi-exclamation-triangle-fill me-1"></i>En Riesgo / Preventivo (2/3)
                                         </span>
                                     @else
                                         <span class="badge bg-success bg-opacity-10 text-success border border-success">
-                                            {{ $mat->faltas_mat }} / 3 faltas (En regla)
+                                            <i class="bi bi-check-circle-fill me-1"></i>Con Derecho a Ordinario
                                         </span>
                                     @endif
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="text-center py-4 text-muted">
+                                <td colspan="6" class="text-center py-4 text-muted">
                                     Aún no tienes materias aceptadas. Haz clic en <strong>"Buscar y Solicitar Grupo"</strong> arriba para inscribirte.
                                 </td>
                             </tr>
@@ -372,22 +417,40 @@
         let segundosRestantes = 60;
 
         function generarNuevoQR() {
-            fetch("{{ route('qr.generar') }}")
-                .then(response => response.json())
+            const contenedor = document.getElementById('qrcode');
+            const qrUrl = contenedor ? contenedor.getAttribute('data-qr-url') : '/alumno/qr/generar';
+            const alertaSesion = document.getElementById('qr-error-sesion');
+            const tokenRespaldoEl = document.getElementById('qr-token-respaldo');
+
+            fetch(qrUrl, {
+                headers: { "Accept": "application/json" }
+            })
+                .then(response => {
+                    if (response.redirected || !response.ok) {
+                        throw new Error('SESION_CAMBIADA');
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     if (data.status === 'success') {
-                        const contenedor = document.getElementById('qrcode');
+                        if (alertaSesion) alertaSesion.classList.add('d-none');
                         contenedor.innerHTML = ''; // Limpiar QR anterior
                         new QRCode(contenedor, {
                             text: data.qr_token,
-                            width: 190,
-                            height: 190,
+                            width: 210,
+                            height: 210,
                             colorDark : "#000000",
                             colorLight : "#ffffff",
-                            correctLevel : QRCode.CorrectLevel.M
+                            correctLevel : QRCode.CorrectLevel.L
                         });
+                        if (tokenRespaldoEl) {
+                            tokenRespaldoEl.textContent = data.qr_token;
+                        }
                         segundosRestantes = 60;
                     }
+                })
+                .catch(() => {
+                    if (alertaSesion) alertaSesion.classList.remove('d-none');
                 });
         }
 
@@ -400,9 +463,36 @@
             document.getElementById('qr-timer').innerText = `Expira en ${segundosRestantes}s`;
         }, 1000);
 
-        // Generar QR e inicializar barras de progreso al abrir el panel
+        // Confirmación en Tiempo Real cuando el QR del alumno es escaneado por el docente
+        function verificarConfirmacionEscaneo() {
+            const box = document.getElementById('qr-confirmacion-escaneo');
+            const detalle = document.getElementById('qr-confirmacion-detalle');
+            if (!box || !detalle) return;
+
+            const estadoUrl = box.getAttribute('data-estado-url');
+            if (!estadoUrl) return;
+
+            fetch(estadoUrl, { headers: { "Accept": "application/json" } })
+                .then(function (r) {
+                    if (!r.ok || r.redirected) return null;
+                    return r.json();
+                })
+                .then(function (data) {
+                    if (data && data.escaneado) {
+                        const etiquetaEstado = (data.estado || 'asistencia').toUpperCase();
+                        const textoGrupo = data.grupo ? ' (Grupo ' + data.grupo + ')' : '';
+                        detalle.textContent = data.materia + textoGrupo + ' — ' + etiquetaEstado + ' a las ' + data.hora;
+                        box.classList.remove('d-none');
+                    }
+                })
+                .catch(function () {});
+        }
+
+        // Generar QR, iniciar polling de confirmación en tiempo real e inicializar barras de progreso
         document.addEventListener('DOMContentLoaded', function () {
             generarNuevoQR();
+            verificarConfirmacionEscaneo();
+            setInterval(verificarConfirmacionEscaneo, 4000);
             document.querySelectorAll('[data-width]').forEach(function (el) {
                 el.style.width = el.getAttribute('data-width') + '%';
             });

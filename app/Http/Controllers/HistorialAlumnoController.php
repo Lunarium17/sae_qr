@@ -42,16 +42,18 @@ class HistorialAlumnoController extends Controller
             return $reg->sesion->fecha;
         });
 
-        // Contadores para resumen y alerta de inasistencias (RF-14: máximo 3 faltas sin justificar)
-        $totalSesiones = $registros->count();
-        $asistencias   = $registros->where('estado_incidencia', 'asistencia')->count();
-        $retardos      = $registros->where('estado_incidencia', 'retardo')->count();
-        $permisos      = $registros->where('estado_incidencia', 'permiso')->count();
-        $faltas        = $registros->where('estado_incidencia', 'falta')->count();
+        // Contadores para resumen y alerta de inasistencias (RF-14: máximo 3 faltas sin justificar + Regla Universitaria: cada 3 retardos = 1 falta)
+        $totalSesiones     = $registros->count();
+        $asistencias       = $registros->where('estado_incidencia', 'asistencia')->count();
+        $retardos          = $registros->where('estado_incidencia', 'retardo')->count();
+        $permisos          = $registros->where('estado_incidencia', 'permiso')->count();
+        $faltas            = $registros->where('estado_incidencia', 'falta')->count();
+        $faltasPorRetardos = intdiv($retardos, 3);
+        $faltasTotales     = $faltas + $faltasPorRetardos;
 
-        $porcentajeFaltas = $totalSesiones > 0 ? round(($faltas / $totalSesiones) * 100, 1) : 0;
-        $alertaCritica    = $faltas >= 3; // Alerta crítica si alcanza o supera el límite de 3 faltas sin justificar
-        $alertaPreventiva = $faltas === 2; // Advertencia preventiva al acumular 2 faltas
+        $porcentajeFaltas = $totalSesiones > 0 ? round(($faltasTotales / $totalSesiones) * 100, 1) : 0;
+        $alertaCritica    = $faltasTotales >= 3; // Alerta crítica si alcanza o supera el límite de 3 faltas acumuladas (sin derecho a ordinario)
+        $alertaPreventiva = $faltasTotales === 2; // Advertencia preventiva al acumular 2 faltas equivalentes
 
         return view('alumno.calendario', compact(
             'registros',
@@ -63,6 +65,8 @@ class HistorialAlumnoController extends Controller
             'retardos',
             'permisos',
             'faltas',
+            'faltasPorRetardos',
+            'faltasTotales',
             'porcentajeFaltas',
             'alertaCritica',
             'alertaPreventiva'

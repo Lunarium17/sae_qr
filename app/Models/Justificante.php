@@ -14,6 +14,7 @@ class Justificante extends Model
     protected $fillable = [
         'registro_id',
         'motivo',
+        'comentario_profesor',
         'documento_url',
         'estado_aprobacion', // 'pendiente', 'aceptado', 'rechazado'
     ];

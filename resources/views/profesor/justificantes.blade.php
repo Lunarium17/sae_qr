@@ -32,10 +32,10 @@
                             <th>Alumno</th>
                             <th>Materia</th>
                             <th>Fecha Sesión</th>
-                            <th>Motivo</th>
+                            <th>Motivo del Alumno</th>
                             <th>Comprobante</th>
                             <th>Estado</th>
-                            <th class="text-end">Acciones</th>
+                            <th style="min-width: 280px;">Comentario Docente (Opcional) y Acción</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -66,26 +66,34 @@
                                         <span class="badge bg-danger">Rechazado</span>
                                     @endif
                                 </td>
-                                <td class="text-end">
+                                <td>
                                     @if($just->estado_aprobacion === 'pendiente')
-                                        <form action="{{ route('profesor.justificantes.estado', $just->id) }}" method="POST" class="d-inline">
+                                        <form action="{{ route('profesor.justificantes.estado', $just->id) }}" method="POST">
                                             @csrf
                                             @method('PATCH')
-                                            <input type="hidden" name="estado_aprobacion" value="aceptado">
-                                            <button type="submit" class="btn btn-sm btn-success rounded-3">
-                                                <i class="bi bi-check-lg"></i> Aprobar
-                                            </button>
-                                        </form>
-                                        <form action="{{ route('profesor.justificantes.estado', $just->id) }}" method="POST" class="d-inline ms-1">
-                                            @csrf
-                                            @method('PATCH')
-                                            <input type="hidden" name="estado_aprobacion" value="rechazado">
-                                            <button type="submit" class="btn btn-sm btn-outline-danger rounded-3">
-                                                <i class="bi bi-x-lg"></i> Rechazar
-                                            </button>
+                                            <div class="mb-2">
+                                                <input type="text" name="comentario_profesor" class="form-control form-control-sm rounded-3" maxlength="500" placeholder="Observación opcional (ej. Sello legible / Falta firma)...">
+                                            </div>
+                                            <div class="d-flex gap-2">
+                                                <button type="submit" name="estado_aprobacion" value="aceptado" class="btn btn-sm btn-success rounded-3 flex-fill">
+                                                    <i class="bi bi-check-lg me-1"></i>Aprobar
+                                                </button>
+                                                <button type="submit" name="estado_aprobacion" value="rechazado" class="btn btn-sm btn-outline-danger rounded-3 flex-fill">
+                                                    <i class="bi bi-x-lg me-1"></i>Rechazar
+                                                </button>
+                                            </div>
                                         </form>
                                     @else
-                                        <span class="text-muted small">Procesado</span>
+                                        <div class="small">
+                                            <span class="text-muted fw-semibold">Procesado</span>
+                                            @if($just->comentario_profesor)
+                                                <div class="text-secondary fst-italic mt-1">
+                                                    <i class="bi bi-chat-left-text me-1"></i>"{{ $just->comentario_profesor }}"
+                                                </div>
+                                            @else
+                                                <div class="text-muted">Sin comentarios del docente</div>
+                                            @endif
+                                        </div>
                                     @endif
                                 </td>
                             </tr>

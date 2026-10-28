@@ -6,37 +6,54 @@ use App\Models\Grupo;
 use App\Models\RegistroAsistencia;
 use App\Models\SesionClase;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
 class GrupoController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Mostrar la lista de grupos académicos universitarios con estadísticas modulares del docente.
      */
-    // mostrar la lista de grupos con estadísticas de asistencia
     public function index()
     {
-        $grupos = Grupo::with(['materias'])
+        $profesorId = Auth::id();
+
+        $grupos = Grupo::with(['materias.profesor'])
             ->withCount([
                 'materias',
-                'matriculas as alumnos_aceptados_count' => function ($q) {
-                    $q->where('estado', 'aceptado');
+                'materias as mis_materias_count' => function ($q) use ($profesorId) {
+                    $q->where('profesor_id', $profesorId)
+                      ->orWhereNull('profesor_id');
+                },
+                'matriculas as alumnos_aceptados_count' => function ($q) use ($profesorId) {
+                    $q->where('estado', 'aceptado')
+                      ->whereHas('materia', function ($sub) use ($profesorId) {
+                          $sub->where('profesor_id', $profesorId)
+                              ->orWhereNull('profesor_id');
+                      });
                 }
             ])
             ->orderBy('created_at', 'desc')
             ->get();
 
-        // Calcular porcentaje de asistencia para cada grupo
+        // Calcular porcentaje de asistencia para las asignaturas que imparte el docente en cada grupo
         foreach ($grupos as $grupo) {
-            $materiaIds = $grupo->materias->pluck('id');
-            if ($materiaIds->isEmpty()) {
+            $misMateriaIds = $grupo->materias
+                ->filter(fn ($m) => is_null($m->profesor_id) || (int) $m->profesor_id === (int) $profesorId)
+                ->pluck('id');
+
+            if ($misMateriaIds->isEmpty()) {
                 $grupo->porcentaje_asistencia = null;
                 $grupo->total_registros_grupo = 0;
                 continue;
             }
 
-            $registros = RegistroAsistencia::whereHas('sesion', function ($q) use ($materiaIds) {
-                $q->whereIn('materia_id', $materiaIds);
+            $registros = RegistroAsistencia::whereHas('sesion', function ($q) use ($misMateriaIds, $grupo) {
+                $q->whereIn('materia_id', $misMateriaIds)
+                  ->where(function ($sub) use ($grupo) {
+                      $sub->where('grupo_id', $grupo->id)
+                          ->orWhereNull('grupo_id');
+                  });
             })->get();
 
             $total = $registros->count();
@@ -50,26 +67,22 @@ class GrupoController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Mostrar el formulario para crear un nuevo grupo universitario.
      */
-    // mostrar el formulario para crear un nuevo grupo
     public function create()
     {
         return view('grupos.create');
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Guardar el nuevo grupo académico en la BD.
      */
-    // guardar el nuevo grupo en la BD
     public function store(Request $request)
     {
-        // Compatibilidad si el formulario envía 'nombre' o 'nombre_grupo'
         if ($request->filled('nombre') && !$request->filled('nombre_grupo')) {
             $request->merge(['nombre_grupo' => $request->input('nombre')]);
         }
 
-        // 1. Validar los datos recibidos del formulario (no permitir duplicados en el mismo turno)
         $request->validate([
             'nombre_grupo' => [
                 'required',
@@ -79,57 +92,73 @@ class GrupoController extends Controller
                     return $query->where('turno', $request->turno);
                 }),
             ],
+            'carrera'         => 'required|string|max:120',
             'grado'           => 'required|string|max:50',
             'turno'           => 'required|string|max:30',
             'periodo_lectivo' => 'required|string|max:50',
         ], [
             'nombre_grupo.required'    => 'El nombre del grupo es obligatorio.',
-            'nombre_grupo.unique'      => 'Ya existe un grupo llamado "' . $request->nombre_grupo . '" en el turno ' . $request->turno . '. Solo puede registrarse en un turno diferente (ej. Matutino o Vespertino).',
-            'grado.required'           => 'El grado o semestre es obligatorio.',
+            'nombre_grupo.unique'      => 'Ya existe un grupo llamado "' . $request->nombre_grupo . '" en el turno ' . $request->turno . '. Solo puede registrarse en un turno diferente.',
+            'carrera.required'         => 'La carrera o programa educativo es obligatorio.',
+            'grado.required'           => 'El semestre es obligatorio.',
             'turno.required'           => 'Debes seleccionar un turno.',
             'periodo_lectivo.required' => 'El periodo lectivo es obligatorio.',
         ]);
 
-        // 2. Crear el registro en la base de datos (Modelo Grupo)
         Grupo::create([
             'nombre_grupo'    => $request->nombre_grupo,
+            'carrera'         => $request->carrera,
             'grado'           => $request->grado,
             'turno'           => $request->turno,
             'periodo_lectivo' => $request->periodo_lectivo,
         ]);
 
-        // 3. Redirigir de vuelta al índice de grupos con un mensaje de éxito
-        return redirect()->route('grupos.index')->with('success', 'Grupo creado exitosamente.');
+        return redirect()->route('grupos.index')->with('success', 'Grupo académico creado exitosamente.');
     }
 
     /**
-     * Display the specified resource.
+     * Mostrar el panel del grupo con sus asignaturas (modulares por docente), matrículas y estadísticas.
      */
-    // Mostrar el panel unificado del grupo con sus materias, alumnos inscritos y estadísticas
     public function show(string $id)
     {
+        $profesorId = Auth::id();
+
         $grupo = Grupo::with([
+            'materias.profesor',
             'materias.matriculas' => function ($q) {
                 $q->where('estado', 'aceptado')->with('alumno');
             },
-            'matriculas' => function ($q) {
-                $q->with(['alumno', 'materia'])
+            'matriculas' => function ($q) use ($profesorId) {
+                $q->with(['alumno', 'materia.profesor'])
+                  ->whereHas('materia', function ($sub) use ($profesorId) {
+                      $sub->where('profesor_id', $profesorId)
+                          ->orWhereNull('profesor_id');
+                  })
                   ->orderByRaw("FIELD(estado, 'pendiente', 'aceptado', 'rechazado')")
                   ->orderBy('created_at', 'desc');
             }
         ])->findOrFail($id);
 
-        $alumnosDisponibles = \App\Models\User::where('rol', 'alumno')->orderBy('name')->get();
+        // Asignaturas que este docente imparte dentro de este grupo
+        $misMateriasGrupo = $grupo->materias->filter(
+            fn ($m) => is_null($m->profesor_id) || (int) $m->profesor_id === (int) $profesorId
+        );
+        $materiaIds = $misMateriasGrupo->pluck('id');
 
-        // Estadísticas de asistencia del grupo y desglose por materia
-        $materiaIds = $grupo->materias->pluck('id');
         $totalSesionesGrupo = $materiaIds->isNotEmpty()
-            ? SesionClase::whereIn('materia_id', $materiaIds)->count()
+            ? SesionClase::whereIn('materia_id', $materiaIds)
+                ->where(function ($q) use ($grupo) {
+                    $q->where('grupo_id', $grupo->id)->orWhereNull('grupo_id');
+                })
+                ->count()
             : 0;
 
         $registrosGrupo = $materiaIds->isNotEmpty()
-            ? RegistroAsistencia::with('sesion')->whereHas('sesion', function ($q) use ($materiaIds) {
-                $q->whereIn('materia_id', $materiaIds);
+            ? RegistroAsistencia::with('sesion')->whereHas('sesion', function ($q) use ($materiaIds, $grupo) {
+                $q->whereIn('materia_id', $materiaIds)
+                  ->where(function ($sub) use ($grupo) {
+                      $sub->where('grupo_id', $grupo->id)->orWhereNull('grupo_id');
+                  });
             })->get()
             : collect();
 
@@ -146,27 +175,48 @@ class GrupoController extends Controller
             ? round(($efectivasGrupo / $statsGrupo['total_registros']) * 100)
             : 0;
 
-        // Estadísticas por cada materia del grupo y conteo de faltas por alumno-materia
+        // Estadísticas por cada materia del grupo y conteo de faltas por alumno-materia (aplicando regla universitaria: 3 retardos = 1 falta)
         $faltasPorAlumnoMateria = [];
+        $faltasDirectasPorAlumnoMateria = [];
+        $retardosPorAlumnoMateria = [];
         foreach ($grupo->materias as $materia) {
-            $regsMat = $registrosGrupo->filter(fn ($r) => $r->sesion && (int) $r->sesion->materia_id === (int) $materia->id);
+            $regsMat = RegistroAsistencia::with('sesion')->whereHas('sesion', function ($q) use ($materia, $grupo) {
+                $q->where('materia_id', $materia->id)
+                  ->where(function ($sub) use ($grupo) {
+                      $sub->where('grupo_id', $grupo->id)->orWhereNull('grupo_id');
+                  });
+            })->get();
+
             $totMat = $regsMat->count();
             $efecMat = $regsMat->whereIn('estado_incidencia', ['asistencia', 'retardo', 'permiso'])->count();
             $materia->porcentaje_asistencia = $totMat > 0 ? round(($efecMat / $totMat) * 100) : null;
             $materia->total_registros = $totMat;
 
-            foreach ($regsMat->where('estado_incidencia', 'falta')->groupBy('user_id') as $uid => $faltasAlumno) {
-                $faltasPorAlumnoMateria[$materia->id . '_' . $uid] = $faltasAlumno->count();
+            foreach ($regsMat->groupBy('user_id') as $uid => $regsAlumno) {
+                $clave = $materia->id . '_' . $uid;
+                $faltasDirectas = $regsAlumno->where('estado_incidencia', 'falta')->count();
+                $retardosAcum   = $regsAlumno->where('estado_incidencia', 'retardo')->count();
+                $faltasPorRet   = intdiv($retardosAcum, 3);
+
+                $faltasDirectasPorAlumnoMateria[$clave] = $faltasDirectas;
+                $retardosPorAlumnoMateria[$clave]       = $retardosAcum;
+                $faltasPorAlumnoMateria[$clave]         = $faltasDirectas + $faltasPorRet;
             }
         }
 
-        return view('grupos.show', compact('grupo', 'alumnosDisponibles', 'statsGrupo', 'faltasPorAlumnoMateria'));
+        return view('grupos.show', compact(
+            'grupo',
+            'misMateriasGrupo',
+            'statsGrupo',
+            'faltasPorAlumnoMateria',
+            'faltasDirectasPorAlumnoMateria',
+            'retardosPorAlumnoMateria'
+        ));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Mostrar el formulario para editar un grupo existente.
      */
-    // Mostrar el formulario para editar un grupo existente
     public function edit(string $id)
     {
         $grupo = Grupo::findOrFail($id);
@@ -174,9 +224,8 @@ class GrupoController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualizar los datos del grupo en la BD.
      */
-    // Actualizar los datos del grupo en la BD
     public function update(Request $request, string $id)
     {
         $grupo = Grupo::findOrFail($id);
@@ -196,19 +245,22 @@ class GrupoController extends Controller
                     })
                     ->ignore($grupo->id),
             ],
+            'carrera'         => 'required|string|max:120',
             'grado'           => 'required|string|max:50',
             'turno'           => 'required|string|max:30',
             'periodo_lectivo' => 'required|string|max:50',
         ], [
             'nombre_grupo.required'    => 'El nombre del grupo es obligatorio.',
             'nombre_grupo.unique'      => 'Ya existe otro grupo llamado "' . $request->nombre_grupo . '" en el turno ' . $request->turno . '.',
-            'grado.required'           => 'El grado o semestre es obligatorio.',
+            'carrera.required'         => 'La carrera o programa educativo es obligatorio.',
+            'grado.required'           => 'El semestre es obligatorio.',
             'turno.required'           => 'Debes seleccionar un turno.',
             'periodo_lectivo.required' => 'El periodo lectivo es obligatorio.',
         ]);
 
         $grupo->update([
             'nombre_grupo'    => $request->nombre_grupo,
+            'carrera'         => $request->carrera,
             'grado'           => $request->grado,
             'turno'           => $request->turno,
             'periodo_lectivo' => $request->periodo_lectivo,
@@ -218,11 +270,20 @@ class GrupoController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Eliminar un grupo de la BD (solo si no tiene asignaturas de otros profesores).
      */
-    // eliminar un grupo de la BD
     public function destroy(Grupo $grupo)
     {
+        $tieneMateriasDeOtrosDocentes = $grupo->materias()
+            ->whereNotNull('profesor_id')
+            ->where('profesor_id', '!=', Auth::id())
+            ->exists();
+
+        if ($tieneMateriasDeOtrosDocentes) {
+            return redirect()->route('grupos.index')
+                ->with('error', 'No se puede eliminar este grupo porque otros docentes imparten asignaturas en él. Elimina únicamente tus asignaturas desde el detalle del grupo.');
+        }
+
         $grupo->delete();
         return redirect()->route('grupos.index')->with('success', 'Grupo eliminado correctamente.');
     }

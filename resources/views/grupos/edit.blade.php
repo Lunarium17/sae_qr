@@ -51,31 +51,62 @@
                             
                             <div class="row g-4 mb-4">
                                 <!-- Nombre del Grupo -->
-                                <div class="col-md-6">
-                                    <label for="nombre_grupo" class="form-label fw-bold text-dark">Nombre del Grupo <span class="text-danger">*</span></label>
+                                <div class="col-md-4">
+                                    <label for="nombre_grupo" class="form-label fw-bold text-dark">Clave / Nombre del Grupo <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control rounded-3 py-2" id="nombre_grupo" name="nombre_grupo" value="{{ old('nombre_grupo', $grupo->nombre_grupo) }}" required>
                                 </div>
+
+                                <!-- Carrera -->
+                                <div class="col-md-8">
+                                    <label for="carrera" class="form-label fw-bold text-dark">Carrera / Programa Educativo <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control rounded-3 py-2" id="carrera" name="carrera" list="listaCarrerasEdit" value="{{ old('carrera', $grupo->carrera) }}" placeholder="Ej. Ingeniería en Sistemas Computacionales" maxlength="120" required>
+                                    <datalist id="listaCarrerasEdit">
+                                        <option value="Ingeniería en Sistemas Computacionales"></option>
+                                        <option value="Ingeniería en Tecnologías de la Información"></option>
+                                        <option value="Ingeniería Industrial"></option>
+                                        <option value="Ingeniería Mecatrónica"></option>
+                                        <option value="Licenciatura en Administración"></option>
+                                        <option value="Licenciatura en Contaduría Pública"></option>
+                                        <option value="Licenciatura en Derecho"></option>
+                                        <option value="Arquitectura"></option>
+                                    </datalist>
+                                </div>
                                 
-                                <!-- Grado -->
-                                <div class="col-md-6">
-                                    <label for="grado" class="form-label fw-bold text-dark">Grado o Semestre <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control rounded-3 py-2" id="grado" name="grado" value="{{ old('grado', $grupo->grado) }}" required>
+                                <!-- Semestre -->
+                                <div class="col-md-4">
+                                    <label for="grado" class="form-label fw-bold text-dark">Semestre <span class="text-danger">*</span></label>
+                                    @php
+                                        $gradoActual = old('grado', $grupo->grado);
+                                        $semestresLista = [];
+                                        for ($i = 1; $i <= 12; $i++) {
+                                            $semestresLista[] = $i . '° Semestre';
+                                        }
+                                    @endphp
+                                    <select class="form-select rounded-3 py-2" id="grado" name="grado" required>
+                                        @if ($gradoActual && !in_array($gradoActual, $semestresLista))
+                                            <option value="{{ $gradoActual }}" selected>{{ $gradoActual }}</option>
+                                        @endif
+                                        @foreach ($semestresLista as $sem)
+                                            <option value="{{ $sem }}" {{ $gradoActual === $sem ? 'selected' : '' }}>{{ $sem }}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                                 
                                 <!-- Turno -->
-                                <div class="col-md-6">
-                                    <label for="turno" class="form-label fw-bold text-dark">Turno / Horario <span class="text-danger">*</span></label>
+                                <div class="col-md-4">
+                                    <label for="turno" class="form-label fw-bold text-dark">Turno / Modalidad <span class="text-danger">*</span></label>
                                     @php $turnoActual = old('turno', $grupo->turno); @endphp
                                     <select class="form-select rounded-3 py-2" id="turno" name="turno" required>
                                         <option value="Matutino" {{ $turnoActual === 'Matutino' ? 'selected' : '' }}>Matutino</option>
                                         <option value="Vespertino" {{ $turnoActual === 'Vespertino' ? 'selected' : '' }}>Vespertino</option>
                                         <option value="Nocturno" {{ $turnoActual === 'Nocturno' ? 'selected' : '' }}>Nocturno</option>
+                                        <option value="Mixto / Sabatino" {{ $turnoActual === 'Mixto / Sabatino' ? 'selected' : '' }}>Mixto / Sabatino</option>
                                     </select>
                                 </div>
                                 
                                 <!-- Periodo Lectivo -->
-                                <div class="col-md-6">
-                                    <label for="periodo_lectivo" class="form-label fw-bold text-dark">Periodo Lectivo <span class="text-danger">*</span></label>
+                                <div class="col-md-4">
+                                    <label for="periodo_lectivo" class="form-label fw-bold text-dark">Periodo Semestral <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control rounded-3 py-2" id="periodo_lectivo" name="periodo_lectivo" value="{{ old('periodo_lectivo', $grupo->periodo_lectivo) }}" required>
                                 </div>
                             </div>

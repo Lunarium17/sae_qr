@@ -10,22 +10,45 @@
 <body class="bg-light">
 
     @php
-        $grupos = \App\Models\Grupo::with('materias')->get();
-        $gruposCount = $grupos->count();
-        $materiasCount = \App\Models\Materia::count();
-
         $profesorId = \Illuminate\Support\Facades\Auth::id();
+
+        $misMaterias = \App\Models\Materia::with('grupo')
+            ->where(function ($q) use ($profesorId) {
+                $q->where('profesor_id', $profesorId)
+                  ->orWhereNull('profesor_id');
+            })
+            ->get();
+        $misMateriaIds = $misMaterias->pluck('id');
+        $materiasCount = $misMaterias->count();
+
+        $grupos = \App\Models\Grupo::with(['materias' => function ($q) use ($profesorId) {
+            $q->where('profesor_id', $profesorId)->orWhereNull('profesor_id');
+        }])->get();
+        $gruposCount = $grupos->count();
+
         $totalSesiones = \App\Models\SesionClase::where('profesor_id', $profesorId)->count();
         $sesionesActivasCount = \App\Models\SesionClase::where('profesor_id', $profesorId)->where('estado', 'activa')->count();
 
-        $alumnosAceptadosCount = \App\Models\Matricula::where('estado', 'aceptado')->count();
-        $solicitudesPendientes = \App\Models\Matricula::where('estado', 'pendiente')->count();
-        $justificantesPendientes = \App\Models\Justificante::where('estado_aprobacion', 'pendiente')->count();
+        $alumnosAceptadosCount = $misMateriaIds->isNotEmpty()
+            ? \App\Models\Matricula::whereIn('materia_id', $misMateriaIds)->where('estado', 'aceptado')->count()
+            : 0;
+        $solicitudesPendientes = $misMateriaIds->isNotEmpty()
+            ? \App\Models\Matricula::whereIn('materia_id', $misMateriaIds)->where('estado', 'pendiente')->count()
+            : 0;
+        $justificantesPendientes = \App\Models\Justificante::where('estado_aprobacion', 'pendiente')
+            ->whereHas('registroAsistencia.sesion', function ($q) use ($profesorId) {
+                $q->where('profesor_id', $profesorId);
+            })
+            ->count();
 
-        $asistenciasCount = \App\Models\RegistroAsistencia::where('estado_incidencia', 'asistencia')->count();
-        $retardosCount    = \App\Models\RegistroAsistencia::where('estado_incidencia', 'retardo')->count();
-        $permisosCount    = \App\Models\RegistroAsistencia::where('estado_incidencia', 'permiso')->count();
-        $faltasCount      = \App\Models\RegistroAsistencia::where('estado_incidencia', 'falta')->count();
+        $asistenciasCount = \App\Models\RegistroAsistencia::where('estado_incidencia', 'asistencia')
+            ->whereHas('sesion', fn($q) => $q->where('profesor_id', $profesorId))->count();
+        $retardosCount    = \App\Models\RegistroAsistencia::where('estado_incidencia', 'retardo')
+            ->whereHas('sesion', fn($q) => $q->where('profesor_id', $profesorId))->count();
+        $permisosCount    = \App\Models\RegistroAsistencia::where('estado_incidencia', 'permiso')
+            ->whereHas('sesion', fn($q) => $q->where('profesor_id', $profesorId))->count();
+        $faltasCount      = \App\Models\RegistroAsistencia::where('estado_incidencia', 'falta')
+            ->whereHas('sesion', fn($q) => $q->where('profesor_id', $profesorId))->count();
 
         $totalRegistros = $asistenciasCount + $retardosCount + $permisosCount + $faltasCount;
         $asistenciasEfectivas = $asistenciasCount + $retardosCount + $permisosCount;
@@ -33,46 +56,54 @@
 
         $colorSemaforoGlobal = $porcentajeAsistencia >= 85 ? 'success' : ($porcentajeAsistencia >= 70 ? 'warning' : 'danger');
 
-        // Datos para la gráfica comparativa de asistencia por Grupo
+        // Datos para la gráfica comparativa de asistencia por Grupo (en las asignaturas que imparte este docente)
         $nombresGruposChart = [];
         $porcentajesGruposChart = [];
         foreach ($grupos as $g) {
-            $nombresGruposChart[] = $g->nombre_grupo . ' (' . $g->turno . ')';
             $mIds = $g->materias->pluck('id');
-            if ($mIds->isEmpty()) {
-                $porcentajesGruposChart[] = 0;
-            } else {
-                $regsG = \App\Models\RegistroAsistencia::whereHas('sesion', function ($q) use ($mIds) {
-                    $q->whereIn('materia_id', $mIds);
-                })->get();
-                $totG = $regsG->count();
-                $efecG = $regsG->whereIn('estado_incidencia', ['asistencia', 'retardo', 'permiso'])->count();
-                $porcentajesGruposChart[] = $totG > 0 ? round(($efecG / $totG) * 100) : 0;
-            }
+            if ($mIds->isEmpty()) continue;
+            $nombresGruposChart[] = $g->nombre_grupo . ' (' . $g->turno . ')';
+            $regsG = \App\Models\RegistroAsistencia::whereHas('sesion', function ($q) use ($mIds, $profesorId) {
+                $q->where('profesor_id', $profesorId)->whereIn('materia_id', $mIds);
+            })->get();
+            $totG = $regsG->count();
+            $efecG = $regsG->whereIn('estado_incidencia', ['asistencia', 'retardo', 'permiso'])->count();
+            $porcentajesGruposChart[] = $totG > 0 ? round(($efecG / $totG) * 100) : 0;
         }
 
-        // Detección de Alumnos en Riesgo por Faltas (Regla real: máximo 3 faltas sin justificar por materia)
-        $matriculasAceptadas = \App\Models\Matricula::with(['alumno', 'grupo', 'materia'])
-            ->where('estado', 'aceptado')
-            ->get();
+        // Detección de Alumnos en Riesgo de perder Derecho a Examen Ordinario (aplicando regla universitaria: 3 retardos = 1 falta)
+        $matriculasAceptadas = $misMateriaIds->isNotEmpty()
+            ? \App\Models\Matricula::with(['alumno', 'grupo', 'materia'])
+                ->whereIn('materia_id', $misMateriaIds)
+                ->where('estado', 'aceptado')
+                ->get()
+            : collect();
 
         $alumnosEnRiesgo = [];
         foreach ($matriculasAceptadas as $mat) {
             if (!$mat->materia || !$mat->alumno) continue;
-            $faltasSinJustificar = \App\Models\RegistroAsistencia::where('user_id', $mat->user_id)
-                ->where('estado_incidencia', 'falta')
-                ->whereHas('sesion', function ($q) use ($mat) {
-                    $q->where('materia_id', $mat->materia_id);
+            $regsAlumnoMat = \App\Models\RegistroAsistencia::where('user_id', $mat->user_id)
+                ->whereHas('sesion', function ($q) use ($mat, $profesorId) {
+                    $q->where('profesor_id', $profesorId)
+                      ->where('materia_id', $mat->materia_id);
                 })
-                ->count();
+                ->get();
 
-            if ($faltasSinJustificar >= 2) {
+            $faltasDirectas   = $regsAlumnoMat->where('estado_incidencia', 'falta')->count();
+            $retardosAcum     = $regsAlumnoMat->where('estado_incidencia', 'retardo')->count();
+            $faltasPorRetardo = intdiv($retardosAcum, 3);
+            $faltasTotales    = $faltasDirectas + $faltasPorRetardo;
+
+            if ($faltasTotales >= 2) {
                 $alumnosEnRiesgo[] = [
-                    'alumno'     => $mat->alumno,
-                    'grupo'      => $mat->grupo,
-                    'materia'    => $mat->materia,
-                    'faltas'     => $faltasSinJustificar,
-                    'critico'    => $faltasSinJustificar >= 3,
+                    'alumno'           => $mat->alumno,
+                    'grupo'            => $mat->grupo,
+                    'materia'          => $mat->materia,
+                    'faltas'           => $faltasTotales,
+                    'faltas_directas'  => $faltasDirectas,
+                    'retardos'         => $retardosAcum,
+                    'faltas_retardos'  => $faltasPorRetardo,
+                    'critico'          => $faltasTotales >= 3,
                 ];
             }
         }
@@ -253,15 +284,15 @@
             </div>
         </div>
 
-        <!-- 4. Alerta de Alumnos en Riesgo por Faltas (Máximo 3 faltas sin justificar) -->
+        <!-- 4. Seguimiento de Derecho a Examen Ordinario y Riesgo por Faltas (Regla: 3 Retardos = 1 Falta) -->
         <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
                 <div>
                     <h5 class="fw-bold text-dark mb-0">
-                        <i class="bi bi-exclamation-triangle-fill me-2 text-danger"></i>Seguimiento de Riesgo por Inasistencias (Límite: 3 Faltas sin Justificar)
+                        <i class="bi bi-exclamation-triangle-fill me-2 text-danger"></i>Control de Derecho a Examen Ordinario (Regla: 3 Retardos = 1 Falta)
                     </h5>
                     <p class="text-muted small mb-0">
-                        Estudiantes que han acumulado <strong>2 faltas (Advertencia preventiva)</strong> o <strong>3 o más faltas sin justificar (Límite alcanzado)</strong> en alguna asignatura.
+                        Estudiantes con <strong>2 faltas acumuladas (En Riesgo / Preventivo)</strong> o <strong>3+ faltas (SD - Sin Derecho a Examen Ordinario)</strong> considerando faltas directas y retardos acumulados.
                     </p>
                 </div>
                 <span class="badge {{ count($alumnosEnRiesgo) > 0 ? 'bg-danger' : 'bg-success' }} rounded-pill px-3 py-2">
@@ -274,10 +305,10 @@
                     <thead class="table-light">
                         <tr>
                             <th>Alumno</th>
-                            <th>Grupo</th>
+                            <th>Grupo / Semestre</th>
                             <th>Materia</th>
-                            <th class="text-center">Faltas sin Justificar</th>
-                            <th class="text-center">Nivel de Riesgo</th>
+                            <th class="text-center">Faltas Computadas</th>
+                            <th class="text-center">Derecho a Examen Ordinario</th>
                             <th class="text-end">Acción</th>
                         </tr>
                     </thead>
@@ -291,23 +322,29 @@
                                 <td>
                                     @if ($caso['grupo'])
                                         <span class="badge bg-primary bg-opacity-10 text-primary border border-primary">
-                                            {{ $caso['grupo']->nombre_grupo }} ({{ $caso['grupo']->turno }})
+                                            {{ $caso['grupo']->nombre_grupo }} ({{ $caso['grupo']->grado }})
                                         </span>
+                                        @if ($caso['grupo']->carrera)
+                                            <div class="small text-muted mt-1">{{ $caso['grupo']->carrera }}</div>
+                                        @endif
                                     @else
                                         <span class="text-muted">-</span>
                                     @endif
                                 </td>
                                 <td class="fw-semibold">{{ $caso['materia']->nombre_materia }}</td>
                                 <td class="text-center">
-                                    <span class="fw-bold {{ $caso['critico'] ? 'text-danger' : 'text-warning text-dark' }}">
+                                    <div class="fw-bold {{ $caso['critico'] ? 'text-danger' : 'text-warning text-dark' }}">
                                         {{ $caso['faltas'] }} / 3 faltas
-                                    </span>
+                                    </div>
+                                    <div class="text-muted" style="font-size: 0.75rem;">
+                                        {{ $caso['faltas_directas'] }} dir. + {{ $caso['faltas_retardos'] }} por {{ $caso['retardos'] }} ret.
+                                    </div>
                                 </td>
                                 <td class="text-center">
                                     @if ($caso['critico'])
-                                        <span class="badge bg-danger"><i class="bi bi-x-octagon-fill me-1"></i>Límite Alcanzado (3+ faltas)</span>
+                                        <span class="badge bg-danger"><i class="bi bi-x-octagon-fill me-1"></i>Sin Derecho a Examen (SD)</span>
                                     @else
-                                        <span class="badge bg-warning text-dark"><i class="bi bi-exclamation-circle-fill me-1"></i>En Advertencia (A 1 falta del límite)</span>
+                                        <span class="badge bg-warning text-dark"><i class="bi bi-exclamation-circle-fill me-1"></i>En Riesgo / Preventivo (2/3)</span>
                                     @endif
                                 </td>
                                 <td class="text-end">

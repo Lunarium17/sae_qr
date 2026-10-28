@@ -71,9 +71,12 @@
                         </a>
                     </div>
                     <p class="text-muted mb-0 mt-2">
-                        <span class="me-3"><i class="bi bi-mortarboard-fill me-1 text-secondary"></i><strong>Grado:</strong> {{ $grupo->grado }}</span>
+                        @if ($grupo->carrera)
+                            <span class="me-3"><i class="bi bi-building me-1 text-primary"></i><strong>Carrera:</strong> {{ $grupo->carrera }}</span>
+                        @endif
+                        <span class="me-3"><i class="bi bi-mortarboard-fill me-1 text-secondary"></i><strong>Semestre:</strong> {{ $grupo->grado }}</span>
                         <span class="me-3"><i class="bi bi-clock-fill me-1 text-secondary"></i><strong>Turno:</strong> {{ $grupo->turno }}</span>
-                        <span><i class="bi bi-calendar-range-fill me-1 text-secondary"></i><strong>Periodo Lectivo:</strong> {{ $grupo->periodo_lectivo }}</span>
+                        <span><i class="bi bi-calendar-range-fill me-1 text-secondary"></i><strong>Periodo Semestral:</strong> {{ $grupo->periodo_lectivo }}</span>
                     </p>
                 </div>
                 <div class="d-flex flex-wrap gap-2 text-center">
@@ -203,20 +206,33 @@
                                     @php
                                         $pctMat = $materia->porcentaje_asistencia;
                                         $colorMat = is_null($pctMat) ? 'secondary' : ($pctMat >= 85 ? 'success' : ($pctMat >= 70 ? 'warning' : 'danger'));
+                                        $esMiMateria = is_null($materia->profesor_id) || (int) $materia->profesor_id === (int) \Illuminate\Support\Facades\Auth::id();
                                     @endphp
                                     <tr>
                                         <td>
                                             <span class="badge bg-dark rounded-pill px-3 py-2">{{ $materia->codigo_materia }}</span>
                                         </td>
                                         <td>
-                                            <a href="{{ route('materias.show', $materia->id) }}" class="fw-semibold text-dark text-decoration-none">
-                                                {{ $materia->nombre_materia }}
-                                            </a>
+                                            @if ($esMiMateria)
+                                                <a href="{{ route('materias.show', $materia->id) }}" class="fw-semibold text-dark text-decoration-none">
+                                                    {{ $materia->nombre_materia }}
+                                                </a>
+                                                <div><span class="badge bg-success bg-opacity-10 text-success border border-success-subtle small">Mi asignatura</span></div>
+                                            @else
+                                                <span class="fw-semibold text-secondary">{{ $materia->nombre_materia }}</span>
+                                                <div class="small text-muted"><i class="bi bi-person-workspace me-1"></i>Prof. {{ $materia->profesor->name ?? 'Otro docente' }}</div>
+                                            @endif
                                         </td>
                                         <td class="text-center">
-                                            <a href="{{ route('materias.show', $materia->id) }}" class="badge bg-info text-dark text-decoration-none rounded-pill px-3 py-2" title="Ver y gestionar alumnos de esta materia">
-                                                <i class="bi bi-people-fill me-1"></i>{{ $materia->matriculas->count() }}
-                                            </a>
+                                            @if ($esMiMateria)
+                                                <a href="{{ route('materias.show', $materia->id) }}" class="badge bg-info text-dark text-decoration-none rounded-pill px-3 py-2" title="Ver y gestionar alumnos de esta materia">
+                                                    <i class="bi bi-people-fill me-1"></i>{{ $materia->matriculas->count() }}
+                                                </a>
+                                            @else
+                                                <span class="badge bg-light text-secondary border rounded-pill px-3 py-2">
+                                                    <i class="bi bi-people-fill me-1"></i>{{ $materia->matriculas->count() }}
+                                                </span>
+                                            @endif
                                         </td>
                                         <td>
                                             @if (is_null($pctMat))
@@ -232,62 +248,66 @@
                                             @endif
                                         </td>
                                         <td class="text-end">
-                                            <div class="d-inline-flex flex-wrap gap-1 justify-content-end">
-                                                <a href="{{ route('sesiones.index', ['materia_id' => $materia->id]) }}" class="btn btn-sm btn-primary rounded-3" title="Iniciar Pase de Lista QR para esta materia">
-                                                    <i class="bi bi-qr-code-scan me-1"></i>Iniciar QR
-                                                </a>
+                                            @if ($esMiMateria)
+                                                <div class="d-inline-flex flex-wrap gap-1 justify-content-end">
+                                                    <a href="{{ route('sesiones.index', ['materia_id' => $materia->id]) }}" class="btn btn-sm btn-primary rounded-3" title="Iniciar Pase de Lista QR para esta materia">
+                                                        <i class="bi bi-qr-code-scan me-1"></i>Iniciar QR
+                                                    </a>
 
-                                                <a href="{{ route('materias.show', $materia->id) }}" class="btn btn-sm btn-outline-dark rounded-3" title="Gestionar Alumnos de la Materia">
-                                                    <i class="bi bi-people me-1"></i>Alumnos
-                                                </a>
+                                                    <a href="{{ route('materias.show', $materia->id) }}" class="btn btn-sm btn-outline-dark rounded-3" title="Gestionar Alumnos de la Materia">
+                                                        <i class="bi bi-people me-1"></i>Alumnos
+                                                    </a>
 
-                                                <button type="button" class="btn btn-sm btn-outline-warning text-dark rounded-3" data-bs-toggle="modal" data-bs-target="#modalEditarMateria-{{ $materia->id }}" title="Editar Materia">
-                                                    <i class="bi bi-pencil-square"></i>
-                                                </button>
-
-                                                <form action="{{ route('materias.destroy', $materia->id) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Seguro que deseas eliminar esta materia del grupo?');">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-3" title="Eliminar Materia">
-                                                        <i class="bi bi-trash"></i>
+                                                    <button type="button" class="btn btn-sm btn-outline-warning text-dark rounded-3" data-bs-toggle="modal" data-bs-target="#modalEditarMateria-{{ $materia->id }}" title="Editar Materia">
+                                                        <i class="bi bi-pencil-square"></i>
                                                     </button>
-                                                </form>
-                                            </div>
 
-                                            <!-- Modal para Editar Materia -->
-                                            <div class="modal fade text-start" id="modalEditarMateria-{{ $materia->id }}" tabindex="-1" aria-hidden="true">
-                                                <div class="modal-dialog modal-dialog-centered">
-                                                    <div class="modal-content rounded-4 border-0 shadow">
-                                                        <div class="modal-header bg-warning text-dark border-0">
-                                                            <h5 class="modal-title fw-bold">
-                                                                <i class="bi bi-pencil-square me-2"></i>Editar Materia
-                                                            </h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    <form action="{{ route('materias.destroy', $materia->id) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Seguro que deseas eliminar esta materia del grupo?');">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-3" title="Eliminar Materia">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+
+                                                <!-- Modal para Editar Materia -->
+                                                <div class="modal fade text-start" id="modalEditarMateria-{{ $materia->id }}" tabindex="-1" aria-hidden="true">
+                                                    <div class="modal-dialog modal-dialog-centered">
+                                                        <div class="modal-content rounded-4 border-0 shadow">
+                                                            <div class="modal-header bg-warning text-dark border-0">
+                                                                <h5 class="modal-title fw-bold">
+                                                                    <i class="bi bi-pencil-square me-2"></i>Editar Materia
+                                                                </h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <form action="{{ route('materias.update', $materia->id) }}" method="POST">
+                                                                @csrf
+                                                                @method('PUT')
+                                                                <input type="hidden" name="grupo_id" value="{{ $grupo->id }}">
+                                                                <div class="modal-body p-4">
+                                                                    <div class="mb-3">
+                                                                        <label class="form-label fw-semibold">Código / Clave de la Materia</label>
+                                                                        <input type="text" name="codigo" value="{{ $materia->codigo_materia }}" class="form-control rounded-3" maxlength="30" required>
+                                                                    </div>
+                                                                    <div class="mb-2">
+                                                                        <label class="form-label fw-semibold">Nombre de la Materia</label>
+                                                                        <input type="text" name="nombre_materia" value="{{ $materia->nombre_materia }}" class="form-control rounded-3" maxlength="100" required>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="modal-footer border-0 pt-0 px-4 pb-4">
+                                                                    <button type="button" class="btn btn-light rounded-3" data-bs-dismiss="modal">Cancelar</button>
+                                                                    <button type="submit" class="btn btn-warning fw-semibold rounded-3">
+                                                                        <i class="bi bi-check2-circle me-1"></i>Guardar Cambios
+                                                                    </button>
+                                                                </div>
+                                                            </form>
                                                         </div>
-                                                        <form action="{{ route('materias.update', $materia->id) }}" method="POST">
-                                                            @csrf
-                                                            @method('PUT')
-                                                            <input type="hidden" name="grupo_id" value="{{ $grupo->id }}">
-                                                            <div class="modal-body p-4">
-                                                                <div class="mb-3">
-                                                                    <label class="form-label fw-semibold">Código / Clave de la Materia</label>
-                                                                    <input type="text" name="codigo" value="{{ $materia->codigo_materia }}" class="form-control rounded-3" maxlength="30" required>
-                                                                </div>
-                                                                <div class="mb-2">
-                                                                    <label class="form-label fw-semibold">Nombre de la Materia</label>
-                                                                    <input type="text" name="nombre_materia" value="{{ $materia->nombre_materia }}" class="form-control rounded-3" maxlength="100" required>
-                                                                </div>
-                                                            </div>
-                                                            <div class="modal-footer border-0 pt-0 px-4 pb-4">
-                                                                <button type="button" class="btn btn-light rounded-3" data-bs-dismiss="modal">Cancelar</button>
-                                                                <button type="submit" class="btn btn-warning fw-semibold rounded-3">
-                                                                    <i class="bi bi-check2-circle me-1"></i>Guardar Cambios
-                                                                </button>
-                                                            </div>
-                                                        </form>
                                                     </div>
                                                 </div>
-                                            </div>
+                                            @else
+                                                <span class="badge bg-light text-muted border">Impartida por otro docente</span>
+                                            @endif
                                         </td>
                                     </tr>
                                 @empty
@@ -305,19 +325,21 @@
             </div>
         </div>
 
-        <!-- 4. Alumnos Inscritos / Solicitudes en este Grupo con Control de Faltas (Máx. 3) -->
+        <!-- 4. Alumnos Inscritos / Solicitudes en este Grupo con Regla Universitaria (3 Retardos = 1 Falta) y Derecho a Examen -->
         <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
                 <div>
                     <h5 class="fw-bold text-dark mb-0">
-                        <i class="bi bi-people-fill me-2 text-primary"></i>Alumnos Inscritos, Solicitudes y Riesgo por Faltas (Límite: 3 Faltas)
+                        <i class="bi bi-people-fill me-2 text-primary"></i>Alumnos Inscritos, Solicitudes y Derecho a Examen Ordinario
                     </h5>
-                    <p class="text-muted small mb-0">Monitorea las faltas sin justificar de cada alumno en su materia (máximo permitido: 3 faltas).</p>
+                    <p class="text-muted small mb-0">
+                        Regla universitaria activa: <strong>cada 3 retardos acumulados en una misma asignatura equivalen a 1 falta</strong> (Límite para Derecho a Examen: máx. 2 faltas; con 3 faltas pasa a <strong>SD - Sin Derecho</strong>).
+                    </p>
                 </div>
                 <div class="d-flex align-items-center gap-2">
-                    @if ($grupo->materias->isNotEmpty())
+                    @if ($misMateriasGrupo->isNotEmpty())
                         <button type="button" class="btn btn-sm btn-primary rounded-3" data-bs-toggle="modal" data-bs-target="#modalInscribirAlumnoGrupo">
-                            <i class="bi bi-person-plus-fill me-1"></i>Inscribir Alumno Manualmente
+                            <i class="bi bi-person-plus-fill me-1"></i>Inscribir Alumno en mi Asignatura
                         </button>
                     @endif
                     <span class="badge bg-secondary rounded-pill">{{ $grupo->matriculas->count() }} Registros</span>
@@ -330,7 +352,8 @@
                         <tr>
                             <th>Alumno</th>
                             <th>Materia</th>
-                            <th class="text-center">Faltas sin Justificar (Máx. 3)</th>
+                            <th class="text-center">Faltas Acumuladas (3 Ret. = 1 Falta)</th>
+                            <th class="text-center">Derecho a Examen</th>
                             <th class="text-center">Estado Inscripción</th>
                             <th class="text-end">Gestión</th>
                         </tr>
@@ -338,8 +361,11 @@
                     <tbody>
                         @forelse ($grupo->matriculas as $matricula)
                             @php
-                                $claveFaltas = $matricula->materia_id . '_' . $matricula->user_id;
-                                $faltasAlumno = $faltasPorAlumnoMateria[$claveFaltas] ?? 0;
+                                $claveFaltas    = $matricula->materia_id . '_' . $matricula->user_id;
+                                $faltasAlumno   = $faltasPorAlumnoMateria[$claveFaltas] ?? 0;
+                                $faltasDirectas = $faltasDirectasPorAlumnoMateria[$claveFaltas] ?? 0;
+                                $retardosAcum   = $retardosPorAlumnoMateria[$claveFaltas] ?? 0;
+                                $faltasPorRet   = intdiv($retardosAcum, 3);
                             @endphp
                             <tr>
                                 <td>
@@ -357,17 +383,25 @@
                                     @endif
                                 </td>
                                 <td class="text-center">
+                                    <div class="fw-bold {{ $faltasAlumno >= 3 ? 'text-danger' : ($faltasAlumno === 2 ? 'text-warning text-dark' : 'text-success') }}">
+                                        {{ $faltasAlumno }} / 3 faltas
+                                    </div>
+                                    <div class="text-muted" style="font-size: 0.75rem;">
+                                        Directas: {{ $faltasDirectas }} | Retardos: {{ $retardosAcum }} (+{{ $faltasPorRet }} falta{{ $faltasPorRet === 1 ? '' : 's' }})
+                                    </div>
+                                </td>
+                                <td class="text-center">
                                     @if ($faltasAlumno >= 3)
                                         <span class="badge bg-danger">
-                                            <i class="bi bi-x-octagon-fill me-1"></i>{{ $faltasAlumno }} / 3 (Límite Alcanzado)
+                                            <i class="bi bi-x-octagon-fill me-1"></i>Sin Derecho a Examen (SD)
                                         </span>
                                     @elseif ($faltasAlumno === 2)
                                         <span class="badge bg-warning text-dark">
-                                            <i class="bi bi-exclamation-triangle-fill me-1"></i>2 / 3 (En Advertencia)
+                                            <i class="bi bi-exclamation-triangle-fill me-1"></i>En Riesgo / Preventivo (2/3)
                                         </span>
                                     @else
                                         <span class="badge bg-success bg-opacity-10 text-success border border-success">
-                                            {{ $faltasAlumno }} / 3 faltas
+                                            <i class="bi bi-check-circle-fill me-1"></i>Con Derecho a Ordinario
                                         </span>
                                     @endif
                                 </td>
@@ -414,7 +448,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="text-center py-4 text-muted">
+                                <td colspan="6" class="text-center py-4 text-muted">
                                     No hay alumnos inscritos ni solicitudes registradas en este grupo todavía.
                                 </td>
                             </tr>
@@ -425,8 +459,8 @@
         </div>
     </div>
 
-    <!-- Modal para Inscribir Alumno Manualmente desde el Grupo -->
-    @if ($grupo->materias->isNotEmpty())
+    <!-- Modal para Inscribir Alumno Manualmente desde el Grupo (solo en las asignaturas del docente) -->
+    @if ($misMateriasGrupo->isNotEmpty())
         <div class="modal fade" id="modalInscribirAlumnoGrupo" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content rounded-4 border-0 shadow">
@@ -436,32 +470,48 @@
                         </h5>
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <form action="{{ route('profesor.matriculas.manual') }}" method="POST">
+                    <form action="{{ route('profesor.matriculas.manual') }}" method="POST" id="formInscribirGrupo">
                         @csrf
                         <input type="hidden" name="grupo_id" value="{{ $grupo->id }}">
-                        <div class="modal-body p-4">
+                        <input type="hidden" name="user_id" id="inputUserIdGrupo" required>
+                        <div class="modal-body p-4" id="buscadorAlumnosGrupoContainer" data-search-url="{{ route('profesor.alumnos.buscar') }}">
                             <div class="mb-3">
-                                <label class="form-label fw-semibold">Materia del Grupo</label>
-                                <select name="materia_id" class="form-select rounded-3" required>
-                                    <option value="" selected disabled>-- Selecciona una materia --</option>
-                                    @foreach ($grupo->materias as $mat)
+                                <label class="form-label fw-semibold">1. Tu Asignatura en este Grupo</label>
+                                <select name="materia_id" id="selectMateriaModalGrupo" class="form-select rounded-3" required>
+                                    <option value="" selected disabled>-- Selecciona una asignatura que impartes --</option>
+                                    @foreach ($misMateriasGrupo as $mat)
                                         <option value="{{ $mat->id }}">[{{ $mat->codigo_materia }}] {{ $mat->nombre_materia }}</option>
                                     @endforeach
                                 </select>
                             </div>
                             <div class="mb-2">
-                                <label class="form-label fw-semibold">Alumno a Inscribir</label>
-                                <select name="user_id" class="form-select rounded-3" required>
-                                    <option value="" selected disabled>-- Selecciona un alumno --</option>
-                                    @foreach ($alumnosDisponibles as $alumno)
-                                        <option value="{{ $alumno->id }}">{{ $alumno->name }} ({{ $alumno->email }})</option>
-                                    @endforeach
-                                </select>
+                                <label class="form-label fw-semibold">2. Buscar Alumno (Nombre, Matrícula o Correo)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
+                                    <input type="text" id="inputBuscarAlumnoGrupo" class="form-control" autocomplete="off" placeholder="Escribe al menos 2 letras para buscar...">
+                                </div>
+                                <div class="form-text" id="estadoBusquedaGrupo">
+                                    Ingresa al menos 2 caracteres para buscar en el padrón estudiantil.
+                                </div>
+
+                                <!-- Lista de coincidencias AJAX -->
+                                <div id="resultadosAlumnosGrupo" class="list-group mt-2 shadow-sm d-none"></div>
+
+                                <!-- Tarjeta de alumno seleccionado -->
+                                <div id="alumnoSeleccionadoGrupo" class="alert alert-primary d-none align-items-center justify-content-between py-2 px-3 mt-2 mb-0 rounded-3">
+                                    <div class="small">
+                                        <div class="fw-bold" id="nombreAlumnoSelGrupo"></div>
+                                        <div class="text-muted" id="detalleAlumnoSelGrupo"></div>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2" id="btnLimpiarAlumnoGrupo" title="Cambiar alumno">
+                                        <i class="bi bi-x-lg"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         <div class="modal-footer border-0 pt-0 px-4 pb-4">
                             <button type="button" class="btn btn-light rounded-3" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-primary fw-semibold rounded-3">
+                            <button type="submit" id="btnSubmitInscribirGrupo" class="btn btn-primary fw-semibold rounded-3" disabled>
                                 <i class="bi bi-check2-circle me-1"></i>Inscribir Alumno
                             </button>
                         </div>
@@ -541,6 +591,128 @@
                         },
                         plugins: { legend: { display: false } }
                     }
+                });
+            }
+
+            // Buscador dinámico AJAX para Inscribir Alumno Manualmente en Grupo
+            const buscadorContainer = document.getElementById('buscadorAlumnosGrupoContainer');
+            if (buscadorContainer) {
+                const searchUrl = buscadorContainer.getAttribute('data-search-url');
+                const selectMateria = document.getElementById('selectMateriaModalGrupo');
+                const inputBuscar = document.getElementById('inputBuscarAlumnoGrupo');
+                const inputUserId = document.getElementById('inputUserIdGrupo');
+                const resultadosEl = document.getElementById('resultadosAlumnosGrupo');
+                const estadoEl = document.getElementById('estadoBusquedaGrupo');
+                const seleccionadoEl = document.getElementById('alumnoSeleccionadoGrupo');
+                const nombreSelEl = document.getElementById('nombreAlumnoSelGrupo');
+                const detalleSelEl = document.getElementById('detalleAlumnoSelGrupo');
+                const btnLimpiar = document.getElementById('btnLimpiarAlumnoGrupo');
+                const btnSubmit = document.getElementById('btnSubmitInscribirGrupo');
+
+                let debounceTimer = null;
+
+                function actualizarBotonSubmit() {
+                    btnSubmit.disabled = !(inputUserId.value && selectMateria.value);
+                }
+
+                function limpiarSeleccion() {
+                    inputUserId.value = '';
+                    seleccionadoEl.classList.add('d-none');
+                    seleccionadoEl.classList.remove('d-flex');
+                    inputBuscar.classList.remove('d-none');
+                    inputBuscar.value = '';
+                    inputBuscar.focus();
+                    actualizarBotonSubmit();
+                }
+
+                btnLimpiar.addEventListener('click', limpiarSeleccion);
+                selectMateria.addEventListener('change', function () {
+                    if (inputUserId.value) {
+                        limpiarSeleccion();
+                    }
+                    actualizarBotonSubmit();
+                });
+
+                inputBuscar.addEventListener('input', function () {
+                    const q = this.value.trim();
+                    clearTimeout(debounceTimer);
+
+                    if (q.length < 2) {
+                        resultadosEl.innerHTML = '';
+                        resultadosEl.classList.add('d-none');
+                        estadoEl.textContent = 'Ingresa al menos 2 caracteres para buscar en el padrón estudiantil.';
+                        return;
+                    }
+
+                    estadoEl.textContent = 'Buscando estudiantes...';
+
+                    debounceTimer = setTimeout(function () {
+                        const matId = selectMateria.value || 0;
+                        const url = searchUrl + '?q=' + encodeURIComponent(q) + '&materia_id=' + encodeURIComponent(matId);
+                        fetch(url)
+                            .then(function (r) { return r.json(); })
+                            .then(function (lista) {
+                                resultadosEl.innerHTML = '';
+
+                                if (!lista || lista.length === 0) {
+                                    resultadosEl.classList.add('d-none');
+                                    estadoEl.textContent = 'No se encontraron alumnos con ese criterio.';
+                                    return;
+                                }
+
+                                estadoEl.textContent = 'Mostrando ' + lista.length + ' coincidencia(s). Haz clic en el alumno:';
+                                resultadosEl.classList.remove('d-none');
+
+                                lista.forEach(function (al) {
+                                    const btn = document.createElement('button');
+                                    btn.type = 'button';
+                                    btn.className = 'list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2 px-3 small';
+
+                                    const infoDiv = document.createElement('div');
+                                    const nameStrong = document.createElement('div');
+                                    nameStrong.className = 'fw-semibold text-dark';
+                                    nameStrong.textContent = al.name;
+
+                                    const subSpan = document.createElement('div');
+                                    subSpan.className = 'text-muted';
+                                    subSpan.textContent = 'Matrícula: ' + al.matricula_codigo + ' | ' + al.email;
+
+                                    infoDiv.appendChild(nameStrong);
+                                    infoDiv.appendChild(subSpan);
+                                    btn.appendChild(infoDiv);
+
+                                    if (al.ya_inscrito) {
+                                        const badge = document.createElement('span');
+                                        badge.className = 'badge bg-secondary ms-2';
+                                        badge.textContent = 'Ya inscrito';
+                                        btn.appendChild(badge);
+                                        btn.disabled = true;
+                                    } else {
+                                        const badge = document.createElement('span');
+                                        badge.className = 'badge bg-primary ms-2';
+                                        badge.textContent = 'Elegir';
+                                        btn.appendChild(badge);
+
+                                        btn.addEventListener('click', function () {
+                                            inputUserId.value = al.id;
+                                            nombreSelEl.textContent = al.name;
+                                            detalleSelEl.textContent = 'Matrícula: ' + al.matricula_codigo + ' (' + al.email + ')';
+                                            seleccionadoEl.classList.remove('d-none');
+                                            seleccionadoEl.classList.add('d-flex');
+                                            resultadosEl.classList.add('d-none');
+                                            inputBuscar.classList.add('d-none');
+                                            estadoEl.textContent = 'Alumno seleccionado.';
+                                            actualizarBotonSubmit();
+                                        });
+                                    }
+
+                                    resultadosEl.appendChild(btn);
+                                });
+                            })
+                            .catch(function () {
+                                estadoEl.textContent = 'Error al consultar el buscador de alumnos.';
+                            });
+                    }, 260);
                 });
             }
         });

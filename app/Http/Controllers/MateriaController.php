@@ -6,24 +6,33 @@ use App\Models\Materia;
 use App\Models\User;
 use App\Models\RegistroAsistencia;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
 class MateriaController extends Controller
 {
-    // mostrar la lista de materias
+    // Mostrar la lista de asignaturas que imparte el profesor autenticado
     public function index()
     {
-        $materias = Materia::with('grupo')->orderBy('created_at', 'desc')->get();
+        $profesorId = Auth::id();
+        $materias = Materia::with(['grupo', 'profesor'])
+            ->where(function ($q) use ($profesorId) {
+                $q->where('profesor_id', $profesorId)
+                  ->orWhereNull('profesor_id');
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
+
         return view('materias.index', compact('materias'));
     }
 
-    // mostrar el formulario para crear una nueva materia
+    // Mostrar el formulario para crear una nueva materia
     public function create()
     {
         return view('materias.create');
     }
 
-    // guardar la nueva materia en la BD vinculada a su grupo (sin duplicados en el mismo grupo)
+    // Guardar la nueva asignatura en la BD vinculada al grupo y al profesor que la imparte
     public function store(Request $request)
     {
         $request->validate([
@@ -55,22 +64,25 @@ class MateriaController extends Controller
 
         Materia::create([
             'grupo_id'       => $request->grupo_id,
+            'profesor_id'    => Auth::id(),
             'nombre_materia' => $request->nombre_materia,
             'codigo_materia' => $request->codigo,
         ]);
 
         return redirect()->route('grupos.show', $request->grupo_id)
-                         ->with('success', 'Materia registrada y vinculada al grupo exitosamente.');
+                         ->with('success', 'Asignatura registrada y asignada a tu carga docente dentro del grupo exitosamente.');
     }
 
     /**
-     * Display the specified resource.
+     * Vista detallada de una materia con sus alumnos inscritos (en ese grupo y materia) y estadísticas de asistencia.
      */
-    // Vista detallada de una materia con sus alumnos inscritos y estadísticas de asistencia
     public function show(string $id)
     {
+        $profesorId = Auth::id();
+
         $materia = Materia::with([
             'grupo',
+            'profesor',
             'matriculas' => function ($q) {
                 $q->with('alumno')
                   ->orderByRaw("FIELD(estado, 'aceptado', 'pendiente', 'rechazado')")
@@ -78,34 +90,52 @@ class MateriaController extends Controller
             }
         ])->findOrFail($id);
 
-        // Alumnos registrados en el sistema para poder inscribirlos manualmente
-        $alumnosDisponibles = User::where('rol', 'alumno')
-            ->orderBy('name')
-            ->get();
+        if (!is_null($materia->profesor_id) && (int) $materia->profesor_id !== (int) $profesorId) {
+            return redirect()->route('grupos.show', $materia->grupo_id)
+                ->with('error', 'Solo el docente titular de esta asignatura puede gestionar su lista de alumnos.');
+        }
 
-        // Estadísticas de asistencia por alumno en esta materia
+        // Estadísticas de asistencia por alumno en esta combinación exacta (materia_id + grupo_id)
         $registrosMateria = RegistroAsistencia::whereHas('sesion', function ($q) use ($materia) {
             $q->where('materia_id', $materia->id);
+            if ($materia->grupo_id) {
+                $q->where(function ($sub) use ($materia) {
+                    $sub->where('grupo_id', $materia->grupo_id)
+                        ->orWhereNull('grupo_id');
+                });
+            }
         })->get()->groupBy('user_id');
 
-        return view('materias.show', compact('materia', 'alumnosDisponibles', 'registrosMateria'));
+        return view('materias.show', compact('materia', 'registrosMateria'));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Mostrar el formulario para editar una asignatura propia.
      */
     public function edit(string $id)
     {
         $materia = Materia::with('grupo')->findOrFail($id);
+
+        if (!is_null($materia->profesor_id) && (int) $materia->profesor_id !== (int) Auth::id()) {
+            return redirect()->route('grupos.show', $materia->grupo_id)
+                ->with('error', 'No tienes permiso para editar una asignatura impartida por otro docente.');
+        }
+
         return view('materias.edit', compact('materia'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualizar una asignatura propia.
      */
     public function update(Request $request, string $id)
     {
         $materia = Materia::findOrFail($id);
+
+        if (!is_null($materia->profesor_id) && (int) $materia->profesor_id !== (int) Auth::id()) {
+            return redirect()->route('grupos.show', $materia->grupo_id)
+                ->with('error', 'No tienes permiso para modificar una asignatura impartida por otro docente.');
+        }
+
         $grupoId = $request->input('grupo_id', $materia->grupo_id);
 
         $request->validate([
@@ -137,6 +167,7 @@ class MateriaController extends Controller
         ]);
 
         $materia->update([
+            'profesor_id'    => $materia->profesor_id ?? Auth::id(),
             'nombre_materia' => $request->nombre_materia,
             'codigo_materia' => $request->codigo,
         ]);
@@ -149,17 +180,22 @@ class MateriaController extends Controller
         return redirect()->route('grupos.index')->with('success', 'Materia actualizada correctamente.');
     }
 
-    // eliminar una materia de la BD
+    // Eliminar una asignatura propia de la BD
     public function destroy(Materia $materia)
     {
+        if (!is_null($materia->profesor_id) && (int) $materia->profesor_id !== (int) Auth::id()) {
+            return redirect()->route('grupos.show', $materia->grupo_id)
+                ->with('error', 'No tienes permiso para eliminar una asignatura impartida por otro docente.');
+        }
+
         $grupoId = $materia->grupo_id;
         $materia->delete();
 
         if ($grupoId) {
             return redirect()->route('grupos.show', $grupoId)
-                             ->with('success', 'Materia eliminada del grupo correctamente.');
+                             ->with('success', 'Asignatura eliminada del grupo correctamente.');
         }
 
-        return redirect()->route('grupos.index')->with('success', 'Materia eliminada correctamente.');
+        return redirect()->route('grupos.index')->with('success', 'Asignatura eliminada correctamente.');
     }
 }

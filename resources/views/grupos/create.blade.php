@@ -46,32 +46,55 @@
                             
                             <div class="row g-4 mb-4">
                                 <!-- Nombre del Grupo -->
-                                <div class="col-md-6">
-                                    <label for="nombre_grupo" class="form-label fw-bold text-dark">Nombre del Grupo <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control rounded-3 py-2" id="nombre_grupo" name="nombre_grupo" value="{{ old('nombre_grupo') }}" placeholder="Ej. S7B, 1A" required>
+                                <div class="col-md-4">
+                                    <label for="nombre_grupo" class="form-label fw-bold text-dark">Clave / Nombre del Grupo <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control rounded-3 py-2" id="nombre_grupo" name="nombre_grupo" value="{{ old('nombre_grupo') }}" placeholder="Ej. ISC-701, S7B, ADM-3A" required>
+                                </div>
+
+                                <!-- Carrera o Programa Educativo -->
+                                <div class="col-md-8">
+                                    <label for="carrera" class="form-label fw-bold text-dark">Carrera / Programa Educativo <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control rounded-3 py-2" id="carrera" name="carrera" list="listaCarreras" value="{{ old('carrera') }}" placeholder="Ej. Ingeniería en Sistemas Computacionales" maxlength="120" required>
+                                    <datalist id="listaCarreras">
+                                        <option value="Ingeniería en Sistemas Computacionales"></option>
+                                        <option value="Ingeniería en Tecnologías de la Información"></option>
+                                        <option value="Ingeniería Industrial"></option>
+                                        <option value="Ingeniería Mecatrónica"></option>
+                                        <option value="Licenciatura en Administración"></option>
+                                        <option value="Licenciatura en Contaduría Pública"></option>
+                                        <option value="Licenciatura en Derecho"></option>
+                                        <option value="Arquitectura"></option>
+                                    </datalist>
                                 </div>
                                 
-                                <!-- Grado -->
-                                <div class="col-md-6">
-                                    <label for="grado" class="form-label fw-bold text-dark">Grado o Semestre <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control rounded-3 py-2" id="grado" name="grado" value="{{ old('grado') }}" placeholder="Ej. 7mo Semestre, Primer Año" required>
+                                <!-- Semestre -->
+                                <div class="col-md-4">
+                                    <label for="grado" class="form-label fw-bold text-dark">Semestre <span class="text-danger">*</span></label>
+                                    <select class="form-select rounded-3 py-2" id="grado" name="grado" required>
+                                        <option value="" disabled {{ old('grado') ? '' : 'selected' }}>Selecciona el semestre...</option>
+                                        @for ($i = 1; $i <= 12; $i++)
+                                            @php $sem = $i . '° Semestre'; @endphp
+                                            <option value="{{ $sem }}" {{ old('grado') === $sem ? 'selected' : '' }}>{{ $sem }}</option>
+                                        @endfor
+                                    </select>
                                 </div>
                                 
                                 <!-- Turno -->
-                                <div class="col-md-6">
-                                    <label for="turno" class="form-label fw-bold text-dark">Turno / Horario <span class="text-danger">*</span></label>
+                                <div class="col-md-4">
+                                    <label for="turno" class="form-label fw-bold text-dark">Turno / Modalidad <span class="text-danger">*</span></label>
                                     <select class="form-select rounded-3 py-2" id="turno" name="turno" required>
                                         <option value="" disabled {{ old('turno') ? '' : 'selected' }}>Selecciona el turno...</option>
                                         <option value="Matutino" {{ old('turno') === 'Matutino' ? 'selected' : '' }}>Matutino</option>
                                         <option value="Vespertino" {{ old('turno') === 'Vespertino' ? 'selected' : '' }}>Vespertino</option>
                                         <option value="Nocturno" {{ old('turno') === 'Nocturno' ? 'selected' : '' }}>Nocturno</option>
+                                        <option value="Mixto / Sabatino" {{ old('turno') === 'Mixto / Sabatino' ? 'selected' : '' }}>Mixto / Sabatino</option>
                                     </select>
                                 </div>
                                 
                                 <!-- Periodo Lectivo -->
-                                <div class="col-md-6">
-                                    <label for="periodo_lectivo" class="form-label fw-bold text-dark">Periodo Lectivo <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control rounded-3 py-2" id="periodo_lectivo" name="periodo_lectivo" value="{{ old('periodo_lectivo') }}" placeholder="Ej. Ago-Dic 2026, Ciclo 2026-A" required>
+                                <div class="col-md-4">
+                                    <label for="periodo_lectivo" class="form-label fw-bold text-dark">Periodo Semestral <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control rounded-3 py-2" id="periodo_lectivo" name="periodo_lectivo" value="{{ old('periodo_lectivo') }}" placeholder="Ej. Ago-Dic 2026, 2026-2" required>
                                 </div>
                             </div>
 

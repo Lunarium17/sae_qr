@@ -68,9 +68,10 @@ class JustificanteController extends Controller
         Justificante::updateOrCreate(
             ['registro_id' => $request->registro_id],
             [
-                'motivo'            => $request->motivo,
-                'documento_url'     => $rutaArchivo,
-                'estado_aprobacion' => 'pendiente',
+                'motivo'              => $request->motivo,
+                'comentario_profesor' => null,
+                'documento_url'       => $rutaArchivo,
+                'estado_aprobacion'   => 'pendiente',
             ]
         );
 
@@ -100,7 +101,10 @@ class JustificanteController extends Controller
     public function actualizarEstado(Request $request, $id)
     {
         $request->validate([
-            'estado_aprobacion' => 'required|in:aceptado,rechazado'
+            'estado_aprobacion'   => 'required|in:aceptado,rechazado',
+            'comentario_profesor' => 'nullable|string|max:500',
+        ], [
+            'comentario_profesor.max' => 'El comentario del docente no puede exceder los 500 caracteres.',
         ]);
 
         $profesorId = Auth::id();
@@ -111,13 +115,17 @@ class JustificanteController extends Controller
             ->findOrFail($id);
 
         $justificante->estado_aprobacion = $request->estado_aprobacion;
+        $justificante->comentario_profesor = $request->filled('comentario_profesor')
+            ? trim($request->comentario_profesor)
+            : null;
         $justificante->save();
 
         // Si el profesor lo acepta, cambiamos automáticamente la falta/retardo a 'permiso'
         if ($request->estado_aprobacion === 'aceptado') {
             $registro = $justificante->registroAsistencia;
             $registro->estado_incidencia = 'permiso';
-            $registro->observaciones = 'Justificado: ' . $justificante->motivo;
+            $registro->observaciones = 'Justificado: ' . $justificante->motivo
+                . ($justificante->comentario_profesor ? ' | Nota docente: ' . $justificante->comentario_profesor : '');
             $registro->save();
         }
 

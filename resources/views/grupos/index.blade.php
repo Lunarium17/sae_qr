@@ -52,9 +52,9 @@
                         <thead class="table-light">
                             <tr>
                                 <th scope="col" class="ps-4 py-3">ID</th>
-                                <th scope="col" class="py-3">Nombre del Grupo</th>
-                                <th scope="col" class="py-3">Grado / Turno</th>
-                                <th scope="col" class="py-3">Periodo</th>
+                                <th scope="col" class="py-3">Grupo / Carrera</th>
+                                <th scope="col" class="py-3">Semestre / Turno</th>
+                                <th scope="col" class="py-3">Periodo Semestral</th>
                                 <th scope="col" class="text-center py-3">Materias / Alumnos</th>
                                 <th scope="col" class="py-3" style="min-width: 190px;">Índice de Asistencia</th>
                                 <th scope="col" class="text-center pe-4 py-3">Acciones</th>
@@ -83,6 +83,9 @@
                                             <a href="{{ route('grupos.show', $grupo->id) }}" class="badge bg-primary bg-opacity-10 text-primary border border-primary rounded-pill px-3 py-2 fs-6 text-decoration-none">
                                                 {{ $grupo->nombre_grupo }}
                                             </a>
+                                            @if ($grupo->carrera)
+                                                <div class="small text-muted mt-1"><i class="bi bi-mortarboard me-1"></i>{{ $grupo->carrera }}</div>
+                                            @endif
                                         </td>
                                         <td>
                                             <div class="fw-semibold text-dark">{{ $grupo->grado }}</div>

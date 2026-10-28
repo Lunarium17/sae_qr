@@ -18,21 +18,25 @@
     </nav>
 
     <div class="container my-5">
-        <!-- Alerta de límite crítico de faltas (RF-14: máximo 3 faltas sin justificar) -->
+        <!-- Alerta de límite crítico de faltas y Derecho a Examen Ordinario (RF-14 + Regla Universitaria: 3 retardos = 1 falta) -->
         @if($alertaCritica)
             <div class="alert alert-danger d-flex align-items-center rounded-4 shadow-sm mb-4" role="alert">
                 <i class="bi bi-exclamation-triangle-fill fs-3 me-3"></i>
                 <div>
-                    <h6 class="fw-bold mb-1">¡Alerta Crítica: Límite de Faltas sin Justificar Alcanzado ({{ $faltas }} / 3)!</h6>
-                    <p class="mb-0 small">Has acumulado <strong>{{ $faltas }} faltas sin justificar</strong> en el periodo seleccionado (el máximo permitido es de 3). Sube tu justificante a la brevedad para no perder derecho a evaluación.</p>
+                    <h6 class="fw-bold mb-1">¡Alerta Crítica: Sin Derecho a Examen Ordinario ({{ $faltasTotales }} / 3 faltas acumuladas)!</h6>
+                    <p class="mb-0 small">
+                        Has acumulado <strong>{{ $faltasTotales }} faltas computadas</strong> en el periodo seleccionado ({{ $faltas }} directas + {{ $faltasPorRetardos }} por {{ $retardos }} retardos acumulados). Sube tu justificante a la brevedad para recuperar tu derecho a evaluación ordinaria.
+                    </p>
                 </div>
             </div>
         @elseif(!empty($alertaPreventiva))
             <div class="alert alert-warning d-flex align-items-center rounded-4 shadow-sm mb-4" role="alert">
                 <i class="bi bi-exclamation-circle-fill fs-3 me-3"></i>
                 <div>
-                    <h6 class="fw-bold mb-1">Aviso Preventivo de Inasistencias (2 / 3 faltas)</h6>
-                    <p class="mb-0 small">Llevas <strong>2 faltas sin justificar</strong>. Recuerda que el límite máximo permitido es de <strong>3 faltas sin justificar</strong>.</p>
+                    <h6 class="fw-bold mb-1">Aviso Preventivo de Derecho a Examen (2 / 3 faltas acumuladas)</h6>
+                    <p class="mb-0 small">
+                        Llevas <strong>2 faltas computadas</strong> ({{ $faltas }} directas + {{ $faltasPorRetardos }} por {{ $retardos }} retardos). Recuerda que en el reglamento universitario <strong>cada 3 retardos equivalen a 1 falta</strong> y el límite máximo es de 3 faltas.
+                    </p>
                 </div>
             </div>
         @endif
@@ -74,7 +78,7 @@
             <div class="col-6 col-md-3">
                 <div class="card border-0 shadow-sm rounded-4 p-3 bg-warning bg-opacity-10 border-start border-warning border-4">
                     <h3 class="fw-bold text-warning mb-0">{{ $retardos }}</h3>
-                    <small class="text-muted fw-semibold">Retardos (Amarillo)</small>
+                    <small class="text-muted fw-semibold">Retardos (3 Ret. = +{{ $faltasPorRetardos }} Falta)</small>
                 </div>
             </div>
             <div class="col-6 col-md-3">
@@ -85,8 +89,8 @@
             </div>
             <div class="col-6 col-md-3">
                 <div class="card border-0 shadow-sm rounded-4 p-3 bg-danger bg-opacity-10 border-start border-danger border-4">
-                    <h3 class="fw-bold text-danger mb-0">{{ $faltas }}</h3>
-                    <small class="text-muted fw-semibold">Faltas ({{ $faltas }} / 3 Máx.)</small>
+                    <h3 class="fw-bold text-danger mb-0">{{ $faltasTotales }}</h3>
+                    <small class="text-muted fw-semibold">Faltas Computadas ({{ $faltas }} dir. + {{ $faltasPorRetardos }} por ret.)</small>
                 </div>
             </div>
         </div>

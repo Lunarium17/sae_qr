@@ -84,7 +84,7 @@
                                 <tr>
                                     <th>Fecha Clase</th>
                                     <th>Materia</th>
-                                    <th>Motivo</th>
+                                    <th>Motivo y Observación Docente</th>
                                     <th>Documento</th>
                                     <th>Estado</th>
                                 </tr>
@@ -94,7 +94,14 @@
                                     <tr>
                                         <td>{{ $just->registroAsistencia->sesion->fecha }}</td>
                                         <td>{{ $just->registroAsistencia->sesion->materia->nombre_materia }}</td>
-                                        <td class="small">{{ $just->motivo }}</td>
+                                        <td class="small">
+                                            <div>{{ $just->motivo }}</div>
+                                            @if($just->comentario_profesor)
+                                                <div class="mt-1 p-2 rounded-3 bg-light border-start border-3 {{ $just->estado_aprobacion === 'rechazado' ? 'border-danger text-danger' : 'border-primary text-dark' }}">
+                                                    <i class="bi bi-chat-quote-fill me-1"></i><strong>Docente:</strong> {{ $just->comentario_profesor }}
+                                                </div>
+                                            @endif
+                                        </td>
                                         <td>
                                             @if($just->documento_url)
                                                 <a href="{{ asset('storage/' . $just->documento_url) }}" target="_blank" class="btn btn-sm btn-outline-dark">

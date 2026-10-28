@@ -1,0 +1,291 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [6 0 R 8 0 R 10 0 R 12 0 R 14 0 R] /Count 5 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier /Encoding /WinAnsiEncoding >>
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 7 0 R >>
+endobj
+7 0 obj
+<< /Length 5654 >>
+stream
+0.09 0.23 0.54 rg 48.00 702.00 516.00 56.00 re f
+BT /F2 15 Tf 1 1 1 rg 62.00 734.00 Td (MANUAL TÉCNICO DEL SISTEMA — SAE QR) Tj ET
+BT /F1 9.5 Tf 0.85 0.91 1 rg 62.00 716.00 Td (Arquitectura, Stack Tecnológico, Base de Datos, APIs, Diagramas y Despliegue \(Laravel 12\)) Tj ET
+BT /F2 11.8 Tf 0.12 0.23 0.54 rg 48.00 674.00 Td (1. Arquitectura General del Sistema) Tj ET
+0.80 0.84 0.88 RG 0.7 w 48.00 669.00 m 564.00 669.00 l S
+BT /F1 9.8 Tf 0.12 0.16 0.23 rg 48.00 655.00 Td (El sistema SAE QR está construido bajo el patrón Modelo-Vista-Controlador \(MVC\) en Laravel) Tj ET
+BT /F1 9.8 Tf 0.12 0.16 0.23 rg 48.00 641.50 Td (12, complementado con endpoints asíncronos JSON \(Fetch / AJAX\) para la emisión y) Tj ET
+BT /F1 9.8 Tf 0.12 0.16 0.23 rg 48.00 628.00 Td (validación de códigos QR dinámicos, confirmación de lectura en tiempo real y búsquedas) Tj ET
+BT /F1 9.8 Tf 0.12 0.16 0.23 rg 48.00 614.50 Td (sobre padrones estudiantiles.) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 597.00 Td (• Modelo Universitario Modular: La entidad SesionClase vincula de forma ternaria) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 584.00 Td (profesor_id + grupo_id + materia_id. La tabla matriculas aplica la restricción única) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 571.00 Td (compuesta UNIQUE\(user_id, grupo_id, materia_id\).) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 555.00 Td (• Control de Acceso RBAC: El middleware CheckRol intercepta cada petición autenticada y) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 542.00 Td (valida el rol \(admin, profesor, alumno\).) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 526.00 Td (• Seguridad Criptográfica del QR \(HMAC-SHA256\): Los tokens QR tienen el formato) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 513.00 Td (compacto {user_id}.{timestamp_exp}.{firma_16_hex} firmados con APP_KEY y validados con) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 500.00 Td (hash_equals\(\) y vigencia estricta de 60 segundos.) Tj ET
+BT /F2 11.8 Tf 0.12 0.23 0.54 rg 48.00 478.00 Td (2. Stack Tecnológico Completo) Tj ET
+0.80 0.84 0.88 RG 0.7 w 48.00 473.00 m 564.00 473.00 l S
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 459.00 Td (• Backend: PHP ^8.2 \(8.2.12\), Laravel Framework ^12.0, Eloquent ORM, Carbon, Laravel) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 446.00 Td (Sanctum ^4.0.) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 430.00 Td (• Base de Datos: MySQL / MariaDB \(Motor InnoDB, codificación utf8mb4_unicode_ci, puerto) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 417.00 Td (3307 en XAMPP\).) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 401.00 Td (• Frontend y Librerías JS: Blade Templates, Bootstrap 5.3.0, Bootstrap Icons 1.10.5,) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 388.00 Td (QRCode.js 1.0.0 \(generador QR cliente\), html5-qrcode + BarCodeDetector API \(escáner de) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 375.00 Td (cámara\), Chart.js 4.4.1 \(gráficas analíticas\).) Tj ET
+BT /F2 11.8 Tf 0.12 0.23 0.54 rg 48.00 353.00 Td (3. Diccionario de Datos Relacional \(8 Tablas de Dominio\)) Tj ET
+0.80 0.84 0.88 RG 0.7 w 48.00 348.00 m 564.00 348.00 l S
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 334.00 Td (• 1. users: id \(PK\), name, email \(UNIQUE\), password \(Bcrypt\), rol ENUM\(admin, profesor,) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 321.00 Td (alumno\), matricula_codigo \(UNIQUE, nullable\).) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 305.00 Td (• 2. codigos_docentes: id \(PK\), codigo \(UNIQUE\), descripcion_nota, usado \(BOOLEAN\),) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 292.00 Td (usado_por_id \(FK users\), creado_por_id \(FK users\), usado_en.) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 276.00 Td (• 3. grupos: id \(PK\), nombre_grupo, carrera \(VARCHAR 120\), grado \(Semestre\), turno,) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 263.00 Td (periodo_lectivo, profesor_id \(nullable\). UNIQUE\(nombre_grupo, turno\).) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 247.00 Td (• 4. materias: id \(PK\), nombre_materia, codigo_materia, grupo_id \(FK grupos ON DELETE) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 234.00 Td (CASCADE\), profesor_id \(FK users ON DELETE SET NULL\).) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 218.00 Td (• 5. matriculas: id \(PK\), user_id \(FK users\), grupo_id \(FK grupos\), materia_id \(FK) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 205.00 Td (materias\), estado ENUM\(pendiente, aceptado, rechazado\). UNIQUE\(user_id, grupo_id,) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 192.00 Td (materia_id\).) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 176.00 Td (• 6. sesion_clases: id \(PK\), profesor_id \(FK users\), grupo_id \(FK grupos\), materia_id) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 163.00 Td (\(FK materias\), fecha, hora_inicio, hora_fin, tolerancia_minutos, estado ENUM\(activa,) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 150.00 Td (finalizada\).) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 134.00 Td (• 7. registro_asistencias: id \(PK\), sesion_clase_id \(FK sesion_clases\), user_id \(FK) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 121.00 Td (users\), timestamp_escaneo, estado_incidencia ENUM\(asistencia, retardo, falta, permiso\),) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 108.00 Td (observaciones.) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 92.00 Td (• 8. justificantes: id \(PK\), registro_id \(FK registro_asistencias\), motivo,) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 79.00 Td (comentario_profesor \(VARCHAR 500, nullable\), documento_url \(nullable\),) Tj ET
+0.82 0.85 0.88 RG 0.5 w 48.00 42 m 564.00 42 l S
+BT /F1 8.5 Tf 0.45 0.50 0.56 rg 48.00 28 Td (SAE QR \(Nivel Universitario\)  |  Página 1 de 5) Tj ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 9 0 R >>
+endobj
+9 0 obj
+<< /Length 3935 >>
+stream
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 742.00 Td (estado_aprobacion ENUM\(pendiente, aceptado, rechazado\).) Tj ET
+BT /F2 11.8 Tf 0.12 0.23 0.54 rg 48.00 720.00 Td (4. APIs Internas y Endpoints AJAX Principales) Tj ET
+0.80 0.84 0.88 RG 0.7 w 48.00 715.00 m 564.00 715.00 l S
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 701.00 Td (• GET /alumno/qr/generar \(QrController@generarTokenQR\): Retorna JSON con el token) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 688.00 Td (firmado HMAC-SHA256 válido por 60 segundos.) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 672.00 Td (• POST /profesor/qr/validar \(QrController@validarEscaneo\): Valida firma HMAC, vigencia,) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 659.00 Td (sesión activa y matrícula aceptada; inserta asistencia o retardo y devuelve JSON 200) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 646.00 Td (OK.) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 630.00 Td (• GET /alumno/qr/estado \(QrController@verificarEscaneoReciente\): Endpoint de polling) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 617.00 Td (ligero \(cada 4 s\) que confirma en la pantalla del alumno cuando su QR ha sido escaneado) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 604.00 Td (hoy.) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 588.00 Td (• GET /profesor/alumnos/buscar \(MatriculaController@buscarAlumnos\): Búsqueda asíncrona) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 575.00 Td (de alumnos por nombre, matrícula o correo \(máx. 15 resultados\).) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 559.00 Td (• GET /alumno/grupos/{grupo}/materias \(MatriculaController@materiasPorGrupo\): Carga) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 546.00 Td (dinámica de asignaturas e indicador de inscripción previa por grupo.) Tj ET
+BT /F2 11.8 Tf 0.12 0.23 0.54 rg 48.00 524.00 Td (5. Flujo Técnico del Pase de Lista QR) Tj ET
+0.80 0.84 0.88 RG 0.7 w 48.00 519.00 m 564.00 519.00 l S
+0.95 0.96 0.98 rg 0.82 0.85 0.90 RG 0.6 w 48.00 441.00 516.00 72.00 re B
+BT /F3 8.3 Tf 0.10 0.15 0.25 rg 58.00 500.00 Td ([Alumno Dashboard] --\(1. GET /alumno/qr/generar cada 60s\)--> [QrController]) Tj ET
+BT /F3 8.3 Tf 0.10 0.15 0.25 rg 58.00 488.00 Td ([Alumno Dashboard] <--\(2. Token HMAC: id.exp.firma16\)------- [QrController]) Tj ET
+BT /F3 8.3 Tf 0.10 0.15 0.25 rg 58.00 476.00 Td ([Profesor Camara]  --\(3. Escanea QR con html5-qrcode\)------> [POST /profesor/qr/validar]) Tj ET
+BT /F3 8.3 Tf 0.10 0.15 0.25 rg 58.00 464.00 Td ([QrController]     --\(4. Valida HMAC + Vigencia + Matricula\)-> [INSERT registro_asistencias]) Tj ET
+BT /F3 8.3 Tf 0.10 0.15 0.25 rg 58.00 452.00 Td ([Alumno Dashboard] --\(5. Polling GET /alumno/qr/estado\)----> [Muestra Confirmacion en Vivo]) Tj ET
+BT /F2 11.8 Tf 0.12 0.23 0.54 rg 48.00 421.00 Td (6. Procedimiento de Instalación y Despliegue \(Entorno de Desarrollo\)) Tj ET
+0.80 0.84 0.88 RG 0.7 w 48.00 416.00 m 564.00 416.00 l S
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 402.00 Td (• Paso 1: Instalar dependencias: Ejecutar "composer install" dentro de) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 389.00 Td (c:\\xampp\\htdocs\\sae_qr.) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 373.00 Td (• Paso 2: Configurar archivo .env: Copiar .env.example a .env, ejecutar "php artisan) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 360.00 Td (key:generate" y configurar DB_PORT=3307 \(o 3306\) y DB_DATABASE=sae_qr.) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 344.00 Td (• Paso 3: Ejecutar migraciones y enlace de archivos: Ejecutar "php artisan migrate" y) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 331.00 Td ("php artisan storage:link".) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 315.00 Td (• Paso 4: Credenciales de Administrador Inicial: Correo: admin@saeqr.com | Contraseña:) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 302.00 Td (admin123.) Tj ET
+0.82 0.85 0.88 RG 0.5 w 48.00 42 m 564.00 42 l S
+BT /F1 8.5 Tf 0.45 0.50 0.56 rg 48.00 28 Td (SAE QR \(Nivel Universitario\)  |  Página 2 de 5) Tj ET
+endstream
+endobj
+10 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 11 0 R >>
+endobj
+11 0 obj
+<< /Length 4194 >>
+stream
+0.09 0.23 0.54 rg 48.00 702.00 516.00 56.00 re f
+BT /F2 15 Tf 1 1 1 rg 62.00 734.00 Td (MANUAL DE USUARIO — SISTEMA SAE QR) Tj ET
+BT /F1 9.5 Tf 0.85 0.91 1 rg 62.00 716.00 Td (Sistema de Asistencia Escolar mediante Códigos QR Dinámicos \(Ámbito Universitario\)) Tj ET
+BT /F2 11.8 Tf 0.12 0.23 0.54 rg 48.00 674.00 Td (1. Introducción y Propósito del Sistema) Tj ET
+0.80 0.84 0.88 RG 0.7 w 48.00 669.00 m 564.00 669.00 l S
+BT /F1 9.8 Tf 0.12 0.16 0.23 rg 48.00 655.00 Td (SAE QR es una plataforma web diseñada para agilizar, transparentar y automatizar el pase) Tj ET
+BT /F1 9.8 Tf 0.12 0.16 0.23 rg 48.00 641.50 Td (de lista y el control de asistencia en instituciones de Educación Superior \(Universidades,) Tj ET
+BT /F1 9.8 Tf 0.12 0.16 0.23 rg 48.00 628.00 Td (Institutos Tecnológicos y Facultades\).) Tj ET
+BT /F1 9.8 Tf 0.12 0.16 0.23 rg 48.00 610.50 Td (Mediante códigos QR temporales que se renuevan automáticamente cada 60 segundos desde el) Tj ET
+BT /F1 9.8 Tf 0.12 0.16 0.23 rg 48.00 597.00 Td (teléfono móvil o laptop del estudiante, el profesor registra la asistencia de su grupo en) Tj ET
+BT /F1 9.8 Tf 0.12 0.16 0.23 rg 48.00 583.50 Td (segundos usando la cámara de su dispositivo, aplicando de forma automática el reglamento) Tj ET
+BT /F1 9.8 Tf 0.12 0.16 0.23 rg 48.00 570.00 Td (académico universitario.) Tj ET
+BT /F2 10.5 Tf 0.18 0.24 0.33 rg 48.00 549.50 Td (1.1. Reglas Académicas Universitarias del Sistema) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 535.50 Td (• Tolerancia de Entrada: Si el alumno escanea su código QR dentro de los minutos de) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 522.50 Td (tolerancia definidos por el profesor al iniciar la clase, se registra como Asistencia.) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 509.50 Td (Si lo escanea después de ese tiempo, se registra como Retardo.) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 493.50 Td (• Regla 3 Retardos = 1 Falta: Cada 3 retardos acumulados en una misma asignatura) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 480.50 Td (equivalen automáticamente a 1 falta computada adicional.) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 464.50 Td (• Derecho a Examen Ordinario \(Límite de 3 Faltas\): Con 0 o 1 falta computada el alumno) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 451.50 Td (se encuentra "Con Derecho a Ordinario" \(Verde\); con 2 faltas pasa a "En Riesgo /) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 438.50 Td (Preventivo \(2/3\)" \(Amarillo\); con 3 o más faltas pasa a "Sin Derecho a Examen \(SD\)") Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 425.50 Td (\(Rojo\).) Tj ET
+BT /F2 11.8 Tf 0.12 0.23 0.54 rg 48.00 403.50 Td (2. Acceso Inicial y Registro de Cuenta) Tj ET
+0.80 0.84 0.88 RG 0.7 w 48.00 398.50 m 564.00 398.50 l S
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 384.50 Td (• Registro de Alumnos \(/register\): El estudiante selecciona la opción "Soy Alumno" e) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 371.50 Td (ingresa su Nombre Completo, Matrícula Escolar única \(obligatoria\), Correo Electrónico y) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 358.50 Td (Contraseña \(mínimo 6 caracteres\).) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 342.50 Td (• Registro de Profesores \(/register\): El docente selecciona "Soy Profesor" e ingresa) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 329.50 Td (sus datos junto con el Código de Invitación Docente de un solo uso \(ej. DOC-8F2A-26\)) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 316.50 Td (proporcionado por el Administrador Escolar.) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 300.50 Td (• Inicio y Cierre de Sesión \(/login\): Ingresa correo y contraseña para acceder. El) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 287.50 Td (sistema detecta automáticamente tu rol \(Alumno, Profesor o Administrador\) y te dirige a) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 274.50 Td (tu panel correspondiente.) Tj ET
+BT /F2 11.8 Tf 0.12 0.23 0.54 rg 48.00 252.50 Td (3. Explicación Visual de la Interfaz y Semáforo de Colores) Tj ET
+0.80 0.84 0.88 RG 0.7 w 48.00 247.50 m 564.00 247.50 l S
+0.82 0.85 0.88 RG 0.5 w 48.00 42 m 564.00 42 l S
+BT /F1 8.5 Tf 0.45 0.50 0.56 rg 48.00 28 Td (SAE QR \(Nivel Universitario\)  |  Página 3 de 5) Tj ET
+endstream
+endobj
+12 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 13 0 R >>
+endobj
+13 0 obj
+<< /Length 6516 >>
+stream
+0.95 0.96 0.98 rg 0.82 0.85 0.90 RG 0.6 w 48.00 558.00 516.00 192.00 re B
+BT /F3 8.3 Tf 0.10 0.15 0.25 rg 58.00 737.00 Td (+-------------------------------------------------------------------------+) Tj ET
+BT /F3 8.3 Tf 0.10 0.15 0.25 rg 58.00 725.00 Td (| [SAE QR | Panel de Alumno]                  [Mi Perfil] [Cerrar Sesion] |) Tj ET
+BT /F3 8.3 Tf 0.10 0.15 0.25 rg 58.00 713.00 Td (+-------------------------------------------------------------------------+) Tj ET
+BT /F3 8.3 Tf 0.10 0.15 0.25 rg 58.00 701.00 Td (| Hola, Estudiante [Matricula: 2026301045]   [Buscar y Solicitar Grupo]   |) Tj ET
+BT /F3 8.3 Tf 0.10 0.15 0.25 rg 58.00 689.00 Td (+----------------------------------+--------------------------------------+) Tj ET
+BT /F3 8.3 Tf 0.10 0.15 0.25 rg 58.00 677.00 Td (| MI CODIGO QR TEMPORAL            | RESUMEN GLOBAL DE ASISTENCIA         |) Tj ET
+BT /F3 8.3 Tf 0.10 0.15 0.25 rg 58.00 665.00 Td (| [Pase de Lista Confirmado Hoy!]  |  * Asistencias registradas    [ 14 ] |) Tj ET
+BT /F3 8.3 Tf 0.10 0.15 0.25 rg 58.00 653.00 Td (|        +---------------+         |  * Retardos                   [  2 ] |) Tj ET
+BT /F3 8.3 Tf 0.10 0.15 0.25 rg 58.00 641.00 Td (|        |   [QR CODE]   |         |  * Faltas sin justificar      [  0 ] |) Tj ET
+BT /F3 8.3 Tf 0.10 0.15 0.25 rg 58.00 629.00 Td (|        +---------------+         |  * Permiso / Justificado      [  1 ] |) Tj ET
+BT /F3 8.3 Tf 0.10 0.15 0.25 rg 58.00 617.00 Td (|     \( Expira en 60s \)            |  [Ver Calendario Mensual]            |) Tj ET
+BT /F3 8.3 Tf 0.10 0.15 0.25 rg 58.00 605.00 Td (|   [ Renovar QR ahora ]           |  [Carga Digital de Justificante]     |) Tj ET
+BT /F3 8.3 Tf 0.10 0.15 0.25 rg 58.00 593.00 Td (+----------------------------------+--------------------------------------+) Tj ET
+BT /F3 8.3 Tf 0.10 0.15 0.25 rg 58.00 581.00 Td (| MIS MATERIAS INSCRITAS Y DERECHO A EXAMEN ORDINARIO                     |) Tj ET
+BT /F3 8.3 Tf 0.10 0.15 0.25 rg 58.00 569.00 Td (+-------------------------------------------------------------------------+) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 544.00 Td (• Color Verde \(Éxito / En Regla\): Asistencia puntual, índice de asistencia >= 85% o) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 531.00 Td (estatus "Con Derecho a Ordinario" \(0 a 1 falta\).) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 515.00 Td (• Color Amarillo \(Advertencia / Preventivo\): Retardo, asistencia entre 70% y 84%, o) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 502.00 Td (estatus "En Riesgo / Preventivo \(2/3\)".) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 486.00 Td (• Color Azul \(Permiso / Justificado\): Inasistencia o retardo justificado por el docente) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 473.00 Td (tras revisar un comprobante médico o institucional.) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 457.00 Td (• Color Rojo \(Crítico / Sin Derecho\): Falta sin justificar, asistencia menor al 70% o) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 444.00 Td (estatus "Sin Derecho a Examen \(SD\)" \(3+ faltas\).) Tj ET
+BT /F2 11.8 Tf 0.12 0.23 0.54 rg 48.00 422.00 Td (4. Descripción de Módulos y Funciones Principales por Rol) Tj ET
+0.80 0.84 0.88 RG 0.7 w 48.00 417.00 m 564.00 417.00 l S
+BT /F2 10.5 Tf 0.18 0.24 0.33 rg 48.00 400.00 Td (4.1. Módulo de Administrador Escolar \(rol: admin\)) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 386.00 Td (• Catálogo de Grupos Oficiales Universitarios: Permite crear, editar y eliminar grupos) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 373.00 Td (oficiales indicando Clave del Grupo \(ej. ISC-701\), Carrera / Programa Educativo,) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 360.00 Td (Semestre \(1° a 12° Semestre\), Turno \(Matutino, Vespertino, Nocturno, Mixto / Sabatino\)) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 347.00 Td (y Periodo Semestral.) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 331.00 Td (• Códigos de Acceso Docente: Genera códigos de invitación de un solo uso para nuevos) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 318.00 Td (profesores y muestra qué docente canjeó cada código.) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 302.00 Td (• Directorio de Usuarios y Contraseñas: Permite buscar cuentas por rol, crear usuarios) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 289.00 Td (manualmente, editar datos y restablecer contraseñas olvidadas.) Tj ET
+BT /F2 10.5 Tf 0.18 0.24 0.33 rg 48.00 270.00 Td (4.2. Módulo de Profesor \(rol: profesor\)) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 256.00 Td (• Gestión de Grupos y Materias: Permite consultar los grupos universitarios y registrar) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 243.00 Td (las asignaturas que imparte el docente dentro de cada grupo con su clave curricular.) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 227.00 Td (• Inscripción de Alumnos y Buscador Dinámico: El docente puede aprobar o rechazar) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 214.00 Td (solicitudes enviadas por alumnos, o inscribir estudiantes manualmente escribiendo al) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 201.00 Td (menos 2 letras de su nombre, matrícula o correo en el buscador instantáneo.) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 185.00 Td (• Sesiones de Clase y Escáner QR en Vivo: El profesor selecciona la asignatura, define) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 172.00 Td (los minutos de tolerancia y enciende su cámara. Al escanear el QR del alumno, se) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 159.00 Td (registra Asistencia o Retardo al instante y se agrega la fila en vivo. Al cerrar la) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 146.00 Td (clase, se asigna falta automática a los alumnos inscritos que no escanearon su QR.) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 130.00 Td (• Historial de Sesiones Anteriores: Muestra todas las sesiones impartidas previamente y) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 117.00 Td (permite abrir el modal "Ver Pase de Lista" para consultar o modificar manualmente la) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 104.00 Td (asistencia de cualquier clase pasada.) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 88.00 Td (• Revisión de Justificantes con Comentario Opcional: El docente revisa el comprobante) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 75.00 Td (PDF/imagen subido por el alumno y puede escribir un comentario opcional al aprobarlo o) Tj ET
+0.82 0.85 0.88 RG 0.5 w 48.00 42 m 564.00 42 l S
+BT /F1 8.5 Tf 0.45 0.50 0.56 rg 48.00 28 Td (SAE QR \(Nivel Universitario\)  |  Página 4 de 5) Tj ET
+endstream
+endobj
+14 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 15 0 R >>
+endobj
+15 0 obj
+<< /Length 4612 >>
+stream
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 742.00 Td (rechazarlo. Si lo aprueba, la falta o retardo cambia automáticamente a Permiso.) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 726.00 Td (• Exportación de Reportes a Excel \(CSV\): Filtra asistencias por grupo, asignatura y) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 713.00 Td (rango de fechas para descargar la sábana de asistencias en formato CSV compatible con) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 700.00 Td (Excel.) Tj ET
+BT /F2 10.5 Tf 0.18 0.24 0.33 rg 48.00 681.00 Td (4.3. Módulo de Alumno \(rol: alumno\)) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 667.00 Td (• Solicitud Modular por Asignatura y Grupo: Permite al estudiante elegir un grupo y) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 654.00 Td (solicitar inscripción únicamente en las asignaturas que cursa con cada profesor.) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 638.00 Td (• Código QR Temporal y Confirmación en Tiempo Real: Genera un código QR válido por 60) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 625.00 Td (segundos. En cuanto el profesor lo escanea, la pantalla del alumno muestra) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 612.00 Td (automáticamente el aviso verde "¡Pase de Lista Confirmado Hoy!" con la asignatura,) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 599.00 Td (estado y hora.) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 583.00 Td (• Control de Derecho a Examen y Calendario Mensual: Muestra por cada materia las) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 570.00 Td (asistencias, retardos, permisos, faltas computadas \(directas + por retardos\) y el) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 557.00 Td (estatus de Derecho a Examen Ordinario.) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 541.00 Td (• Carga Digital de Justificantes: Permite seleccionar una falta o retardo, escribir el) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 528.00 Td (motivo, adjuntar comprobante opcional \(PDF, JPG, PNG hasta 5 MB\) y consultar la) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 515.00 Td (respuesta y comentario del profesor.) Tj ET
+BT /F2 11.8 Tf 0.12 0.23 0.54 rg 48.00 493.00 Td (5. Soporte y Solución de Dudas Comunes \(FAQ\)) Tj ET
+0.80 0.84 0.88 RG 0.7 w 48.00 488.00 m 564.00 488.00 l S
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 474.00 Td (• 1. El escáner indica "El código QR ha expirado": Cada código QR caduca a los 60) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 461.00 Td (segundos por seguridad. Presiona el botón "Renovar QR ahora" en tu panel de alumno y) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 448.00 Td (vuelve a mostrarlo.) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 432.00 Td (• 2. Aparece "El alumno NO está inscrito como Aceptado en esta asignatura": Asegúrate) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 419.00 Td (de haber enviado solicitud a esa materia en ese grupo y de que el profesor titular la) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 406.00 Td (haya aceptado.) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 390.00 Td (• 3. Prueba de Profesor y Alumno en la misma computadora: No abras ambos perfiles en) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 377.00 Td (pestañas normales del mismo navegador porque comparten la sesión. Abre el Profesor en) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 364.00 Td (ventana normal y el Alumno en una Ventana de Incógnito \(o usa el Código de Respaldo) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 351.00 Td (debajo del QR\).) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 335.00 Td (• 4. ¿Por qué tengo 1 falta si nunca falté a clase?: Por reglamento universitario, cada) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 322.00 Td (3 retardos acumulados en una misma asignatura suman automáticamente 1 falta computada.) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 306.00 Td (• 5. ¿Cómo recupero mi Derecho a Examen si tenía 3 faltas?: Sube tu justificante en el) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 293.00 Td (módulo de Justificantes. Cuando tu profesor lo apruebe, la falta cambiará a Permiso y) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 280.00 Td (recuperarás tu derecho a evaluación ordinaria.) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 264.00 Td (• 6. Olvidé mi contraseña de acceso: Solicita al Administrador Escolar el) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 251.00 Td (restablecimiento de tu contraseña desde el módulo Directorio de Usuarios) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 238.00 Td (\(/admin/usuarios\).) Tj ET
+0.82 0.85 0.88 RG 0.5 w 48.00 42 m 564.00 42 l S
+BT /F1 8.5 Tf 0.45 0.50 0.56 rg 48.00 28 Td (SAE QR \(Nivel Universitario\)  |  Página 5 de 5) Tj ET
+endstream
+endobj
+xref
+0 16
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000142 00000 n 
+0000000239 00000 n 
+0000000341 00000 n 
+0000000436 00000 n 
+0000000582 00000 n 
+0000006288 00000 n 
+0000006434 00000 n 
+0000010421 00000 n 
+0000010569 00000 n 
+0000014816 00000 n 
+0000014964 00000 n 
+0000021533 00000 n 
+0000021681 00000 n 
+trailer
+<< /Size 16 /Root 1 0 R >>
+startxref
+26346
+%%EOF

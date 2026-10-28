@@ -7,7 +7,7 @@
     <!-- Bootstrap 5 CSS CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body class="bg-light d-flex align-items-center justify-content-center vh-100">
+<body class="bg-light d-flex align-items-center justify-content-center min-vh-100 py-4">
 
     <div class="container">
         <div class="row justify-content-center">
@@ -20,6 +20,14 @@
                             <h2 class="fw-bold text-primary">SAE_QR</h2>
                             <p class="text-muted">Sistema de Asistencia Escolar</p>
                         </div>
+
+                        <!-- Mensaje de éxito tras crear cuenta -->
+                        @if (session('success'))
+                            <div class="alert alert-success alert-dismissible fade show py-2 small" role="alert">
+                                {{ session('success') }}
+                                <button type="button" class="btn-close py-2" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                            </div>
+                        @endif
 
                         <!-- Errores de validación -->
                         @if ($errors->any())
@@ -38,7 +46,7 @@
 
                             <div class="mb-3">
                                 <label for="email" class="form-label">Correo Electrónico:</label>
-                                <input type="email" class="form-control rounded-3" id="email" name="email" value="{{ old('email') }}" required autofocus placeholder="ejemplo@sae_qr.com">
+                                <input type="email" class="form-control rounded-3" id="email" name="email" value="{{ old('email') }}" required autofocus placeholder="ejemplo@saeqr.com">
                             </div>
 
                             <div class="mb-3">
@@ -51,8 +59,15 @@
                             </div>
                         </form>
 
-                        <div class="text-center mt-4">
-                            <small class="text-muted">¿Problemas con tu acceso? Contacta al catministrador escolar.</small>
+                        <hr class="my-4">
+
+                        <div class="text-center">
+                            <span class="text-muted small">¿No tienes una cuenta?</span>
+                            <a href="{{ route('register') }}" class="fw-semibold text-decoration-none ms-1">Crear cuenta aquí</a>
+                        </div>
+
+                        <div class="text-center mt-3">
+                            <small class="text-muted">¿Problemas con tu acceso? Contacta al administrador escolar.</small>
                         </div>
 
                     </div>

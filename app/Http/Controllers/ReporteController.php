@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ReporteController extends Controller
 {
-    // Vista principal de reportes con filtros y modo imprimible (PDF)
+    // Vista principal de reportes con filtros por Asignatura+Grupo del docente y modo imprimible (PDF)
     public function index(Request $request)
     {
         $profesorId = Auth::id();
@@ -21,10 +21,16 @@ class ReporteController extends Controller
         $rawMes = $request->input('mes');
         $mes    = (is_string($rawMes) && preg_match('/^\d{4}-\d{2}$/', $rawMes)) ? $rawMes : null;
 
-        // Obtenemos el catálogo general de materias
-        $materias = Materia::with('grupo')->get();
+        // Catálogo de asignaturas impartidas por este docente
+        $materias = Materia::with('grupo')
+            ->where(function ($q) use ($profesorId) {
+                $q->where('profesor_id', $profesorId)
+                  ->orWhereNull('profesor_id');
+            })
+            ->orderBy('grupo_id')
+            ->get();
 
-        $query = RegistroAsistencia::with(['alumno', 'sesion.materia'])
+        $query = RegistroAsistencia::with(['alumno', 'sesion.grupo', 'sesion.materia.grupo'])
             ->whereHas('sesion', function ($q) use ($profesorId, $materiaId, $mes) {
                 $q->where('profesor_id', $profesorId);
                 if ($materiaId) {
@@ -51,7 +57,7 @@ class ReporteController extends Controller
         $rawMes = $request->input('mes');
         $mes    = (is_string($rawMes) && preg_match('/^\d{4}-\d{2}$/', $rawMes)) ? $rawMes : null;
 
-        $registros = RegistroAsistencia::with(['alumno', 'sesion.materia'])
+        $registros = RegistroAsistencia::with(['alumno', 'sesion.grupo', 'sesion.materia.grupo'])
             ->whereHas('sesion', function ($q) use ($profesorId, $materiaId, $mes) {
                 $q->where('profesor_id', $profesorId);
                 if ($materiaId) {
@@ -71,12 +77,17 @@ class ReporteController extends Controller
             // BOM UTF-8 para que Excel reconozca acentos correctamente
             fprintf($handle, chr(0xEF).chr(0xBB).chr(0xBF));
 
-            // Encabezados del CSV
-            fputcsv($handle, ['Fecha Sesion', 'Codigo Materia', 'Materia', 'Alumno', 'Correo', 'Hora Escaneo', 'Estado Incidencia', 'Observaciones']);
+            // Encabezados del CSV (incluyendo Grupo y Asignatura)
+            fputcsv($handle, ['Fecha Sesion', 'Grupo', 'Codigo Materia', 'Materia', 'Alumno', 'Correo', 'Hora Escaneo', 'Estado Incidencia', 'Observaciones']);
 
             foreach ($registros as $reg) {
+                $nombreGrupo = optional($reg->sesion->grupo)->nombre_grupo
+                    ?? optional(optional($reg->sesion->materia)->grupo)->nombre_grupo
+                    ?? 'N/A';
+
                 fputcsv($handle, [
                     $this->sanitizarCeldaCsv($reg->sesion->fecha ?? ''),
+                    $this->sanitizarCeldaCsv($nombreGrupo),
                     $this->sanitizarCeldaCsv($reg->sesion->materia->codigo_materia ?? ''),
                     $this->sanitizarCeldaCsv($reg->sesion->materia->nombre_materia ?? ''),
                     $this->sanitizarCeldaCsv($reg->alumno->name ?? ''),

@@ -1,0 +1,133 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [6 0 R 8 0 R] /Count 2 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Courier /Encoding /WinAnsiEncoding >>
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 7 0 R >>
+endobj
+7 0 obj
+<< /Length 5654 >>
+stream
+0.09 0.23 0.54 rg 48.00 702.00 516.00 56.00 re f
+BT /F2 15 Tf 1 1 1 rg 62.00 734.00 Td (MANUAL TÉCNICO DEL SISTEMA — SAE QR) Tj ET
+BT /F1 9.5 Tf 0.85 0.91 1 rg 62.00 716.00 Td (Arquitectura, Stack Tecnológico, Base de Datos, APIs, Diagramas y Despliegue \(Laravel 12\)) Tj ET
+BT /F2 11.8 Tf 0.12 0.23 0.54 rg 48.00 674.00 Td (1. Arquitectura General del Sistema) Tj ET
+0.80 0.84 0.88 RG 0.7 w 48.00 669.00 m 564.00 669.00 l S
+BT /F1 9.8 Tf 0.12 0.16 0.23 rg 48.00 655.00 Td (El sistema SAE QR está construido bajo el patrón Modelo-Vista-Controlador \(MVC\) en Laravel) Tj ET
+BT /F1 9.8 Tf 0.12 0.16 0.23 rg 48.00 641.50 Td (12, complementado con endpoints asíncronos JSON \(Fetch / AJAX\) para la emisión y) Tj ET
+BT /F1 9.8 Tf 0.12 0.16 0.23 rg 48.00 628.00 Td (validación de códigos QR dinámicos, confirmación de lectura en tiempo real y búsquedas) Tj ET
+BT /F1 9.8 Tf 0.12 0.16 0.23 rg 48.00 614.50 Td (sobre padrones estudiantiles.) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 597.00 Td (• Modelo Universitario Modular: La entidad SesionClase vincula de forma ternaria) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 584.00 Td (profesor_id + grupo_id + materia_id. La tabla matriculas aplica la restricción única) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 571.00 Td (compuesta UNIQUE\(user_id, grupo_id, materia_id\).) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 555.00 Td (• Control de Acceso RBAC: El middleware CheckRol intercepta cada petición autenticada y) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 542.00 Td (valida el rol \(admin, profesor, alumno\).) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 526.00 Td (• Seguridad Criptográfica del QR \(HMAC-SHA256\): Los tokens QR tienen el formato) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 513.00 Td (compacto {user_id}.{timestamp_exp}.{firma_16_hex} firmados con APP_KEY y validados con) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 500.00 Td (hash_equals\(\) y vigencia estricta de 60 segundos.) Tj ET
+BT /F2 11.8 Tf 0.12 0.23 0.54 rg 48.00 478.00 Td (2. Stack Tecnológico Completo) Tj ET
+0.80 0.84 0.88 RG 0.7 w 48.00 473.00 m 564.00 473.00 l S
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 459.00 Td (• Backend: PHP ^8.2 \(8.2.12\), Laravel Framework ^12.0, Eloquent ORM, Carbon, Laravel) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 446.00 Td (Sanctum ^4.0.) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 430.00 Td (• Base de Datos: MySQL / MariaDB \(Motor InnoDB, codificación utf8mb4_unicode_ci, puerto) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 417.00 Td (3307 en XAMPP\).) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 401.00 Td (• Frontend y Librerías JS: Blade Templates, Bootstrap 5.3.0, Bootstrap Icons 1.10.5,) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 388.00 Td (QRCode.js 1.0.0 \(generador QR cliente\), html5-qrcode + BarCodeDetector API \(escáner de) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 375.00 Td (cámara\), Chart.js 4.4.1 \(gráficas analíticas\).) Tj ET
+BT /F2 11.8 Tf 0.12 0.23 0.54 rg 48.00 353.00 Td (3. Diccionario de Datos Relacional \(8 Tablas de Dominio\)) Tj ET
+0.80 0.84 0.88 RG 0.7 w 48.00 348.00 m 564.00 348.00 l S
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 334.00 Td (• 1. users: id \(PK\), name, email \(UNIQUE\), password \(Bcrypt\), rol ENUM\(admin, profesor,) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 321.00 Td (alumno\), matricula_codigo \(UNIQUE, nullable\).) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 305.00 Td (• 2. codigos_docentes: id \(PK\), codigo \(UNIQUE\), descripcion_nota, usado \(BOOLEAN\),) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 292.00 Td (usado_por_id \(FK users\), creado_por_id \(FK users\), usado_en.) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 276.00 Td (• 3. grupos: id \(PK\), nombre_grupo, carrera \(VARCHAR 120\), grado \(Semestre\), turno,) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 263.00 Td (periodo_lectivo, profesor_id \(nullable\). UNIQUE\(nombre_grupo, turno\).) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 247.00 Td (• 4. materias: id \(PK\), nombre_materia, codigo_materia, grupo_id \(FK grupos ON DELETE) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 234.00 Td (CASCADE\), profesor_id \(FK users ON DELETE SET NULL\).) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 218.00 Td (• 5. matriculas: id \(PK\), user_id \(FK users\), grupo_id \(FK grupos\), materia_id \(FK) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 205.00 Td (materias\), estado ENUM\(pendiente, aceptado, rechazado\). UNIQUE\(user_id, grupo_id,) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 192.00 Td (materia_id\).) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 176.00 Td (• 6. sesion_clases: id \(PK\), profesor_id \(FK users\), grupo_id \(FK grupos\), materia_id) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 163.00 Td (\(FK materias\), fecha, hora_inicio, hora_fin, tolerancia_minutos, estado ENUM\(activa,) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 150.00 Td (finalizada\).) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 134.00 Td (• 7. registro_asistencias: id \(PK\), sesion_clase_id \(FK sesion_clases\), user_id \(FK) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 121.00 Td (users\), timestamp_escaneo, estado_incidencia ENUM\(asistencia, retardo, falta, permiso\),) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 108.00 Td (observaciones.) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 92.00 Td (• 8. justificantes: id \(PK\), registro_id \(FK registro_asistencias\), motivo,) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 79.00 Td (comentario_profesor \(VARCHAR 500, nullable\), documento_url \(nullable\),) Tj ET
+0.82 0.85 0.88 RG 0.5 w 48.00 42 m 564.00 42 l S
+BT /F1 8.5 Tf 0.45 0.50 0.56 rg 48.00 28 Td (SAE QR \(Nivel Universitario\)  |  Página 1 de 2) Tj ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 9 0 R >>
+endobj
+9 0 obj
+<< /Length 3935 >>
+stream
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 742.00 Td (estado_aprobacion ENUM\(pendiente, aceptado, rechazado\).) Tj ET
+BT /F2 11.8 Tf 0.12 0.23 0.54 rg 48.00 720.00 Td (4. APIs Internas y Endpoints AJAX Principales) Tj ET
+0.80 0.84 0.88 RG 0.7 w 48.00 715.00 m 564.00 715.00 l S
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 701.00 Td (• GET /alumno/qr/generar \(QrController@generarTokenQR\): Retorna JSON con el token) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 688.00 Td (firmado HMAC-SHA256 válido por 60 segundos.) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 672.00 Td (• POST /profesor/qr/validar \(QrController@validarEscaneo\): Valida firma HMAC, vigencia,) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 659.00 Td (sesión activa y matrícula aceptada; inserta asistencia o retardo y devuelve JSON 200) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 646.00 Td (OK.) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 630.00 Td (• GET /alumno/qr/estado \(QrController@verificarEscaneoReciente\): Endpoint de polling) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 617.00 Td (ligero \(cada 4 s\) que confirma en la pantalla del alumno cuando su QR ha sido escaneado) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 604.00 Td (hoy.) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 588.00 Td (• GET /profesor/alumnos/buscar \(MatriculaController@buscarAlumnos\): Búsqueda asíncrona) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 575.00 Td (de alumnos por nombre, matrícula o correo \(máx. 15 resultados\).) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 559.00 Td (• GET /alumno/grupos/{grupo}/materias \(MatriculaController@materiasPorGrupo\): Carga) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 546.00 Td (dinámica de asignaturas e indicador de inscripción previa por grupo.) Tj ET
+BT /F2 11.8 Tf 0.12 0.23 0.54 rg 48.00 524.00 Td (5. Flujo Técnico del Pase de Lista QR) Tj ET
+0.80 0.84 0.88 RG 0.7 w 48.00 519.00 m 564.00 519.00 l S
+0.95 0.96 0.98 rg 0.82 0.85 0.90 RG 0.6 w 48.00 441.00 516.00 72.00 re B
+BT /F3 8.3 Tf 0.10 0.15 0.25 rg 58.00 500.00 Td ([Alumno Dashboard] --\(1. GET /alumno/qr/generar cada 60s\)--> [QrController]) Tj ET
+BT /F3 8.3 Tf 0.10 0.15 0.25 rg 58.00 488.00 Td ([Alumno Dashboard] <--\(2. Token HMAC: id.exp.firma16\)------- [QrController]) Tj ET
+BT /F3 8.3 Tf 0.10 0.15 0.25 rg 58.00 476.00 Td ([Profesor Camara]  --\(3. Escanea QR con html5-qrcode\)------> [POST /profesor/qr/validar]) Tj ET
+BT /F3 8.3 Tf 0.10 0.15 0.25 rg 58.00 464.00 Td ([QrController]     --\(4. Valida HMAC + Vigencia + Matricula\)-> [INSERT registro_asistencias]) Tj ET
+BT /F3 8.3 Tf 0.10 0.15 0.25 rg 58.00 452.00 Td ([Alumno Dashboard] --\(5. Polling GET /alumno/qr/estado\)----> [Muestra Confirmacion en Vivo]) Tj ET
+BT /F2 11.8 Tf 0.12 0.23 0.54 rg 48.00 421.00 Td (6. Procedimiento de Instalación y Despliegue \(Entorno de Desarrollo\)) Tj ET
+0.80 0.84 0.88 RG 0.7 w 48.00 416.00 m 564.00 416.00 l S
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 402.00 Td (• Paso 1: Instalar dependencias: Ejecutar "composer install" dentro de) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 389.00 Td (c:\\xampp\\htdocs\\sae_qr.) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 373.00 Td (• Paso 2: Configurar archivo .env: Copiar .env.example a .env, ejecutar "php artisan) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 360.00 Td (key:generate" y configurar DB_PORT=3307 \(o 3306\) y DB_DATABASE=sae_qr.) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 344.00 Td (• Paso 3: Ejecutar migraciones y enlace de archivos: Ejecutar "php artisan migrate" y) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 331.00 Td ("php artisan storage:link".) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 54.00 315.00 Td (• Paso 4: Credenciales de Administrador Inicial: Correo: admin@saeqr.com | Contraseña:) Tj ET
+BT /F1 9.6 Tf 0.12 0.16 0.23 rg 63.00 302.00 Td (admin123.) Tj ET
+0.82 0.85 0.88 RG 0.5 w 48.00 42 m 564.00 42 l S
+BT /F1 8.5 Tf 0.45 0.50 0.56 rg 48.00 28 Td (SAE QR \(Nivel Universitario\)  |  Página 2 de 2) Tj ET
+endstream
+endobj
+xref
+0 10
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000121 00000 n 
+0000000218 00000 n 
+0000000320 00000 n 
+0000000415 00000 n 
+0000000561 00000 n 
+0000006267 00000 n 
+0000006413 00000 n 
+trailer
+<< /Size 10 /Root 1 0 R >>
+startxref
+10400
+%%EOF
