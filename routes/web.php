@@ -16,11 +16,11 @@ use App\Http\Controllers\HistorialAlumnoController;
 use App\Http\Controllers\PerfilAlumnoController;
 use App\Http\Controllers\AdminController;
 
-// Rutas públicas de autenticación y registro
+// Rutas públicas de autenticación y registro (con protección contra fuerza bruta / Rate Limiting)
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:10,1');
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-Route::post('/register', [AuthController::class, 'register'])->name('register.store');
+Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:6,1')->name('register.store');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Redirección raíz
@@ -69,7 +69,7 @@ Route::middleware(['auth', \App\Http\Middleware\CheckRol::class . ':profesor'])-
     Route::post('/profesor/sesiones/iniciar', [SesionClaseController::class, 'iniciarSesion'])->name('sesiones.iniciar');
     Route::post('/profesor/sesiones/{sesion}/finalizar', [SesionClaseController::class, 'finalizarSesion'])->name('sesiones.finalizar');
     Route::patch('/profesor/asistencias/{registro}', [SesionClaseController::class, 'cambiarEstadoManual'])->name('asistencias.manual');
-    Route::post('/profesor/qr/validar', [QrController::class, 'validarEscaneo'])->name('qr.validar');
+    Route::post('/profesor/qr/validar', [QrController::class, 'validarEscaneo'])->middleware('throttle:60,1')->name('qr.validar');
 
     // Rutas para gestión de justificantes (Sprint 6)
     Route::get('/profesor/justificantes', [JustificanteController::class, 'indexProfesor'])->name('profesor.justificantes');

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use App\Models\Justificante;
 use App\Models\RegistroAsistencia;
@@ -48,7 +49,7 @@ class JustificanteController extends Controller
                 }),
             ],
             'motivo'      => 'required|string|max:500',
-            'documento'   => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120', // Opcional, máx 5MB
+            'documento'   => 'nullable|file|mimes:pdf,jpg,jpeg,png|mimetypes:application/pdf,image/jpeg,image/png|max:5120', // Opcional, máx 5MB
         ], [
             'registro_id.required' => 'Debes seleccionar la sesión o incidencia que deseas justificar.',
             'registro_id.exists'   => 'La incidencia seleccionada no es válida o no pertenece a tu historial.',
@@ -56,14 +57,21 @@ class JustificanteController extends Controller
             'motivo.max'           => 'El motivo no puede exceder los 500 caracteres.',
             'documento.file'       => 'El archivo subido no es válido.',
             'documento.mimes'      => 'El justificante solo puede ser un archivo en formato PDF, JPG, JPEG o PNG.',
+            'documento.mimetypes'  => 'El contenido real del archivo debe corresponder a un documento PDF o imagen JPG/PNG.',
             'documento.max'        => 'El archivo del justificante no debe superar el tamaño máximo de 5 MB.',
             'documento.uploaded'   => 'No se pudo subir el archivo. Verifica que sea formato PDF, JPG, JPEG o PNG y que no supere los 5 MB.',
         ]);
 
-        // Guardamos el archivo en storage/app/public/justificantes si se adjuntó uno
-        $rutaArchivo = $request->hasFile('documento')
-            ? $request->file('documento')->store('justificantes', 'public')
-            : null;
+        $justificanteExistente = Justificante::where('registro_id', $request->registro_id)->first();
+        $rutaArchivo = $justificanteExistente ? $justificanteExistente->documento_url : null;
+
+        // Guardamos el archivo en storage/app/public/justificantes si se adjuntó uno nuevo y limpiamos el anterior
+        if ($request->hasFile('documento')) {
+            if ($rutaArchivo && Storage::disk('public')->exists($rutaArchivo)) {
+                Storage::disk('public')->delete($rutaArchivo);
+            }
+            $rutaArchivo = $request->file('documento')->store('justificantes', 'public');
+        }
 
         Justificante::updateOrCreate(
             ['registro_id' => $request->registro_id],

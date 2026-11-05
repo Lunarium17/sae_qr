@@ -36,9 +36,10 @@ class MatriculaController extends Controller
             ->where('grupo_id', $grupo->id);
 
         if ($q !== '') {
-            $query->where(function ($sub) use ($q) {
-                $sub->where('nombre_materia', 'like', "%{$q}%")
-                    ->orWhere('codigo_materia', 'like', "%{$q}%");
+            $qEscapado = addcslashes($q, '%_\\');
+            $query->where(function ($sub) use ($qEscapado) {
+                $sub->where('nombre_materia', 'like', "%{$qEscapado}%")
+                    ->orWhere('codigo_materia', 'like', "%{$qEscapado}%");
             });
         }
 
@@ -109,11 +110,12 @@ class MatriculaController extends Controller
             return response()->json([]);
         }
 
+        $terminoEscapado = addcslashes($termino, '%_\\');
         $alumnos = User::where('rol', 'alumno')
-            ->where(function ($q) use ($termino) {
-                $q->where('name', 'like', "%{$termino}%")
-                  ->orWhere('matricula_codigo', 'like', "%{$termino}%")
-                  ->orWhere('email', 'like', "%{$termino}%");
+            ->where(function ($q) use ($terminoEscapado) {
+                $q->where('name', 'like', "%{$terminoEscapado}%")
+                  ->orWhere('matricula_codigo', 'like', "%{$terminoEscapado}%")
+                  ->orWhere('email', 'like', "%{$terminoEscapado}%");
             })
             ->orderBy('name')
             ->limit(15)
@@ -172,10 +174,11 @@ class MatriculaController extends Controller
         }
 
         if ($buscar !== '') {
-            $query->whereHas('alumno', function ($q) use ($buscar) {
-                $q->where('name', 'like', "%{$buscar}%")
-                  ->orWhere('email', 'like', "%{$buscar}%")
-                  ->orWhere('matricula_codigo', 'like', "%{$buscar}%");
+            $buscarEscapado = addcslashes($buscar, '%_\\');
+            $query->whereHas('alumno', function ($q) use ($buscarEscapado) {
+                $q->where('name', 'like', "%{$buscarEscapado}%")
+                  ->orWhere('email', 'like', "%{$buscarEscapado}%")
+                  ->orWhere('matricula_codigo', 'like', "%{$buscarEscapado}%");
             });
         }
 

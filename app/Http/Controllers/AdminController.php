@@ -148,10 +148,11 @@ class AdminController extends Controller
         }
 
         if ($buscar !== '') {
-            $query->where(function ($q) use ($buscar) {
-                $q->where('name', 'like', "%{$buscar}%")
-                  ->orWhere('email', 'like', "%{$buscar}%")
-                  ->orWhere('matricula_codigo', 'like', "%{$buscar}%");
+            $buscarEscapado = addcslashes($buscar, '%_\\');
+            $query->where(function ($q) use ($buscarEscapado) {
+                $q->where('name', 'like', "%{$buscarEscapado}%")
+                  ->orWhere('email', 'like', "%{$buscarEscapado}%")
+                  ->orWhere('matricula_codigo', 'like', "%{$buscarEscapado}%");
             });
         }
 

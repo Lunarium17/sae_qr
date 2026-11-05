@@ -60,43 +60,52 @@ class AuthController extends Controller
             'password.confirmed'        => 'La confirmación de la contraseña no coincide.',
         ]);
 
-        $codigoDocenteModel = null;
+        $codigoIngresado = $esProfesor ? strtoupper(trim((string) $request->input('codigo_docente'))) : null;
 
-        // Validar el Código de Invitación Docente (de un solo uso) generado por el Administrador
-        if ($esProfesor) {
-            $codigoIngresado = strtoupper(trim((string) $request->input('codigo_docente')));
-            $codigoDocenteModel = CodigoDocente::where('codigo', $codigoIngresado)->first();
+        try {
+            DB::transaction(function () use ($request, $esProfesor, $codigoIngresado) {
+                $codigoDocenteModel = null;
 
-            if (!$codigoDocenteModel) {
-                return back()
-                    ->withInput($request->except('password', 'password_confirmation', 'codigo_docente'))
-                    ->withErrors(['codigo_docente' => 'El Código de Acceso Docente ingresado no existe. Solicita uno válido al Administrador Escolar.']);
-            }
+                // Validar y bloquear (FOR UPDATE) el Código de Invitación Docente para evitar condiciones de carrera (Race Condition)
+                if ($esProfesor) {
+                    $codigoDocenteModel = CodigoDocente::where('codigo', $codigoIngresado)
+                        ->lockForUpdate()
+                        ->first();
 
-            if ($codigoDocenteModel->usado) {
-                return back()
-                    ->withInput($request->except('password', 'password_confirmation', 'codigo_docente'))
-                    ->withErrors(['codigo_docente' => 'Este Código de Acceso Docente ya fue utilizado anteriormente. Solicita un nuevo código al Administrador.']);
-            }
-        }
+                    if (!$codigoDocenteModel) {
+                        throw new \RuntimeException('CODIGO_NO_EXISTE');
+                    }
 
-        DB::transaction(function () use ($request, $codigoDocenteModel) {
-            $nuevoUsuario = User::create([
-                'name'             => $request->name,
-                'email'            => $request->email,
-                'rol'              => $request->rol,
-                'matricula_codigo' => $request->matricula_codigo ?: null,
-                'password'         => Hash::make($request->password),
-            ]);
+                    if ($codigoDocenteModel->usado) {
+                        throw new \RuntimeException('CODIGO_USADO');
+                    }
+                }
 
-            if ($codigoDocenteModel) {
-                $codigoDocenteModel->update([
-                    'usado'        => true,
-                    'usado_por_id' => $nuevoUsuario->id,
-                    'usado_en'     => now(),
+                $nuevoUsuario = User::create([
+                    'name'             => $request->name,
+                    'email'            => $request->email,
+                    'rol'              => $request->rol,
+                    'matricula_codigo' => $request->matricula_codigo ?: null,
+                    'password'         => Hash::make($request->password),
                 ]);
-            }
-        });
+
+                if ($codigoDocenteModel) {
+                    $codigoDocenteModel->update([
+                        'usado'        => true,
+                        'usado_por_id' => $nuevoUsuario->id,
+                        'usado_en'     => now(),
+                    ]);
+                }
+            });
+        } catch (\RuntimeException $e) {
+            $mensajeError = $e->getMessage() === 'CODIGO_USADO'
+                ? 'Este Código de Acceso Docente ya fue utilizado anteriormente. Solicita un nuevo código al Administrador.'
+                : 'El Código de Acceso Docente ingresado no existe. Solicita uno válido al Administrador Escolar.';
+
+            return back()
+                ->withInput($request->except('password', 'password_confirmation', 'codigo_docente'))
+                ->withErrors(['codigo_docente' => $mensajeError]);
+        }
 
         return redirect()->route('login')
             ->with('success', '¡Cuenta creada exitosamente! Ingresa tu correo y contraseña para iniciar sesión.');
