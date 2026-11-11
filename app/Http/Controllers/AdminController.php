@@ -127,6 +127,11 @@ class AdminController extends Controller
     public function eliminarCodigoDocente($id)
     {
         $codigo = CodigoDocente::findOrFail($id);
+
+        if ($codigo->usado) {
+            return back()->with('error', 'No se puede eliminar un código que ya fue utilizado por un docente.');
+        }
+
         $textoCodigo = $codigo->codigo;
         $codigo->delete();
 

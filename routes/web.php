@@ -78,6 +78,7 @@ Route::middleware(['auth', \App\Http\Middleware\CheckRol::class . ':profesor'])-
     // Rutas para reportes de asistencias (Sprint 6)
     Route::get('/profesor/reportes', [ReporteController::class, 'index'])->name('profesor.reportes');
     Route::get('/profesor/reportes/csv', [ReporteController::class, 'exportarCsv'])->name('profesor.reportes.csv');
+    Route::get('/profesor/reportes/pdf', [ReporteController::class, 'exportarPdf'])->name('profesor.reportes.pdf');
 
     // Rutas para ver y editar perfil / datos personales del profesor
     Route::get('/profesor/perfil', [PerfilAlumnoController::class, 'editProfesor'])->name('profesor.perfil');
