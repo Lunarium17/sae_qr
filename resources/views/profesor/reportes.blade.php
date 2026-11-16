@@ -27,10 +27,10 @@
 <body class="bg-light">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ route('profesor.dashboard') }}">
-                <i class="bi bi-arrow-left-circle me-2"></i>Volver al Panel
+            <a class="btn btn-light btn-sm text-dark fw-semibold rounded-3" href="{{ route('profesor.dashboard') }}">
+                <i class="bi bi-arrow-left me-1"></i>Volver al Panel
             </a>
-            <span class="navbar-text text-white fw-bold">Módulo Analítico de Reportes (PDF / Excel CSV)</span>
+            <span class="navbar-text text-white fw-bold">Módulo Analítico de Reportes</span>
         </div>
     </nav>
 
@@ -38,7 +38,7 @@
         <!-- Filtros y botones de descarga directa -->
         <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
             <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
-                <h5 class="fw-bold mb-0"><i class="bi bi-bar-chart-line me-2 text-primary"></i>Filtros y Descarga de Reportes</h5>
+                <h5 class="fw-bold mb-0">Filtros y Descarga de Reportes</h5>
                 <div class="d-flex flex-wrap gap-2">
                     <a href="{{ route('profesor.reportes.csv', ['materia_id' => $materiaId, 'mes' => $mes]) }}" class="btn btn-success rounded-3 fw-semibold">
                         <i class="bi bi-file-earmark-spreadsheet me-1"></i>Descargar CSV (Excel)
@@ -53,12 +53,12 @@
                 <div class="col-md-5">
                     <label class="form-label fw-semibold">Materia y Grupo</label>
                     <select name="materia_id" class="form-select">
-                        <option value="">-- Todas mis materias --</option>
+                        <option value="">Todas mis materias</option>
                         @foreach($materias as $mat)
                             <option value="{{ $mat->id }}" {{ $materiaId == $mat->id ? 'selected' : '' }}>
                                 {{ $mat->nombre_materia }} ({{ $mat->codigo_materia }})
                                 @if(optional($mat->grupo)->nombre_grupo)
-                                    — Grupo {{ $mat->grupo->nombre_grupo }}
+                                     · Grupo {{ $mat->grupo->nombre_grupo }}
                                 @endif
                             </option>
                         @endforeach
@@ -92,7 +92,7 @@
         <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
             <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
                 <div>
-                    <h4 class="fw-bold text-dark mb-0">Reporte Consolidado de Asistencia Escolar (SAE QR)</h4>
+                    <h4 class="fw-bold text-dark mb-0">Reporte Consolidado de Asistencia Escolar</h4>
                     <p class="text-muted small mb-0">Docente: {{ Auth::user()->name }} | Fecha de consulta: {{ date('Y-m-d H:i') }}</p>
                 </div>
                 <div class="d-flex flex-wrap gap-2">

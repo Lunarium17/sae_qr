@@ -6,18 +6,23 @@
     <title>Gestión de Materias - SAE QR</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        .info-icon { position: relative; display: inline-flex; align-items: center; color: #0d6efd; cursor: help; vertical-align: middle; font-size: .8em; margin-left: .15rem; padding: .1rem; }
+        .info-icon .info-icon-text { position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); min-width: 240px; max-width: 320px; background: #212529; color: #fff; font-size: .75rem; font-weight: 400; line-height: 1.35; padding: .5rem .65rem; border-radius: .4rem; box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .2); opacity: 0; visibility: hidden; transition: opacity .15s; z-index: 10; text-align: left; }
+        .info-icon:hover .info-icon-text, .info-icon:focus .info-icon-text, .info-icon:focus-within .info-icon-text { opacity: 1; visibility: visible; }
+    </style>
 </head>
 <body class="bg-light">
 
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="#"><i class="bi bi-journal-bookmark-fill me-2"></i>SAE QR | Gestión de Materias</a>
+            <a class="navbar-brand fw-bold" href="#">SAE QR | Gestión de Materias</a>
             <div class="d-flex align-items-center">
                 <a href="{{ url('/profesor/grupos') }}" class="btn btn-outline-info btn-sm me-2">
                     <i class="bi bi-card-list me-1"></i>Ver Grupos
                 </a>
-                <a href="{{ url('/profesor/dashboard') }}" class="btn btn-outline-light btn-sm me-3">
+                <a href="{{ url('/profesor/dashboard') }}" class="btn btn-light btn-sm text-dark fw-semibold me-3">
                     <i class="bi bi-arrow-left me-1"></i>Volver al Panel
                 </a>
                 <form action="{{ route('logout') }}" method="POST" class="d-inline">
@@ -32,7 +37,7 @@
         <!-- Alerta de éxito -->
         @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show rounded-3 shadow-sm" role="alert">
-                <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+                {{ session('success') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
@@ -40,8 +45,13 @@
         <!-- Encabezado -->
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
-                <h2 class="fw-bold text-dark mb-0">Catálogo de Materias</h2>
-                <p class="text-muted mt-1">Administra las asignaturas que impartes en la institución.</p>
+                <h2 class="fw-bold text-dark mb-0">
+                    Catálogo de Materias
+                    <span class="info-icon" tabindex="0" role="button" aria-label="Tus asignaturas en la institución.">
+                        <i class="bi bi-info-circle"></i>
+                        <span class="info-icon-text" role="tooltip">Tus asignaturas en la institución.</span>
+                    </span>
+                </h2>
             </div>
             <a href="{{ route('materias.create') }}" class="btn btn-primary rounded-pill px-4 py-2 shadow-sm">
                 <i class="bi bi-plus-circle me-2"></i>Nueva Materia

@@ -10,8 +10,8 @@
 <body class="bg-light">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ route('profesor.dashboard') }}">
-                <i class="bi bi-arrow-left-circle me-2"></i>Volver al Panel
+            <a class="btn btn-light btn-sm text-dark fw-semibold rounded-3" href="{{ route('profesor.dashboard') }}">
+                <i class="bi bi-arrow-left me-1"></i>Volver al Panel
             </a>
             <span class="navbar-text text-white fw-bold">Perfil y Datos del Profesor</span>
         </div>
@@ -22,7 +22,7 @@
             <div class="col-lg-7">
                 @if (session('success'))
                     <div class="alert alert-success alert-dismissible fade show rounded-3 shadow-sm mb-4">
-                        <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+                        {{ session('success') }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 @endif
@@ -59,7 +59,7 @@
                             @method('PUT')
 
                             <h6 class="fw-bold text-uppercase text-muted small mb-3">
-                                <i class="bi bi-person-Vcard-fill me-1"></i>Información del Docente
+                                Información del Docente
                             </h6>
 
                             <div class="row g-3 mb-4">
@@ -75,16 +75,15 @@
 
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold">Clave Docente / No. de Empleado</label>
-                                    <input type="text" name="matricula_codigo" value="{{ old('matricula_codigo', $profesor->matricula_codigo) }}" class="form-control rounded-3" placeholder="Ej. DOC-2026-01" maxlength="30">
+                                    <input type="text" name="matricula_codigo" value="{{ old('matricula_codigo', $profesor->matricula_codigo) }}" class="form-control rounded-3" maxlength="30">
                                 </div>
                             </div>
 
                             <hr class="my-4">
 
-                            <h6 class="fw-bold text-uppercase text-muted small mb-1">
-                                <i class="bi bi-shield-lock-fill me-1"></i>Seguridad y Contraseña
+                            <h6 class="fw-bold text-uppercase text-muted small mb-3">
+                                Seguridad y Contraseña
                             </h6>
-                            <p class="text-muted small mb-3">Deja estos campos en blanco si no deseas cambiar tu contraseña actual.</p>
 
                             <div class="row g-3 mb-4">
                                 <div class="col-md-6">

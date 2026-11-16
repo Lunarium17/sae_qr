@@ -12,9 +12,9 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container">
             <a class="navbar-brand fw-bold" href="{{ route('grupos.index') }}">
-                <i class="bi bi-pencil-square me-2"></i>SAE QR | Editar Materia
+                SAE QR | Editar Materia
             </a>
-            <a href="{{ $materia->grupo_id ? route('grupos.show', $materia->grupo_id) : route('grupos.index') }}" class="btn btn-outline-light btn-sm">
+            <a href="{{ $materia->grupo_id ? route('grupos.show', $materia->grupo_id) : route('grupos.index') }}" class="btn btn-light btn-sm text-dark fw-semibold">
                 <i class="bi bi-arrow-left me-1"></i>Volver al Grupo
             </a>
         </div>
@@ -36,7 +36,7 @@
 
                 <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden">
                     <div class="card-header bg-warning text-dark p-4 border-0">
-                        <h5 class="mb-0 fw-bold"><i class="bi bi-pencil-square me-2"></i>Editar Materia: {{ $materia->nombre_materia }}</h5>
+                        <h5 class="mb-0 fw-bold">Editar Materia: {{ $materia->nombre_materia }}</h5>
                     </div>
                     <div class="card-body p-4">
                         <form action="{{ route('materias.update', $materia->id) }}" method="POST">
@@ -45,12 +45,12 @@
                             <input type="hidden" name="grupo_id" value="{{ $materia->grupo_id }}">
 
                             <div class="mb-3">
-                                <label class="form-label fw-semibold">Código / Clave de la Materia</label>
+                                <label class="form-label fw-semibold">Código / Clave de la Materia <span class="text-danger">*</span></label>
                                 <input type="text" name="codigo" value="{{ old('codigo', $materia->codigo_materia) }}" class="form-control rounded-3" maxlength="30" required>
                             </div>
 
                             <div class="mb-4">
-                                <label class="form-label fw-semibold">Nombre de la Materia</label>
+                                <label class="form-label fw-semibold">Nombre de la Materia <span class="text-danger">*</span></label>
                                 <input type="text" name="nombre_materia" value="{{ old('nombre_materia', $materia->nombre_materia) }}" class="form-control rounded-3" maxlength="100" required>
                             </div>
 

@@ -6,6 +6,11 @@
     <title>{{ $materia->nombre_materia }} | Alumnos Inscritos - SAE QR</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        .info-icon { position: relative; display: inline-flex; align-items: center; color: #0d6efd; cursor: help; vertical-align: middle; font-size: .8em; margin-left: .15rem; padding: .1rem; }
+        .info-icon .info-icon-text { position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); min-width: 240px; max-width: 320px; background: #212529; color: #fff; font-size: .75rem; font-weight: 400; line-height: 1.35; padding: .5rem .65rem; border-radius: .4rem; box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .2); opacity: 0; visibility: hidden; transition: opacity .15s; z-index: 10; text-align: left; }
+        .info-icon:hover .info-icon-text, .info-icon:focus .info-icon-text, .info-icon:focus-within .info-icon-text { opacity: 1; visibility: visible; }
+    </style>
 </head>
 <body class="bg-light">
 
@@ -13,15 +18,15 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container">
             <a class="navbar-brand fw-bold" href="{{ $materia->grupo_id ? route('grupos.show', $materia->grupo_id) : route('grupos.index') }}">
-                <i class="bi bi-journal-bookmark-fill me-2"></i>SAE QR | {{ $materia->nombre_materia }}
+                SAE QR | {{ $materia->nombre_materia }}
             </a>
             <div class="d-flex align-items-center gap-2">
                 @if ($materia->grupo_id)
-                    <a href="{{ route('grupos.show', $materia->grupo_id) }}" class="btn btn-outline-light btn-sm">
+                    <a href="{{ route('grupos.show', $materia->grupo_id) }}" class="btn btn-light btn-sm text-dark fw-semibold">
                         <i class="bi bi-arrow-left me-1"></i>Volver al Grupo {{ $materia->grupo->nombre_grupo }}
                     </a>
                 @else
-                    <a href="{{ route('grupos.index') }}" class="btn btn-outline-light btn-sm">
+                    <a href="{{ route('grupos.index') }}" class="btn btn-light btn-sm text-dark fw-semibold">
                         <i class="bi bi-arrow-left me-1"></i>Volver a Grupos
                     </a>
                 @endif
@@ -35,14 +40,14 @@
     <div class="container my-5">
         @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show rounded-3 shadow-sm" role="alert">
-                <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+                {{ session('success') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
 
         @if (session('error'))
             <div class="alert alert-danger alert-dismissible fade show rounded-3 shadow-sm" role="alert">
-                <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ session('error') }}
+                {{ session('error') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
@@ -71,13 +76,13 @@
                     </div>
                     @if ($materia->grupo)
                         <p class="text-muted mb-0 mt-2">
-                            <span class="me-3"><i class="bi bi-people-fill me-1 text-primary"></i><strong>Grupo:</strong> {{ $materia->grupo->nombre_grupo }}</span>
+                            <span class="me-3"><strong>Grupo:</strong> {{ $materia->grupo->nombre_grupo }}</span>
                             @if ($materia->grupo->carrera)
-                                <span class="me-3"><i class="bi bi-building me-1 text-primary"></i><strong>Carrera:</strong> {{ $materia->grupo->carrera }}</span>
+                                <span class="me-3"><strong>Carrera:</strong> {{ $materia->grupo->carrera }}</span>
                             @endif
-                            <span class="me-3"><i class="bi bi-mortarboard-fill me-1 text-secondary"></i><strong>Semestre:</strong> {{ $materia->grupo->grado }}</span>
-                            <span class="me-3"><i class="bi bi-clock-fill me-1 text-secondary"></i><strong>Turno:</strong> {{ $materia->grupo->turno }}</span>
-                            <span><i class="bi bi-calendar-range-fill me-1 text-secondary"></i><strong>Periodo:</strong> {{ $materia->grupo->periodo_lectivo }}</span>
+                            <span class="me-3"><strong>Semestre:</strong> {{ $materia->grupo->grado }}</span>
+                            <span class="me-3"><strong>Turno:</strong> {{ $materia->grupo->turno }}</span>
+                            <span><strong>Periodo:</strong> {{ preg_replace('/([A-Za-zÁÉÍÓÚáéíóú])(\d{4})/u', '$1 $2', $materia->grupo->periodo_lectivo) }}</span>
                         </p>
                     @endif
                 </div>
@@ -102,12 +107,13 @@
             <!-- 2. Formulario Lateral: Inscribir Alumno Manualmente por Búsqueda Dinámica -->
             <div class="col-lg-4">
                 <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
-                    <h5 class="fw-bold text-dark mb-1">
-                        <i class="bi bi-person-plus-fill me-2 text-primary"></i>Inscribir Alumno Manualmente
+                    <h5 class="fw-bold text-dark mb-3">
+                        Inscribir Alumno Manualmente
+                        <span class="info-icon" tabindex="0" role="button" aria-label="Busca por nombre, matrícula o correo para inscribir en {{ $materia->nombre_materia }}.">
+                            <i class="bi bi-info-circle"></i>
+                            <span class="info-icon-text" role="tooltip">Busca por nombre, matrícula o correo para inscribir en {{ $materia->nombre_materia }}.</span>
+                        </span>
                     </h5>
-                    <p class="text-muted small mb-3">
-                        Busca al estudiante por <strong>nombre, matrícula o correo</strong> para inscribirlo en <strong>{{ $materia->nombre_materia }}</strong>.
-                    </p>
 
                     <form action="{{ route('profesor.matriculas.manual') }}" method="POST" id="formInscribirMateria">
                         @csrf
@@ -152,17 +158,21 @@
                 <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="fw-bold text-dark mb-0">
-                            <i class="bi bi-people-fill me-2 text-dark"></i>Padrón de Alumnos de la Materia
+                            Padrón de Alumnos de la Materia
+                            <span class="info-icon" tabindex="0" role="button" aria-label="3 retardos = 1 falta. Con 2 faltas: en riesgo. Con 3: sin derecho a examen.">
+                                <i class="bi bi-info-circle"></i>
+                                <span class="info-icon-text" role="tooltip">3 retardos = 1 falta. Con 2 faltas: en riesgo. Con 3: sin derecho a examen.</span>
+                            </span>
                         </h5>
                         <span class="badge bg-dark rounded-pill">{{ $materia->matriculas->count() }} Registros</span>
                     </div>
 
                     <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
+                        <table class="table table-striped table-hover align-middle mb-0">
                             <thead class="table-light">
                                 <tr>
                                     <th>Alumno</th>
-                                    <th class="text-center">Incidencias (3 Ret. = 1 Falta)</th>
+                                    <th class="text-center">Incidencias</th>
                                     <th class="text-center">Derecho a Examen</th>
                                     <th class="text-center">Estado</th>
                                     <th class="text-end">Gestión de Inscripción</th>
@@ -201,15 +211,15 @@
                                         <td class="text-center">
                                             @if ($faltasTotales >= 3)
                                                 <span class="badge bg-danger">
-                                                    <i class="bi bi-x-octagon-fill me-1"></i>Sin Derecho a Examen (SD)
+                                                    Sin Derecho a Examen (SD)
                                                 </span>
                                             @elseif ($faltasTotales === 2)
                                                 <span class="badge bg-warning text-dark">
-                                                    <i class="bi bi-exclamation-triangle-fill me-1"></i>En Riesgo (2/3)
+                                                    En Riesgo (2/3)
                                                 </span>
                                             @else
                                                 <span class="badge bg-success bg-opacity-10 text-success border border-success">
-                                                    <i class="bi bi-check-circle-fill me-1"></i>Con Derecho a Ordinario
+                                                    Con Derecho a Ordinario
                                                 </span>
                                             @endif
                                         </td>

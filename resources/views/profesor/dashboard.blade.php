@@ -6,6 +6,11 @@
     <title>Panel de Profesor - SAE QR</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        .info-icon { position: relative; display: inline-flex; align-items: center; color: #0d6efd; cursor: help; vertical-align: middle; font-size: .8em; margin-left: .15rem; padding: .1rem; }
+        .info-icon .info-icon-text { position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); min-width: 240px; max-width: 320px; background: #212529; color: #fff; font-size: .75rem; font-weight: 400; line-height: 1.35; padding: .5rem .65rem; border-radius: .4rem; box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .2); opacity: 0; visibility: hidden; transition: opacity .15s; z-index: 10; text-align: left; }
+        .info-icon:hover .info-icon-text, .info-icon:focus .info-icon-text, .info-icon:focus-within .info-icon-text { opacity: 1; visibility: visible; }
+    </style>
 </head>
 <body class="bg-light">
 
@@ -112,14 +117,14 @@
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="#"><i class="bi bi-qr-code-scan me-2"></i>SAE QR | Panel de Profesor</a>
+            <a class="navbar-brand fw-bold" href="#">SAE QR | Panel de Profesor</a>
             <div class="d-flex align-items-center gap-2">
-                <a href="{{ route('profesor.perfil') }}" class="btn btn-outline-info btn-sm rounded-3">
-                    <i class="bi bi-person-gear me-1"></i>Mi Perfil
+                <a href="{{ route('profesor.perfil') }}" class="btn btn-light btn-sm text-dark fw-semibold rounded-3">
+                    Mi Perfil
                 </a>
                 <form action="{{ route('logout') }}" method="POST" class="d-inline">
                     @csrf
-                    <button type="submit" class="btn btn-outline-light btn-sm rounded-3">Cerrar Sesión</button>
+                    <button type="submit" class="btn btn-danger btn-sm rounded-3">Cerrar Sesión</button>
                 </form>
             </div>
         </div>
@@ -129,27 +134,23 @@
         <!-- 1. Panel Principal de Bienvenida y Acciones Rápidas (Parte Superior) -->
         <div class="card border-0 shadow-sm rounded-4 p-4 bg-white text-center mb-4">
             <h3 class="fw-bold text-dark mb-1">Bienvenido, {{ \Illuminate\Support\Facades\Auth::user()->name }}</h3>
-            <p class="text-muted small mb-1">
-                <i class="bi bi-envelope me-1"></i>{{ \Illuminate\Support\Facades\Auth::user()->email }}
-                | <i class="bi bi-card-heading ms-1 me-1"></i>{{ \Illuminate\Support\Facades\Auth::user()->matricula_codigo ? 'Clave Docente: ' . \Illuminate\Support\Facades\Auth::user()->matricula_codigo : 'Sin clave docente asignada' }}
+            <p class="text-muted small mb-0">
+                {{ \Illuminate\Support\Facades\Auth::user()->email }}
+                | {{ \Illuminate\Support\Facades\Auth::user()->matricula_codigo ? 'Clave: ' . \Illuminate\Support\Facades\Auth::user()->matricula_codigo : 'Sin clave asignada' }}
             </p>
-            <p class="text-muted mb-3">Gestiona tus grupos y materias, inicia sesiones de clase y <strong>escanea los códigos QR de tus estudiantes</strong>.</p>
 
             <div class="d-flex flex-wrap justify-content-center gap-3">
                 <a href="{{ route('sesiones.index') }}" class="btn btn-primary rounded-3 px-4 py-2">
-                    <i class="bi bi-camera-video me-2"></i>Iniciar Sesión y Escanear
+                    <i class="bi bi-qr-code-scan me-2"></i>Iniciar Sesión y Escanear
                 </a>
                 <a href="{{ route('grupos.index') }}" class="btn btn-outline-dark rounded-3 px-4 py-2">
                     <i class="bi bi-collection me-2"></i>Gestión de Grupos y Materias
                 </a>
                 <a href="{{ route('profesor.solicitudes') }}" class="btn btn-warning rounded-3 px-4 py-2">
-                    <i class="bi bi-person-lines-fill me-2"></i>Solicitudes de Alumnos
+                    <i class="bi bi-person-plus-fill me-2"></i>Solicitudes de Alumnos
                     @if($solicitudesPendientes > 0)
                         <span class="badge bg-danger ms-1">{{ $solicitudesPendientes }}</span>
                     @endif
-                </a>
-                <a href="{{ route('profesor.perfil') }}" class="btn btn-outline-secondary rounded-3 px-4 py-2">
-                    <i class="bi bi-pencil-square me-2"></i>Ver / Editar Mis Datos
                 </a>
             </div>
         </div>
@@ -157,12 +158,11 @@
         <!-- 2. Tarjetas de KPIs Detallados en Tiempo Real -->
         <div class="row g-3 mb-4">
             <div class="col-md-3 col-sm-6">
-                <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                <div class="card border-0 border-start border-4 border-primary shadow-sm rounded-4 p-3 bg-white h-100">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h6 class="text-muted small text-uppercase fw-bold mb-1">Grupos y Materias</h6>
                             <h3 class="fw-bold text-dark mb-0">{{ $gruposCount }} Grupos</h3>
-                            <span class="text-secondary small"><i class="bi bi-journal-bookmark me-1"></i>{{ $materiasCount }} Materias registradas</span>
                         </div>
                         <div class="bg-primary bg-opacity-10 text-primary rounded-4 p-3">
                             <i class="bi bi-collection fs-3"></i>
@@ -172,14 +172,11 @@
             </div>
 
             <div class="col-md-3 col-sm-6">
-                <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                <div class="card border-0 border-start border-4 border-info shadow-sm rounded-4 p-3 bg-white h-100">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h6 class="text-muted small text-uppercase fw-bold mb-1">Matrícula Activa</h6>
                             <h3 class="fw-bold text-dark mb-0">{{ $alumnosAceptadosCount }} Inscritos</h3>
-                            <span class="small {{ $solicitudesPendientes > 0 ? 'text-warning fw-semibold' : 'text-muted' }}">
-                                <i class="bi bi-person-plus me-1"></i>{{ $solicitudesPendientes }} solicitudes pendientes
-                            </span>
                         </div>
                         <div class="bg-info bg-opacity-10 text-info rounded-4 p-3">
                             <i class="bi bi-people-fill fs-3"></i>
@@ -189,24 +186,21 @@
             </div>
 
             <div class="col-md-3 col-sm-6">
-                <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                <div class="card border-0 border-start border-4 border-primary shadow-sm rounded-4 p-3 bg-white h-100">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h6 class="text-muted small text-uppercase fw-bold mb-1">Clases Impartidas</h6>
                             <h3 class="fw-bold text-primary mb-0">{{ $totalSesiones }} Sesiones</h3>
-                            <span class="small {{ $sesionesActivasCount > 0 ? 'text-success fw-semibold' : 'text-muted' }}">
-                                <i class="bi bi-broadcast me-1"></i>{{ $sesionesActivasCount }} activa(s) ahora
-                            </span>
                         </div>
                         <div class="bg-primary bg-opacity-10 text-primary rounded-4 p-3">
-                            <i class="bi bi-camera-video-fill fs-3"></i>
+                            <i class="bi bi-easel fs-3"></i>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="col-md-3 col-sm-6">
-                <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                <div class="card border-0 border-start border-4 border-{{ $colorSemaforoGlobal }} shadow-sm rounded-4 p-3 bg-white h-100">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <div>
                             <h6 class="text-muted small text-uppercase fw-bold mb-1">Asistencia Global</h6>
@@ -219,10 +213,6 @@
                     <div class="progress rounded-pill" style="height: 8px;">
                         <div class="progress-bar bg-{{ $colorSemaforoGlobal }}" role="progressbar" data-width="{{ $porcentajeAsistencia }}"></div>
                     </div>
-                    <div class="d-flex justify-content-between small text-muted mt-1">
-                        <span>A:{{ $asistenciasCount }} R:{{ $retardosCount }} P:{{ $permisosCount }}</span>
-                        <span class="text-danger fw-semibold">F:{{ $faltasCount }}</span>
-                    </div>
                 </div>
             </div>
         </div>
@@ -233,7 +223,7 @@
             <div class="col-lg-5">
                 <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="fw-bold text-dark mb-0"><i class="bi bi-pie-chart-fill me-2 text-primary"></i>Distribución de Incidencias</h5>
+                        <h5 class="fw-bold text-dark mb-0">Distribución de Incidencias</h5>
                         <span class="badge bg-dark rounded-pill">{{ $totalRegistros }} pases</span>
                     </div>
                     @if ($totalRegistros > 0)
@@ -266,9 +256,8 @@
             <!-- Gráfica de Barras: Comparativa de Asistencia por Grupo -->
             <div class="col-lg-7">
                 <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="fw-bold text-dark mb-0"><i class="bi bi-bar-chart-steps me-2 text-success"></i>% de Asistencia por Grupo</h5>
-                        <a href="{{ route('grupos.index') }}" class="btn btn-sm btn-outline-secondary rounded-pill">Ver todos los grupos</a>
+                    <div class="mb-3">
+                        <h5 class="fw-bold text-dark mb-0">% de Asistencia por Grupo</h5>
                     </div>
                     @if ($gruposCount > 0)
                         <div style="height: 280px;">
@@ -289,11 +278,12 @@
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
                 <div>
                     <h5 class="fw-bold text-dark mb-0">
-                        <i class="bi bi-exclamation-triangle-fill me-2 text-danger"></i>Control de Derecho a Examen Ordinario (Regla: 3 Retardos = 1 Falta)
+                        Control de Derecho a Examen Ordinario
+                        <span class="info-icon" tabindex="0" role="button" aria-label="3 retardos = 1 falta. Con 2 faltas: en riesgo. Con 3: sin derecho a examen ordinario.">
+                            <i class="bi bi-info-circle"></i>
+                            <span class="info-icon-text" role="tooltip">3 retardos = 1 falta. Con 2 faltas: en riesgo. Con 3: sin derecho a examen ordinario.</span>
+                        </span>
                     </h5>
-                    <p class="text-muted small mb-0">
-                        Estudiantes con <strong>2 faltas acumuladas (En Riesgo / Preventivo)</strong> o <strong>3+ faltas (SD - Sin Derecho a Examen Ordinario)</strong> considerando faltas directas y retardos acumulados.
-                    </p>
                 </div>
                 <span class="badge {{ count($alumnosEnRiesgo) > 0 ? 'bg-danger' : 'bg-success' }} rounded-pill px-3 py-2">
                     {{ count($alumnosEnRiesgo) }} Casos Detectados
@@ -301,7 +291,7 @@
             </div>
 
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
+                    <table class="table table-striped table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
                             <th>Alumno</th>
@@ -342,9 +332,9 @@
                                 </td>
                                 <td class="text-center">
                                     @if ($caso['critico'])
-                                        <span class="badge bg-danger"><i class="bi bi-x-octagon-fill me-1"></i>Sin Derecho a Examen (SD)</span>
+                                        <span class="badge bg-danger">Sin Derecho a Examen (SD)</span>
                                     @else
-                                        <span class="badge bg-warning text-dark"><i class="bi bi-exclamation-circle-fill me-1"></i>En Riesgo / Preventivo (2/3)</span>
+                                        <span class="badge bg-warning text-dark">En Riesgo / Preventivo (2/3)</span>
                                     @endif
                                 </td>
                                 <td class="text-end">
@@ -356,7 +346,7 @@
                         @empty
                             <tr>
                                 <td colspan="6" class="text-center py-4 text-muted">
-                                    <i class="bi bi-check-circle-fill text-success me-1"></i>Ningún alumno supera las 2 faltas sin justificar en este momento.
+                                    Ningún alumno supera las 2 faltas sin justificar en este momento.
                                 </td>
                             </tr>
                         @endforelse
@@ -369,8 +359,7 @@
         <div class="row my-4 g-4">
             <div class="col-md-6">
                 <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
-                    <h5 class="fw-bold text-dark"><i class="bi bi-file-earmark-pdf me-2"></i>Exportación y Reportes</h5>
-                    <p class="text-muted small">Genera consolidados de asistencia semanales o mensuales.</p>
+                    <h5 class="fw-bold text-dark">Exportación y Reportes</h5>
 
                     <a href="{{ route('profesor.reportes') }}" class="btn btn-outline-primary btn-sm rounded-3 mt-auto">
                         <i class="bi bi-bar-chart-line me-1"></i>Ver y Exportar Reportes (PDF / Excel)
@@ -380,15 +369,13 @@
             <div class="col-md-6">
                 <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
                     <div class="d-flex justify-content-between align-items-start">
-                        <h5 class="fw-bold text-dark"><i class="bi bi-envelope-paper me-2"></i>Permisos y Justificantes</h5>
+                        <h5 class="fw-bold text-dark">Permisos y Justificantes</h5>
                         @if ($justificantesPendientes > 0)
                             <span class="badge bg-warning text-dark rounded-pill">{{ $justificantesPendientes }} pendientes</span>
                         @endif
                     </div>
-                    <p class="text-muted small">Revisa la carga digital de comprobantes para realizar el ajuste manual de inasistencias.</p>
-
                     <a href="{{ route('profesor.justificantes') }}" class="btn btn-outline-info btn-sm rounded-3 mt-auto">
-                        <i class="bi bi-envelope-paper me-1"></i>Revisar Justificantes Pendientes
+                        <i class="bi bi-file-earmark-text me-1"></i>Revisar Justificantes Pendientes
                     </a>
                 </div>
             </div>

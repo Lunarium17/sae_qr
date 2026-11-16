@@ -7,13 +7,18 @@
     <title>Sesiones de Clase y Escáner QR - SAE QR</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        .info-icon { position: relative; display: inline-flex; align-items: center; color: #0d6efd; cursor: help; vertical-align: middle; font-size: .8em; margin-left: .15rem; padding: .1rem; }
+        .info-icon .info-icon-text { position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); min-width: 240px; max-width: 320px; background: #212529; color: #fff; font-size: .75rem; font-weight: 400; line-height: 1.35; padding: .5rem .65rem; border-radius: .4rem; box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .2); opacity: 0; visibility: hidden; transition: opacity .15s; z-index: 10; text-align: left; }
+        .info-icon:hover .info-icon-text, .info-icon:focus .info-icon-text, .info-icon:focus-within .info-icon-text { opacity: 1; visibility: visible; }
+    </style>
 </head>
 <body class="bg-light">
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ route('profesor.dashboard') }}"><i class="bi bi-camera-video me-2"></i>SAE QR | Control de Sesiones y Escáner</a>
-            <a href="{{ url('/profesor/dashboard') }}" class="btn btn-outline-light btn-sm">
+            <a class="navbar-brand fw-bold" href="{{ route('profesor.dashboard') }}">SAE QR | Control de Sesiones y Escáner</a>
+            <a href="{{ url('/profesor/dashboard') }}" class="btn btn-light btn-sm text-dark fw-semibold rounded-3">
                 <i class="bi bi-arrow-left me-1"></i>Volver al Panel
             </a>
         </div>
@@ -22,14 +27,14 @@
     <div class="container my-5">
         @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show rounded-3 shadow-sm">
-                <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+                {{ session('success') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         @endif
 
         @if (session('error'))
             <div class="alert alert-danger alert-dismissible fade show rounded-3 shadow-sm">
-                <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ session('error') }}
+                {{ session('error') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         @endif
@@ -37,24 +42,29 @@
         @if(!$sesionActiva)
             <!-- Formulario para Abrir Nueva Sesión de Clase -->
             <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
-                <h4 class="fw-bold text-dark mb-1">Abrir Nueva Sesión de Clase</h4>
-                <p class="text-muted small mb-4">Selecciona la materia (junto con su grupo) y el tiempo de tolerancia para habilitar la lectura de códigos QR.</p>
+                <h4 class="fw-bold text-dark mb-3">
+                    Abrir Nueva Sesión de Clase
+                    <span class="info-icon" tabindex="0" role="button" aria-label="Elige materia, grupo y tolerancia para habilitar la lectura de QR.">
+                        <i class="bi bi-info-circle"></i>
+                        <span class="info-icon-text" role="tooltip">Elige materia, grupo y tolerancia para habilitar la lectura de QR.</span>
+                    </span>
+                </h4>
 
                 <form action="{{ route('sesiones.iniciar') }}" method="POST" class="row g-3 align-items-end">
                     @csrf
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold">Materia y Grupo a Impartir</label>
+                        <label class="form-label fw-semibold">Materia y Grupo a Impartir <span class="text-danger">*</span></label>
                         <select name="materia_id" class="form-select rounded-3" required>
-                            <option value="" disabled {{ empty($materiaSeleccionada) ? 'selected' : '' }}>Selecciona una asignatura...</option>
+                            <option value="" disabled {{ empty($materiaSeleccionada) ? 'selected' : '' }}>Selecciona una asignatura</option>
                             @foreach($materias as $materia)
                                 <option value="{{ $materia->id }}" {{ (isset($materiaSeleccionada) && (int) $materiaSeleccionada === (int) $materia->id) ? 'selected' : '' }}>
-                                    [{{ $materia->codigo_materia }}] {{ $materia->nombre_materia }}{{ $materia->grupo ? ' — Grupo: ' . $materia->grupo->nombre_grupo . ' (' . $materia->grupo->turno . ')' : '' }}
+                                    [{{ $materia->codigo_materia }}] {{ $materia->nombre_materia }}{{ $materia->grupo ? ' · Grupo: ' . $materia->grupo->nombre_grupo . ' (' . $materia->grupo->turno . ')' : '' }}
                                 </option>
                             @endforeach
                         </select>
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label fw-semibold">Tolerancia (Minutos)</label>
+                        <label class="form-label fw-semibold">Tolerancia (Minutos) <span class="text-danger">*</span></label>
                         <input type="number" name="tolerancia_minutos" class="form-control rounded-3" value="15" min="0" max="60" required>
                     </div>
                     <div class="col-md-3">
@@ -105,7 +115,7 @@
                                 <i class="bi bi-keyboard me-1"></i>¿Probando en una sola PC o sin cámara? Pega aquí el código de respaldo del alumno:
                             </label>
                             <div class="input-group input-group-sm">
-                                <input type="text" id="inputCodigoRespaldo" class="form-control font-monospace" placeholder="Ej. 5.1761509200.a8f39c1b4d2e07f1">
+                                <input type="text" id="inputCodigoRespaldo" class="form-control font-monospace">
                                 <button type="button" class="btn btn-outline-primary fw-semibold" onclick="validarTokenManual()">
                                     Validar Código
                                 </button>
@@ -125,7 +135,7 @@
                         </div>
 
                         <div class="table-responsive">
-                            <table class="table table-hover align-middle">
+                            <table class="table table-striped table-hover align-middle">
                                 <thead class="table-light">
                                     <tr>
                                         <th>Alumno</th>
@@ -369,17 +379,18 @@
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
                 <div>
                     <h5 class="fw-bold text-dark mb-0">
-                        <i class="bi bi-clock-history me-2 text-primary"></i>Historial de Sesiones de Clase
+                        Historial de Sesiones de Clase
+                        <span class="info-icon" tabindex="0" role="button" aria-label="Historial de tus sesiones, asistencias por clase y ajustes manuales.">
+                            <i class="bi bi-info-circle"></i>
+                            <span class="info-icon-text" role="tooltip">Historial de tus sesiones, asistencias por clase y ajustes manuales.</span>
+                        </span>
                     </h5>
-                    <p class="text-muted small mb-0">
-                        Consulta todas tus sesiones impartidas, el resumen de asistencias por clase y realiza ajustes manuales si es necesario.
-                    </p>
                 </div>
                 <span class="badge bg-dark rounded-pill px-3 py-2">{{ $historialSesiones->count() }} Sesiones Registradas</span>
             </div>
 
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
+                <table class="table table-striped table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
                             <th>Fecha / Horario</th>
