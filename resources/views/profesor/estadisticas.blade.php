@@ -180,7 +180,7 @@
             <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
                 <div>
                     <h5 class="fw-bold text-dark mb-1">Control de Derecho a Examen Ordinario</h5>
-                    <div class="text-muted small">3 retardos = 1 falta. Con 2 faltas: en riesgo. Con 3: sin derecho a examen ordinario.</div>
+                    <div class="text-muted small">3 retardos = 1 falta · máx. 3 faltas.</div>
                 </div>
                 <span class="badge {{ count($alumnosEnRiesgo) > 0 ? 'bg-danger' : 'bg-success' }} rounded-pill px-3 py-2">
                     {{ count($alumnosEnRiesgo) }} Casos Detectados

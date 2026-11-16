@@ -91,7 +91,6 @@
             <h3 class="fw-bold text-dark mb-1">Bienvenido, {{ $profesor->name }}</h3>
             <p class="text-muted small mb-3">
                 {{ $profesor->email }}
-                | {{ $profesor->matricula_codigo ? 'Clave: ' . $profesor->matricula_codigo : 'Sin clave asignada' }}
             </p>
 
             <div class="d-flex flex-wrap justify-content-center gap-3">
@@ -195,7 +194,7 @@
                     </div>
                     <h5 class="fw-bold text-dark">Sesiones y Escáner</h5>
                     <p class="text-muted small mb-2">Genera el QR de tu clase y registra los pases de tus alumnos en tiempo real.</p>
-                    <span class="text-primary small fw-semibold mt-auto">Abrir <i class="bi bi-arrow-right-short"></i></span>
+                    <span class="text-primary small fw-semibold mt-auto"><i class="bi bi-arrow-right-short"></i></span>
                 </a>
             </div>
 
@@ -209,7 +208,7 @@
                     </div>
                     <h5 class="fw-bold text-dark">Grupos y Materias</h5>
                     <p class="text-muted small mb-2">Administra tus grupos oficiales universitarios y asigna las materias que impartes.</p>
-                    <span class="text-dark small fw-semibold mt-auto">Abrir <i class="bi bi-arrow-right-short"></i></span>
+                    <span class="text-dark small fw-semibold mt-auto"><i class="bi bi-arrow-right-short"></i></span>
                 </a>
             </div>
 
@@ -225,7 +224,7 @@
                     </div>
                     <h5 class="fw-bold text-dark">Solicitudes de Alumnos</h5>
                     <p class="text-muted small mb-2">Aprueba o rechaza las solicitudes de alta de alumnos en tus materias.</p>
-                    <span class="text-warning small fw-semibold mt-auto">Abrir <i class="bi bi-arrow-right-short"></i></span>
+                    <span class="text-warning small fw-semibold mt-auto"><i class="bi bi-arrow-right-short"></i></span>
                 </a>
             </div>
 
@@ -241,7 +240,7 @@
                     </div>
                     <h5 class="fw-bold text-dark">Justificantes</h5>
                     <p class="text-muted small mb-2">Revisa y valida los justificantes de ausencias que envían tus alumnos.</p>
-                    <span class="text-info small fw-semibold mt-auto">Abrir <i class="bi bi-arrow-right-short"></i></span>
+                    <span class="text-info small fw-semibold mt-auto"><i class="bi bi-arrow-right-short"></i></span>
                 </a>
             </div>
 
@@ -254,7 +253,7 @@
                     </div>
                     <h5 class="fw-bold text-dark">Reportes y Exportación</h5>
                     <p class="text-muted small mb-2">Consulta y descarga reportes de asistencia por materia en PDF o Excel.</p>
-                    <span class="text-success small fw-semibold mt-auto">Abrir <i class="bi bi-arrow-right-short"></i></span>
+                    <span class="text-success small fw-semibold mt-auto"><i class="bi bi-arrow-right-short"></i></span>
                 </a>
             </div>
 
@@ -267,7 +266,7 @@
                     </div>
                     <h5 class="fw-bold text-dark">Estadísticas y Riesgo</h5>
                     <p class="text-muted small mb-2">Gráficas de incidencias y control del derecho a examen ordinario por alumno.</p>
-                    <span class="text-secondary small fw-semibold mt-auto">Abrir <i class="bi bi-arrow-right-short"></i></span>
+                    <span class="text-secondary small fw-semibold mt-auto"><i class="bi bi-arrow-right-short"></i></span>
                 </a>
             </div>
 
@@ -280,7 +279,7 @@
                     </div>
                     <h5 class="fw-bold text-dark">Mi Perfil</h5>
                     <p class="text-muted small mb-2">Actualiza tus datos de contacto, clave de docente y foto de perfil.</p>
-                    <span class="text-secondary small fw-semibold mt-auto">Abrir <i class="bi bi-arrow-right-short"></i></span>
+                    <span class="text-secondary small fw-semibold mt-auto"><i class="bi bi-arrow-right-short"></i></span>
                 </a>
             </div>
         </div>
