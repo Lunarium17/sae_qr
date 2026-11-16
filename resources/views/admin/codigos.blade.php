@@ -46,14 +46,14 @@
         </span>
                 </h3>
             </div>
-            <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary rounded-3">
+            <a href="{{ route('admin.dashboard') }}" class="btn btn-light btn-sm text-dark fw-semibold rounded-3">
                 <i class="bi bi-arrow-left me-1"></i>Volver al Panel
             </a>
         </div>
 
         @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show shadow-sm rounded-4" role="alert">
-                <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+                {{ session('success') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
             </div>
         @endif
@@ -94,12 +94,15 @@
 
         <!-- Tabla de códigos generados -->
         <div class="card border-0 shadow-sm rounded-4">
-            <div class="card-header bg-white border-0 pt-4 px-4">
-                <h5 class="fw-bold mb-0">Historial de Códigos ({{ $codigos->count() }})</h5>
+            <div class="card-header bg-white border-bottom pt-4 px-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0">Historial de Códigos</h5>
+                    <span class="badge bg-dark rounded-pill">Total de códigos: {{ $codigos->count() }}</span>
+                </div>
             </div>
             <div class="card-body p-4">
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
+                    <table class="table table-striped table-hover align-middle mb-0">
                         <thead class="table-light">
                             <tr>
                                 <th>Código</th>
@@ -126,7 +129,7 @@
                                             </span>
                                         @else
                                             <span class="badge bg-success px-3 py-2 rounded-pill">
-                                                Disponible (1 uso)
+                                                Disponible · un solo uso
                                             </span>
                                         @endif
                                     </td>
@@ -151,14 +154,14 @@
                                     <td class="text-end">
                                         <div class="d-inline-flex gap-2">
                                             @if (!$cod->usado)
-                                                <button type="button" class="btn btn-outline-primary btn-sm rounded-3 js-copiar-codigo" data-codigo="{{ $cod->codigo }}">
+                                                <button type="button" class="btn btn-primary btn-sm rounded-3 js-copiar-codigo" data-codigo="{{ $cod->codigo }}">
                                                     <i class="bi bi-clipboard me-1"></i>Copiar
                                                 </button>
                                             @endif
                                             <form action="{{ route('admin.codigos.eliminar', $cod->id) }}" method="POST" class="d-inline js-form-eliminar">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-outline-danger btn-sm rounded-3" title="Eliminar código">
+                                                <button type="submit" class="btn btn-danger btn-sm rounded-3" title="Eliminar código">
                                                     <i class="bi bi-trash"></i>
                                                 </button>
                                             </form>
@@ -190,10 +193,10 @@
                         navigator.clipboard.writeText(codigo).then(function () {
                             const original = btn.innerHTML;
                             btn.innerHTML = '<i class="bi bi-check2 me-1"></i>¡Copiado!';
-                            btn.classList.replace('btn-outline-primary', 'btn-success');
+                            btn.classList.replace('btn-primary', 'btn-success');
                             setTimeout(function () {
                                 btn.innerHTML = original;
-                                btn.classList.replace('btn-success', 'btn-outline-primary');
+                                btn.classList.replace('btn-success', 'btn-primary');
                             }, 1600);
                         });
                     }

@@ -38,7 +38,7 @@
 
         @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show shadow-sm rounded-4" role="alert">
-                <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+                {{ session('success') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
             </div>
         @endif
@@ -64,11 +64,24 @@
                 | <span class="badge bg-info text-dark">Administrador</span>
             </p>
 
+            <div class="d-flex flex-wrap justify-content-center gap-3 mb-3">
+                <a href="{{ route('admin.codigos') }}" class="btn btn-primary rounded-3 px-4 py-2">
+                    <i class="bi bi-key-fill me-2"></i>Gestionar Códigos de Acceso Docente
+                </a>
+                <button type="button" class="btn btn-success rounded-3 px-4 py-2" data-bs-toggle="modal" data-bs-target="#modalCrearGrupoAdmin">
+                    <i class="bi bi-plus-circle-fill me-2"></i>Crear Grupo Oficial Universitario
+                </button>
+                <a href="{{ route('admin.usuarios') }}" class="btn btn-dark rounded-3 px-4 py-2">
+                    <i class="bi bi-people-fill me-2"></i>Directorio de Usuarios y Contraseñas
+                </a>
+            </div>
+
+            <div class="text-muted small fw-semibold mb-2">Acceso Rápido por Rol</div>
             <div class="d-flex flex-wrap justify-content-center gap-3">
-                <a href="{{ route('admin.usuarios', ['rol' => 'profesor']) }}" class="btn btn-outline-secondary rounded-3 px-4 py-2">
+                <a href="{{ route('admin.usuarios', ['rol' => 'profesor']) }}" class="btn btn-info text-dark rounded-3 px-4 py-2">
                     <i class="bi bi-person-workspace me-2"></i>Ver Profesores ({{ $totalProfesores }})
                 </a>
-                <a href="{{ route('admin.usuarios', ['rol' => 'alumno']) }}" class="btn btn-outline-secondary rounded-3 px-4 py-2">
+                <a href="{{ route('admin.usuarios', ['rol' => 'alumno']) }}" class="btn btn-warning text-dark rounded-3 px-4 py-2">
                     <i class="bi bi-mortarboard-fill me-2"></i>Ver Alumnos ({{ $totalAlumnos }})
                 </a>
             </div>
@@ -77,7 +90,7 @@
         <!-- 2. Tarjetas de Indicadores Globales (KPIs) -->
         <div class="row g-3 mb-4">
             <div class="col-sm-6 col-xl-3">
-                <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card border-0 border-start border-4 border-primary shadow-sm rounded-4 h-100">
                     <div class="card-body d-flex align-items-center p-4">
                         <div class="bg-primary bg-opacity-10 text-primary rounded-4 p-3 me-3">
                             <i class="bi bi-mortarboard-fill fs-3"></i>
@@ -91,7 +104,7 @@
             </div>
 
             <div class="col-sm-6 col-xl-3">
-                <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card border-0 border-start border-4 border-success shadow-sm rounded-4 h-100">
                     <div class="card-body d-flex align-items-center p-4">
                         <div class="bg-success bg-opacity-10 text-success rounded-4 p-3 me-3">
                             <i class="bi bi-person-workspace fs-3"></i>
@@ -105,7 +118,7 @@
             </div>
 
             <div class="col-sm-6 col-xl-3">
-                <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card border-0 border-start border-4 border-warning shadow-sm rounded-4 h-100">
                     <div class="card-body d-flex align-items-center p-4">
                         <div class="bg-warning bg-opacity-10 text-warning rounded-4 p-3 me-3">
                             <i class="bi bi-key-fill fs-3"></i>
@@ -119,7 +132,7 @@
             </div>
 
             <div class="col-sm-6 col-xl-3">
-                <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card border-0 border-start border-4 border-info shadow-sm rounded-4 h-100">
                     <div class="card-body d-flex align-items-center p-4">
                         <div class="bg-info bg-opacity-10 text-info rounded-4 p-3 me-3">
                             <i class="bi bi-collection-fill fs-3"></i>
@@ -244,7 +257,7 @@
                                             </td>
                                             <td class="text-end">
                                                 @if (!$cod->usado)
-                                                    <button type="button" class="btn btn-outline-primary btn-sm py-0 px-2 js-copiar-codigo" data-codigo="{{ $cod->codigo }}" title="Copiar código">
+                                                    <button type="button" class="btn btn-primary btn-sm py-0 px-2 js-copiar-codigo" data-codigo="{{ $cod->codigo }}" title="Copiar código">
                                                         <i class="bi bi-clipboard"></i>
                                                     </button>
                                                 @endif
