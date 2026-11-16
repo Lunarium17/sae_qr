@@ -58,7 +58,7 @@
 
         @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show shadow-sm rounded-4" role="alert">
-                <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+                {{ session('success') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
             </div>
         @endif
@@ -111,7 +111,7 @@
             </div>
             <div class="card-body p-4">
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
+                    <table class="table table-striped table-hover align-middle mb-0">
                         <thead class="table-light">
                             <tr>
                                 <th>Nombre</th>
@@ -213,8 +213,8 @@
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Rol del Usuario <span class="text-danger">*</span></label>
                             <select name="rol" class="form-select rounded-3" required>
-                                <option value="alumno">Alumno (Estudiante)</option>
-                                <option value="profesor">Profesor (Docente)</option>
+                                <option value="alumno">Alumno</option>
+                                <option value="profesor">Profesor</option>
                                 <option value="admin">Administrador Escolar</option>
                             </select>
                         </div>
@@ -227,7 +227,8 @@
                             <input type="email" name="email" class="form-control rounded-3" required maxlength="150">
                         </div>
                         <div class="mb-3">
-                            <label class="form-label fw-semibold">Matrícula / Clave (Obligatoria para Alumnos)</label>
+                            <label class="form-label fw-semibold">Matrícula / Clave</label>
+                            <div class="form-text">Obligatoria para cuentas de alumno.</div>
                             <input type="text" name="matricula_codigo" class="form-control rounded-3" maxlength="30">
                         </div>
                         <div class="mb-2">
@@ -259,8 +260,8 @@
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Rol del Usuario <span class="text-danger">*</span></label>
                             <select name="rol" id="editRol" class="form-select rounded-3" required>
-                                <option value="alumno">Alumno (Estudiante)</option>
-                                <option value="profesor">Profesor (Docente)</option>
+                                <option value="alumno">Alumno</option>
+                                <option value="profesor">Profesor</option>
                                 <option value="admin">Administrador Escolar</option>
                             </select>
                         </div>
@@ -283,7 +284,7 @@
                             </label>
                             <input type="password" name="password" class="form-control rounded-3 border-primary" minlength="6" placeholder="Dejar en blanco para conservar la actual">
                             <div class="form-text">
-                                Si el usuario olvidó su contraseña, escribe aquí una nueva clave (mínimo 6 caracteres).
+                                Si el usuario olvidó su contraseña, escribe aquí una nueva clave.
                             </div>
                         </div>
                     </div>
