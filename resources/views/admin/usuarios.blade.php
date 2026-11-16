@@ -6,20 +6,25 @@
     <title>Gestión de Usuarios - SAE QR</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        .info-icon { position: relative; display: inline-flex; align-items: center; color: #0d6efd; cursor: help; vertical-align: middle; }
+        .info-icon .info-icon-text { position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); min-width: 250px; max-width: 330px; background: #212529; color: #fff; font-size: .75rem; font-weight: 400; line-height: 1.35; padding: .5rem .65rem; border-radius: .4rem; box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .2); opacity: 0; visibility: hidden; transition: opacity .15s; z-index: 10; text-align: left; }
+        .info-icon:hover .info-icon-text, .info-icon:focus .info-icon-text, .info-icon:focus-within .info-icon-text { opacity: 1; visibility: visible; }
+    </style>
 </head>
 <body class="bg-light">
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container">
             <a class="navbar-brand fw-bold" href="{{ route('admin.dashboard') }}">
-                <i class="bi bi-shield-lock-fill text-info me-2"></i>SAE QR | Panel de Administrador
+                SAE QR | Panel de Administrador
             </a>
             <div class="d-flex align-items-center gap-2">
-                <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-light btn-sm rounded-3">
-                    <i class="bi bi-speedometer2 me-1"></i>Dashboard
+                <a href="{{ route('admin.dashboard') }}" class="btn btn-light btn-sm text-dark fw-semibold rounded-3">
+                    Dashboard
                 </a>
-                <a href="{{ route('admin.codigos') }}" class="btn btn-outline-info btn-sm rounded-3">
-                    <i class="bi bi-key-fill me-1"></i>Códigos Docentes
+                <a href="{{ route('admin.codigos') }}" class="btn btn-light btn-sm text-dark fw-semibold rounded-3">
+                    Códigos Docentes
                 </a>
                 <form action="{{ route('logout') }}" method="POST" class="d-inline">
                     @csrf
@@ -33,8 +38,13 @@
 
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
             <div>
-                <h3 class="fw-bold mb-0"><i class="bi bi-people-fill text-primary me-2"></i>Directorio y Gestión de Usuarios</h3>
-                <p class="text-muted mb-0">Administra cuentas de profesores y alumnos, edita sus datos o restablece contraseñas olvidadas.</p>
+                <h3 class="fw-bold mb-0">
+                    Directorio y Gestión de Usuarios
+                    <span class="info-icon" tabindex="0" role="button" aria-label="Administra cuentas de profesores y alumnos, edita sus datos o restablece contraseñas olvidadas.">
+                        <i class="bi bi-info-circle"></i>
+                        <span class="info-icon-text" role="tooltip">Administra cuentas de profesores y alumnos, edita sus datos o restablece contraseñas olvidadas.</span>
+                    </span>
+                </h3>
             </div>
             <div class="d-flex gap-2">
                 <button type="button" class="btn btn-primary rounded-3" data-bs-toggle="modal" data-bs-target="#modalCrearUsuario">
@@ -79,7 +89,7 @@
                     </div>
                     <div class="col-md-5">
                         <label for="buscar" class="form-label fw-semibold small">Buscar por Nombre, Correo o Matrícula</label>
-                        <input type="text" name="buscar" id="buscar" value="{{ $buscar }}" class="form-control rounded-3" placeholder="Ej. Juan Pérez, correo@saeqr.com o matrícula...">
+                        <input type="text" name="buscar" id="buscar" value="{{ $buscar }}" class="form-control rounded-3" placeholder="Buscar por nombre, correo o matrícula">
                     </div>
                     <div class="col-md-3 d-flex gap-2">
                         <button type="submit" class="btn btn-dark w-100 rounded-3">
@@ -194,7 +204,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow rounded-4">
                 <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title fw-bold"><i class="bi bi-person-plus-fill text-primary me-2"></i>Registrar Nuevo Usuario</h5>
+                    <h5 class="modal-title fw-bold">Registrar Nuevo Usuario</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
                 <form action="{{ route('admin.usuarios.store') }}" method="POST">
@@ -210,15 +220,15 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Nombre Completo <span class="text-danger">*</span></label>
-                            <input type="text" name="name" class="form-control rounded-3" required maxlength="100" placeholder="Ej. María López Hernández">
+                            <input type="text" name="name" class="form-control rounded-3" required maxlength="100">
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Correo Electrónico <span class="text-danger">*</span></label>
-                            <input type="email" name="email" class="form-control rounded-3" required maxlength="150" placeholder="usuario@saeqr.com">
+                            <input type="email" name="email" class="form-control rounded-3" required maxlength="150">
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Matrícula / Clave (Obligatoria para Alumnos)</label>
-                            <input type="text" name="matricula_codigo" class="form-control rounded-3" maxlength="30" placeholder="Ej. 20260001 o DOC-01">
+                            <input type="text" name="matricula_codigo" class="form-control rounded-3" maxlength="30">
                         </div>
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Contraseña Inicial <span class="text-danger">*</span></label>
@@ -239,7 +249,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow rounded-4">
                 <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title fw-bold"><i class="bi bi-pencil-square text-primary me-2"></i>Editar Usuario / Restablecer Clave</h5>
+                    <h5 class="modal-title fw-bold">Editar Usuario / Restablecer Clave</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
                 <form id="formEditarUsuario" method="POST">
@@ -269,7 +279,7 @@
                         <hr>
                         <div class="mb-2">
                             <label class="form-label fw-semibold text-primary">
-                                <i class="bi bi-key-fill me-1"></i>Nueva Contraseña (Opcional)
+                                Nueva Contraseña
                             </label>
                             <input type="password" name="password" class="form-control rounded-3 border-primary" minlength="6" placeholder="Dejar en blanco para conservar la actual">
                             <div class="form-text">
