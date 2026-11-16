@@ -7,8 +7,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <style>
-        .info-icon { position: relative; display: inline-flex; align-items: center; color: #0d6efd; cursor: help; vertical-align: middle; }
-        .info-icon .info-icon-text { position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); min-width: 260px; max-width: 340px; background: #212529; color: #fff; font-size: .75rem; font-weight: 400; line-height: 1.35; padding: .5rem .65rem; border-radius: .4rem; box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .2); opacity: 0; visibility: hidden; transition: opacity .15s; z-index: 10; text-align: left; }
+        .info-icon { position: relative; display: inline-flex; align-items: center; color: #0d6efd; cursor: help; vertical-align: middle; font-size: .8em; margin-left: .15rem; padding: .1rem; }
+        .info-icon .info-icon-text { position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); min-width: 240px; max-width: 320px; background: #212529; color: #fff; font-size: .75rem; font-weight: 400; line-height: 1.35; padding: .5rem .65rem; border-radius: .4rem; box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .2); opacity: 0; visibility: hidden; transition: opacity .15s; z-index: 10; text-align: left; }
         .info-icon:hover .info-icon-text, .info-icon:focus .info-icon-text, .info-icon:focus-within .info-icon-text { opacity: 1; visibility: visible; }
     </style>
 </head>
@@ -69,15 +69,6 @@
             </p>
 
             <div class="d-flex flex-wrap justify-content-center gap-3">
-                <a href="{{ route('admin.codigos') }}" class="btn btn-primary rounded-3 px-4 py-2">
-                    <i class="bi bi-key-fill me-2"></i>Gestionar Códigos de Acceso Docente
-                </a>
-                <button type="button" class="btn btn-success rounded-3 px-4 py-2" data-bs-toggle="modal" data-bs-target="#modalCrearGrupoAdmin">
-                    <i class="bi bi-plus-circle-fill me-2"></i>Crear Grupo Oficial Universitario
-                </button>
-                <a href="{{ route('admin.usuarios') }}" class="btn btn-outline-dark rounded-3 px-4 py-2">
-                    <i class="bi bi-people-fill me-2"></i>Directorio de Usuarios y Contraseñas
-                </a>
                 <a href="{{ route('admin.usuarios', ['rol' => 'profesor']) }}" class="btn btn-outline-secondary rounded-3 px-4 py-2">
                     <i class="bi bi-person-workspace me-2"></i>Ver Profesores ({{ $totalProfesores }})
                 </a>
