@@ -18,7 +18,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container">
             <a class="navbar-brand fw-bold" href="{{ route('profesor.dashboard') }}">SAE QR | Control de Sesiones y Escáner</a>
-            <a href="{{ url('/profesor/dashboard') }}" class="btn btn-outline-light btn-sm">
+            <a href="{{ url('/profesor/dashboard') }}" class="btn btn-light btn-sm text-dark fw-semibold rounded-3">
                 <i class="bi bi-arrow-left me-1"></i>Volver al Panel
             </a>
         </div>
@@ -27,14 +27,14 @@
     <div class="container my-5">
         @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show rounded-3 shadow-sm">
-                <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+                {{ session('success') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         @endif
 
         @if (session('error'))
             <div class="alert alert-danger alert-dismissible fade show rounded-3 shadow-sm">
-                <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ session('error') }}
+                {{ session('error') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         @endif
@@ -53,18 +53,18 @@
                 <form action="{{ route('sesiones.iniciar') }}" method="POST" class="row g-3 align-items-end">
                     @csrf
                     <div class="col-md-6">
-                        <label class="form-label fw-semibold">Materia y Grupo a Impartir</label>
+                        <label class="form-label fw-semibold">Materia y Grupo a Impartir <span class="text-danger">*</span></label>
                         <select name="materia_id" class="form-select rounded-3" required>
                             <option value="" disabled {{ empty($materiaSeleccionada) ? 'selected' : '' }}>Selecciona una asignatura</option>
                             @foreach($materias as $materia)
                                 <option value="{{ $materia->id }}" {{ (isset($materiaSeleccionada) && (int) $materiaSeleccionada === (int) $materia->id) ? 'selected' : '' }}>
-                                    [{{ $materia->codigo_materia }}] {{ $materia->nombre_materia }}{{ $materia->grupo ? ' — Grupo: ' . $materia->grupo->nombre_grupo . ' (' . $materia->grupo->turno . ')' : '' }}
+                                    [{{ $materia->codigo_materia }}] {{ $materia->nombre_materia }}{{ $materia->grupo ? ' · Grupo: ' . $materia->grupo->nombre_grupo . ' (' . $materia->grupo->turno . ')' : '' }}
                                 </option>
                             @endforeach
                         </select>
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label fw-semibold">Tolerancia (Minutos)</label>
+                        <label class="form-label fw-semibold">Tolerancia (Minutos) <span class="text-danger">*</span></label>
                         <input type="number" name="tolerancia_minutos" class="form-control rounded-3" value="15" min="0" max="60" required>
                     </div>
                     <div class="col-md-3">
@@ -135,7 +135,7 @@
                         </div>
 
                         <div class="table-responsive">
-                            <table class="table table-hover align-middle">
+                            <table class="table table-striped table-hover align-middle">
                                 <thead class="table-light">
                                     <tr>
                                         <th>Alumno</th>
@@ -390,7 +390,7 @@
             </div>
 
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
+                <table class="table table-striped table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
                             <th>Fecha / Horario</th>

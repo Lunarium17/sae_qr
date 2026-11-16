@@ -71,7 +71,7 @@
                                 <div class="col-md-4">
                                     <label for="grado" class="form-label fw-bold text-dark">Semestre <span class="text-danger">*</span></label>
                                     <select class="form-select rounded-3 py-2" id="grado" name="grado" required>
-                                        <option value="" disabled {{ old('grado') ? '' : 'selected' }}>Selecciona el semestre...</option>
+                                        <option value="" disabled {{ old('grado') ? '' : 'selected' }}>Selecciona el semestre</option>
                                         @for ($i = 1; $i <= 12; $i++)
                                             @php $sem = $i . '° Semestre'; @endphp
                                             <option value="{{ $sem }}" {{ old('grado') === $sem ? 'selected' : '' }}>{{ $sem }}</option>
@@ -83,7 +83,7 @@
                                 <div class="col-md-4">
                                     <label for="turno" class="form-label fw-bold text-dark">Turno / Modalidad <span class="text-danger">*</span></label>
                                     <select class="form-select rounded-3 py-2" id="turno" name="turno" required>
-                                        <option value="" disabled {{ old('turno') ? '' : 'selected' }}>Selecciona el turno...</option>
+                                        <option value="" disabled {{ old('turno') ? '' : 'selected' }}>Selecciona el turno</option>
                                         <option value="Matutino" {{ old('turno') === 'Matutino' ? 'selected' : '' }}>Matutino</option>
                                         <option value="Vespertino" {{ old('turno') === 'Vespertino' ? 'selected' : '' }}>Vespertino</option>
                                         <option value="Nocturno" {{ old('turno') === 'Nocturno' ? 'selected' : '' }}>Nocturno</option>

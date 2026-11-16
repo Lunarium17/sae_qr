@@ -158,7 +158,7 @@
         <!-- 2. Tarjetas de KPIs Detallados en Tiempo Real -->
         <div class="row g-3 mb-4">
             <div class="col-md-3 col-sm-6">
-                <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                <div class="card border-0 border-start border-4 border-primary shadow-sm rounded-4 p-3 bg-white h-100">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h6 class="text-muted small text-uppercase fw-bold mb-1">Grupos y Materias</h6>
@@ -172,7 +172,7 @@
             </div>
 
             <div class="col-md-3 col-sm-6">
-                <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                <div class="card border-0 border-start border-4 border-info shadow-sm rounded-4 p-3 bg-white h-100">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h6 class="text-muted small text-uppercase fw-bold mb-1">Matrícula Activa</h6>
@@ -186,7 +186,7 @@
             </div>
 
             <div class="col-md-3 col-sm-6">
-                <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                <div class="card border-0 border-start border-4 border-primary shadow-sm rounded-4 p-3 bg-white h-100">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h6 class="text-muted small text-uppercase fw-bold mb-1">Clases Impartidas</h6>
@@ -200,7 +200,7 @@
             </div>
 
             <div class="col-md-3 col-sm-6">
-                <div class="card border-0 shadow-sm rounded-4 p-3 bg-white h-100">
+                <div class="card border-0 border-start border-4 border-{{ $colorSemaforoGlobal }} shadow-sm rounded-4 p-3 bg-white h-100">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <div>
                             <h6 class="text-muted small text-uppercase fw-bold mb-1">Asistencia Global</h6>
@@ -291,7 +291,7 @@
             </div>
 
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
+                    <table class="table table-striped table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
                             <th>Alumno</th>

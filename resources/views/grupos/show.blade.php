@@ -41,14 +41,14 @@
         <!-- Alertas de retroalimentación -->
         @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show rounded-3 shadow-sm" role="alert">
-                <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+                {{ session('success') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
 
         @if (session('error'))
             <div class="alert alert-danger alert-dismissible fade show rounded-3 shadow-sm" role="alert">
-                <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ session('error') }}
+                {{ session('error') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
@@ -293,11 +293,11 @@
                                                                 <input type="hidden" name="grupo_id" value="{{ $grupo->id }}">
                                                                 <div class="modal-body p-4">
                                                                     <div class="mb-3">
-                                                                        <label class="form-label fw-semibold">Código / Clave de la Materia</label>
+                            <label class="form-label fw-semibold">Código / Clave de la Materia <span class="text-danger">*</span></label>
                                                                         <input type="text" name="codigo" value="{{ $materia->codigo_materia }}" class="form-control rounded-3" maxlength="30" required>
                                                                     </div>
                                                                     <div class="mb-2">
-                                                                        <label class="form-label fw-semibold">Nombre de la Materia</label>
+                            <label class="form-label fw-semibold">Nombre de la Materia <span class="text-danger">*</span></label>
                                                                         <input type="text" name="nombre_materia" value="{{ $materia->nombre_materia }}" class="form-control rounded-3" maxlength="100" required>
                                                                     </div>
                                                                 </div>
@@ -335,12 +335,12 @@
         <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
                 <div>
-                    <h5 class="fw-bold text-dark mb-0">
-                        Alumnos Inscritos, Solicitudes y Derecho a Examen Ordinario
+                    <h5 class="fw-bold text-dark mb-0">Alumnos Inscritos, Solicitudes y Derecho a Examen Ordinario
+                        <span class="info-icon" tabindex="0" role="button" aria-label="Cada 3 retardos equivalen a 1 falta. Con 3 faltas el alumno pasa a sin derecho (SD).">
+                            <i class="bi bi-info-circle"></i>
+                            <span class="info-icon-text" role="tooltip">Cada 3 retardos equivalen a 1 falta. Con 3 faltas el alumno pasa a sin derecho (SD).</span>
+                        </span>
                     </h5>
-                    <p class="text-muted small mb-0">
-                        Regla universitaria activa: <strong>cada 3 retardos acumulados en una misma asignatura equivalen a 1 falta</strong> (Límite para Derecho a Examen: máx. 2 faltas; con 3 faltas pasa a <strong>SD - Sin Derecho</strong>).
-                    </p>
                 </div>
                 <div class="d-flex align-items-center gap-2">
                     @if ($misMateriasGrupo->isNotEmpty())
@@ -353,12 +353,12 @@
             </div>
 
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
+                <table class="table table-striped table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
                             <th>Alumno</th>
                             <th>Materia</th>
-                            <th class="text-center">Faltas Acumuladas (3 Ret. = 1 Falta)</th>
+                            <th class="text-center">Faltas Acumuladas</th>
                             <th class="text-center">Derecho a Examen</th>
                             <th class="text-center">Estado Inscripción</th>
                             <th class="text-end">Gestión</th>
@@ -484,7 +484,7 @@
                             <div class="mb-3">
                                 <label class="form-label fw-semibold">1. Tu Asignatura en este Grupo</label>
                                 <select name="materia_id" id="selectMateriaModalGrupo" class="form-select rounded-3" required>
-                                    <option value="" selected disabled>-- Selecciona una asignatura que impartes --</option>
+                                    <option value="" selected disabled>Selecciona una asignatura que impartes</option>
                                     @foreach ($misMateriasGrupo as $mat)
                                         <option value="{{ $mat->id }}">[{{ $mat->codigo_materia }}] {{ $mat->nombre_materia }}</option>
                                     @endforeach

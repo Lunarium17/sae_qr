@@ -45,12 +45,12 @@
                             <input type="hidden" name="grupo_id" value="{{ $materia->grupo_id }}">
 
                             <div class="mb-3">
-                                <label class="form-label fw-semibold">Código / Clave de la Materia</label>
+                                <label class="form-label fw-semibold">Código / Clave de la Materia <span class="text-danger">*</span></label>
                                 <input type="text" name="codigo" value="{{ old('codigo', $materia->codigo_materia) }}" class="form-control rounded-3" maxlength="30" required>
                             </div>
 
                             <div class="mb-4">
-                                <label class="form-label fw-semibold">Nombre de la Materia</label>
+                                <label class="form-label fw-semibold">Nombre de la Materia <span class="text-danger">*</span></label>
                                 <input type="text" name="nombre_materia" value="{{ old('nombre_materia', $materia->nombre_materia) }}" class="form-control rounded-3" maxlength="100" required>
                             </div>
 
