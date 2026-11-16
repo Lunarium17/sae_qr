@@ -94,14 +94,14 @@
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="#"><i class="bi bi-person-badge me-2"></i>SAE QR | Panel de Alumno</a>
+            <a class="navbar-brand fw-bold" href="#">SAE QR | Panel de Alumno</a>
             <div class="d-flex align-items-center gap-2">
                 <a href="{{ route('alumno.perfil') }}" class="btn btn-light btn-sm text-primary fw-semibold rounded-3">
-                    <i class="bi bi-person-gear me-1"></i>Mi Perfil
+                    Mi Perfil
                 </a>
                 <form action="{{ route('logout') }}" method="POST" class="d-inline">
                     @csrf
-                    <button type="submit" class="btn btn-outline-light btn-sm rounded-3">Cerrar Sesión</button>
+                    <button type="submit" class="btn btn-danger btn-sm rounded-3">Cerrar Sesión</button>
                 </form>
             </div>
         </div>
@@ -115,7 +115,7 @@
                     <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
                         <h3 class="fw-bold text-dark mb-0">Hola, {{ $alumno->name }}</h3>
                         <span class="badge bg-primary bg-opacity-10 text-primary border border-primary rounded-pill px-3 py-1">
-                            <i class="bi bi-card-heading me-1"></i>{{ $alumno->matricula_codigo ? 'Matrícula: ' . $alumno->matricula_codigo : 'Sin matrícula registrada' }}
+                            {{ $alumno->matricula_codigo ? 'Matrícula: ' . $alumno->matricula_codigo : 'Sin matrícula registrada' }}
                         </span>
                     </div>
                 </div>
@@ -125,9 +125,6 @@
                         @if ($pendientesCount > 0)
                             <span class="badge bg-warning text-dark ms-1">{{ $pendientesCount }}</span>
                         @endif
-                    </a>
-                    <a href="{{ route('alumno.perfil') }}" class="btn btn-outline-secondary btn-sm rounded-3 px-3 py-2">
-                        <i class="bi bi-pencil-square me-1"></i>Ver / Editar Mis Datos
                     </a>
                 </div>
             </div>
@@ -181,7 +178,7 @@
             @if ($incidenciasPorJustificar->isNotEmpty())
                 <div class="mt-2">
                     <h6 class="fw-bold text-secondary small text-uppercase mb-2">
-                        <i class="bi bi-file-earmark-medical me-1"></i>Inasistencias y Retardos que puedes justificar:
+                        <i class="bi bi-clipboard-check me-1"></i>Inasistencias y retardos que puedes justificar
                     </h6>
                     <div class="list-group list-group-flush border rounded-3">
                         @foreach ($incidenciasPorJustificar->take(5) as $inc)
@@ -262,24 +259,36 @@
                 <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
                     <h5 class="text-dark fw-bold mb-4">Resumen Global de Asistencia</h5>
 
-                    <ul class="list-group list-group-flush fs-5">
-                        <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3">
-                            <span class="text-success"><i class="bi bi-check-circle-fill me-2"></i>Asistencias registradas</span>
-                            <span class="badge bg-success rounded-pill px-3">{{ $asistenciasCount }}</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3">
-                            <span class="text-warning"><i class="bi bi-clock-fill me-2"></i>Retardos</span>
-                            <span class="badge bg-warning text-dark rounded-pill px-3">{{ $retardosCount }}</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3">
-                            <span class="text-danger"><i class="bi bi-x-circle-fill me-2"></i>Faltas sin justificar</span>
-                            <span class="badge bg-danger rounded-pill px-3">{{ $faltasCount }}</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3">
-                            <span class="text-primary"><i class="bi bi-info-circle-fill me-2"></i>Permiso / Justificado</span>
-                            <span class="badge bg-primary rounded-pill px-3">{{ $permisosCount }}</span>
-                        </li>
-                    </ul>
+                    <div class="row g-3 mb-4">
+                        <div class="col-6 col-xl-3">
+                            <div class="h-100 rounded-4 border bg-success bg-opacity-10 text-center p-3">
+                                <i class="bi bi-check-circle-fill fs-4 text-success d-block mb-2"></i>
+                                <div class="fs-4 fw-bold text-success">{{ $asistenciasCount }}</div>
+                                <div class="small text-muted">Asistencias</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-xl-3">
+                            <div class="h-100 rounded-4 border bg-warning bg-opacity-10 text-center p-3">
+                                <i class="bi bi-clock-fill fs-4 text-warning d-block mb-2"></i>
+                                <div class="fs-4 fw-bold text-dark">{{ $retardosCount }}</div>
+                                <div class="small text-muted">Retardos</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-xl-3">
+                            <div class="h-100 rounded-4 border bg-danger bg-opacity-10 text-center p-3">
+                                <i class="bi bi-x-circle-fill fs-4 text-danger d-block mb-2"></i>
+                                <div class="fs-4 fw-bold text-danger">{{ $faltasCount }}</div>
+                                <div class="small text-muted">Faltas sin justificar</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-xl-3">
+                            <div class="h-100 rounded-4 border bg-primary bg-opacity-10 text-center p-3">
+                                <i class="bi bi-file-earmark-check fs-4 text-primary d-block mb-2"></i>
+                                <div class="fs-4 fw-bold text-primary">{{ $permisosCount }}</div>
+                                <div class="small text-muted">Permiso / Justificado</div>
+                            </div>
+                        </div>
+                    </div>
 
                     <hr class="my-4">
                     <div class="d-grid gap-3">
@@ -382,15 +391,15 @@
                                 <td class="text-center">
                                     @if ($mat->faltas_totales_mat >= 3)
                                         <span class="badge bg-danger">
-                                            <i class="bi bi-x-octagon-fill me-1"></i>Sin Derecho a Examen (SD)
+                                            Sin Derecho a Examen (SD)
                                         </span>
                                     @elseif ($mat->faltas_totales_mat === 2)
                                         <span class="badge bg-warning text-dark">
-                                            <i class="bi bi-exclamation-triangle-fill me-1"></i>En Riesgo / Preventivo (2/3)
+                                            En Riesgo / Preventivo (2/3)
                                         </span>
                                     @else
                                         <span class="badge bg-success bg-opacity-10 text-success border border-success">
-                                            <i class="bi bi-check-circle-fill me-1"></i>Con Derecho a Ordinario
+                                            Con Derecho a Ordinario
                                         </span>
                                     @endif
                                 </td>
