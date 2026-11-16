@@ -313,13 +313,13 @@
         <!-- 4. Tabla de Mis Materias Inscritas, Regla Universitaria (3 Retardos = 1 Falta) y Derecho a Examen -->
         <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-                <div>
+                <div class="d-flex flex-wrap align-items-center gap-2">
                     <h5 class="fw-bold text-dark mb-0">
                         Mis Materias Inscritas y Derecho a Examen Ordinario
                     </h5>
-                    <p class="text-muted small mb-0">
-                        Regla universitaria: <strong>cada 3 retardos acumulados en una misma asignatura equivalen a 1 falta</strong> (Máx. permitido: 3 faltas).
-                    </p>
+                    <span class="badge bg-secondary bg-opacity-10 text-secondary border rounded-pill fw-normal">
+                        3 retardos = 1 falta · máx. 3 faltas
+                    </span>
                 </div>
                 <span class="badge bg-primary rounded-pill">{{ $matriculasAceptadas->count() }} Materias Aceptadas</span>
             </div>
