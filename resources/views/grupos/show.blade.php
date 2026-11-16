@@ -159,9 +159,9 @@
                 <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
                     <h5 class="fw-bold text-dark mb-3">
                         Agregar Materia al Grupo
-                        <span class="info-icon" tabindex="0" role="button" aria-label="Registra una nueva asignatura que impartes dentro del grupo {{ $grupo->nombre_grupo }} ({{ $grupo->turno }}).">
+                        <span class="info-icon" tabindex="0" role="button" aria-label="Registra una nueva asignatura en {{ $grupo->nombre_grupo }} ({{ $grupo->turno }}).">
                             <i class="bi bi-info-circle"></i>
-                            <span class="info-icon-text" role="tooltip">Registra una nueva asignatura que impartes dentro del grupo {{ $grupo->nombre_grupo }} ({{ $grupo->turno }}).</span>
+                            <span class="info-icon-text" role="tooltip">Registra una nueva asignatura en {{ $grupo->nombre_grupo }} ({{ $grupo->turno }}).</span>
                         </span>
                     </h5>
 

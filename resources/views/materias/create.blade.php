@@ -29,9 +29,9 @@
                 <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
                     <h4 class="fw-bold text-dark mb-4">
                         Registrar Nueva Materia
-                        <span class="info-icon" tabindex="0" role="button" aria-label="Ingresa los datos de la asignatura para el catálogo académico.">
+                        <span class="info-icon" tabindex="0" role="button" aria-label="Datos de la nueva asignatura del catálogo.">
                             <i class="bi bi-info-circle"></i>
-                            <span class="info-icon-text" role="tooltip">Ingresa los datos de la asignatura para el catálogo académico.</span>
+                            <span class="info-icon-text" role="tooltip">Datos de la nueva asignatura del catálogo.</span>
                         </span>
                     </h4>
 

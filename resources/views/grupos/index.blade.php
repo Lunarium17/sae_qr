@@ -43,9 +43,9 @@
             <div>
                 <h2 class="fw-bold text-dark mb-0">
                     Mis Grupos Académicos
-                    <span class="info-icon" tabindex="0" role="button" aria-label="Administra tus grupos asignados, sus materias impartidas, alumnos inscritos y rendimiento de asistencia.">
+                    <span class="info-icon" tabindex="0" role="button" aria-label="Tus grupos, materias, alumnos inscritos y asistencia.">
                         <i class="bi bi-info-circle"></i>
-                        <span class="info-icon-text" role="tooltip">Administra tus grupos asignados, sus materias impartidas, alumnos inscritos y rendimiento de asistencia.</span>
+                        <span class="info-icon-text" role="tooltip">Tus grupos, materias, alumnos inscritos y asistencia.</span>
                     </span>
                 </h2>
             </div>

@@ -44,9 +44,9 @@
             <div>
                 <h2 class="fw-bold text-dark mb-0">
                     Validación y Gestión de Alumnos en mis Asignaturas
-                    <span class="info-icon" tabindex="0" role="button" aria-label="Aprueba, rechaza, busca o inscribe estudiantes en las asignaturas y grupos que impartes.">
+                    <span class="info-icon" tabindex="0" role="button" aria-label="Aprueba, rechaza o inscribe estudiantes en tus materias.">
                         <i class="bi bi-info-circle"></i>
-                        <span class="info-icon-text" role="tooltip">Aprueba, rechaza, busca o inscribe estudiantes en las asignaturas y grupos que impartes.</span>
+                        <span class="info-icon-text" role="tooltip">Aprueba, rechaza o inscribe estudiantes en tus materias.</span>
                     </span>
                 </h2>
             </div>

@@ -47,9 +47,9 @@
             <div>
                 <h2 class="fw-bold text-dark mb-0">
                     Catálogo de Materias
-                    <span class="info-icon" tabindex="0" role="button" aria-label="Administra las asignaturas que impartes en la institución.">
+                    <span class="info-icon" tabindex="0" role="button" aria-label="Tus asignaturas en la institución.">
                         <i class="bi bi-info-circle"></i>
-                        <span class="info-icon-text" role="tooltip">Administra las asignaturas que impartes en la institución.</span>
+                        <span class="info-icon-text" role="tooltip">Tus asignaturas en la institución.</span>
                     </span>
                 </h2>
             </div>

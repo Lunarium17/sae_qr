@@ -109,9 +109,9 @@
                 <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
                     <h5 class="fw-bold text-dark mb-3">
                         Inscribir Alumno Manualmente
-                        <span class="info-icon" tabindex="0" role="button" aria-label="Busca al estudiante por nombre, matrícula o correo para inscribirlo en {{ $materia->nombre_materia }}.">
+                        <span class="info-icon" tabindex="0" role="button" aria-label="Busca por nombre, matrícula o correo para inscribir en {{ $materia->nombre_materia }}.">
                             <i class="bi bi-info-circle"></i>
-                            <span class="info-icon-text" role="tooltip">Busca al estudiante por nombre, matrícula o correo para inscribirlo en {{ $materia->nombre_materia }}.</span>
+                            <span class="info-icon-text" role="tooltip">Busca por nombre, matrícula o correo para inscribir en {{ $materia->nombre_materia }}.</span>
                         </span>
                     </h5>
 
@@ -159,9 +159,9 @@
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="fw-bold text-dark mb-0">
                             Padrón de Alumnos de la Materia
-                            <span class="info-icon" tabindex="0" role="button" aria-label="Regla universitaria: cada 3 retardos acumulados equivalen a 1 falta. Con 2 faltas el alumno queda en riesgo y con 3 pierde el derecho a examen ordinario.">
+                            <span class="info-icon" tabindex="0" role="button" aria-label="3 retardos = 1 falta. Con 2 faltas: en riesgo. Con 3: sin derecho a examen.">
                                 <i class="bi bi-info-circle"></i>
-                                <span class="info-icon-text" role="tooltip">Regla universitaria: cada 3 retardos acumulados equivalen a 1 falta. Con 2 faltas el alumno queda en riesgo y con 3 pierde el derecho a examen ordinario.</span>
+                                <span class="info-icon-text" role="tooltip">3 retardos = 1 falta. Con 2 faltas: en riesgo. Con 3: sin derecho a examen.</span>
                             </span>
                         </h5>
                         <span class="badge bg-dark rounded-pill">{{ $materia->matriculas->count() }} Registros</span>

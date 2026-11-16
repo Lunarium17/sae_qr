@@ -44,9 +44,9 @@
             <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
                 <h4 class="fw-bold text-dark mb-3">
                     Abrir Nueva Sesión de Clase
-                    <span class="info-icon" tabindex="0" role="button" aria-label="Selecciona la materia y su grupo, y el tiempo de tolerancia para habilitar la lectura de códigos QR.">
+                    <span class="info-icon" tabindex="0" role="button" aria-label="Elige materia, grupo y tolerancia para habilitar la lectura de QR.">
                         <i class="bi bi-info-circle"></i>
-                        <span class="info-icon-text" role="tooltip">Selecciona la materia y su grupo, y el tiempo de tolerancia para habilitar la lectura de códigos QR.</span>
+                        <span class="info-icon-text" role="tooltip">Elige materia, grupo y tolerancia para habilitar la lectura de QR.</span>
                     </span>
                 </h4>
 
@@ -380,9 +380,9 @@
                 <div>
                     <h5 class="fw-bold text-dark mb-0">
                         Historial de Sesiones de Clase
-                        <span class="info-icon" tabindex="0" role="button" aria-label="Consulta todas tus sesiones impartidas, el resumen de asistencias por clase y realiza ajustes manuales si es necesario.">
+                        <span class="info-icon" tabindex="0" role="button" aria-label="Historial de tus sesiones, asistencias por clase y ajustes manuales.">
                             <i class="bi bi-info-circle"></i>
-                            <span class="info-icon-text" role="tooltip">Consulta todas tus sesiones impartidas, el resumen de asistencias por clase y realiza ajustes manuales si es necesario.</span>
+                            <span class="info-icon-text" role="tooltip">Historial de tus sesiones, asistencias por clase y ajustes manuales.</span>
                         </span>
                     </h5>
                 </div>

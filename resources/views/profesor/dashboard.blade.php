@@ -134,9 +134,9 @@
         <!-- 1. Panel Principal de Bienvenida y Acciones Rápidas (Parte Superior) -->
         <div class="card border-0 shadow-sm rounded-4 p-4 bg-white text-center mb-4">
             <h3 class="fw-bold text-dark mb-1">Bienvenido, {{ \Illuminate\Support\Facades\Auth::user()->name }}</h3>
-            <p class="text-muted small mb-1">
+            <p class="text-muted small mb-0">
                 {{ \Illuminate\Support\Facades\Auth::user()->email }}
-                | {{ \Illuminate\Support\Facades\Auth::user()->matricula_codigo ? 'Clave Docente: ' . \Illuminate\Support\Facades\Auth::user()->matricula_codigo : 'Sin clave docente asignada' }}
+                | {{ \Illuminate\Support\Facades\Auth::user()->matricula_codigo ? 'Clave: ' . \Illuminate\Support\Facades\Auth::user()->matricula_codigo : 'Sin clave asignada' }}
             </p>
 
             <div class="d-flex flex-wrap justify-content-center gap-3">
@@ -279,9 +279,9 @@
                 <div>
                     <h5 class="fw-bold text-dark mb-0">
                         Control de Derecho a Examen Ordinario
-                        <span class="info-icon" tabindex="0" role="button" aria-label="Regla universitaria: cada 3 retardos acumulados equivalen a 1 falta. Estudiantes con 2 faltas acumuladas están en riesgo preventivo; con 3 o más faltas quedan sin derecho a examen ordinario. Se consideran faltas directas y retardos acumulados.">
+                        <span class="info-icon" tabindex="0" role="button" aria-label="3 retardos = 1 falta. Con 2 faltas: en riesgo. Con 3: sin derecho a examen ordinario.">
                             <i class="bi bi-info-circle"></i>
-                            <span class="info-icon-text" role="tooltip">Regla universitaria: cada 3 retardos acumulados equivalen a 1 falta. Estudiantes con 2 faltas acumuladas están en riesgo preventivo; con 3 o más faltas quedan sin derecho a examen ordinario. Se consideran faltas directas y retardos acumulados.</span>
+                            <span class="info-icon-text" role="tooltip">3 retardos = 1 falta. Con 2 faltas: en riesgo. Con 3: sin derecho a examen ordinario.</span>
                         </span>
                     </h5>
                 </div>
@@ -360,7 +360,6 @@
             <div class="col-md-6">
                 <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
                     <h5 class="fw-bold text-dark">Exportación y Reportes</h5>
-                    <p class="text-muted small">Genera consolidados de asistencia semanales o mensuales.</p>
 
                     <a href="{{ route('profesor.reportes') }}" class="btn btn-outline-primary btn-sm rounded-3 mt-auto">
                         <i class="bi bi-bar-chart-line me-1"></i>Ver y Exportar Reportes (PDF / Excel)
@@ -375,8 +374,6 @@
                             <span class="badge bg-warning text-dark rounded-pill">{{ $justificantesPendientes }} pendientes</span>
                         @endif
                     </div>
-                    <p class="text-muted small">Revisa la carga digital de comprobantes para realizar el ajuste manual de inasistencias.</p>
-
                     <a href="{{ route('profesor.justificantes') }}" class="btn btn-outline-info btn-sm rounded-3 mt-auto">
                         <i class="bi bi-file-earmark-text me-1"></i>Revisar Justificantes Pendientes
                     </a>
