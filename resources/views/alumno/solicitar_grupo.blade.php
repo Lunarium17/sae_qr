@@ -21,14 +21,14 @@
     <div class="container my-5">
         @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show rounded-3 shadow-sm">
-                <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+                {{ session('success') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         @endif
 
         @if (session('error'))
             <div class="alert alert-danger alert-dismissible fade show rounded-3 shadow-sm">
-                <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ session('error') }}
+                {{ session('error') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         @endif
@@ -37,20 +37,22 @@
             <!-- Formulario para solicitar inscripción independiente por asignatura y grupo (Carga AJAX) -->
             <div class="col-md-5">
                 <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
-                    <h5 class="fw-bold text-dark mb-1">Solicitar Inscripción en Asignatura</h5>
-                    <p class="text-muted small mb-4">
-                        Selecciona el grupo y busca la asignatura que deseas cursar.
-                    </p>
+                    <h5 class="fw-bold text-dark mb-4">Solicitar Inscripción en Asignatura
+                        <span class="info-icon" tabindex="0" role="button" aria-label="Selecciona el grupo y busca la asignatura que deseas cursar.">
+                            <i class="bi bi-info-circle"></i>
+                            <span class="info-icon-text" role="tooltip">Selecciona el grupo y busca la asignatura que deseas cursar.</span>
+                        </span>
+                    </h5>
 
                     <form action="{{ route('alumno.solicitar.guardar') }}" method="POST" id="formSolicitarAsignatura" data-base-url="{{ url('/alumno/grupos') }}">
                         @csrf
                         <div class="mb-3">
-                            <label class="form-label fw-semibold">1. Selecciona el Grupo Académico</label>
+                            <label class="form-label fw-semibold">1. Selecciona el Grupo Académico <span class="text-danger">*</span></label>
                             <select id="select-grupo" name="grupo_id" class="form-select rounded-3" required>
                                 <option value="" selected disabled>Elige un grupo académico</option>
                                 @foreach($grupos as $grupo)
                                     <option value="{{ $grupo->id }}">
-                                        {{ $grupo->nombre_grupo }}{{ $grupo->carrera ? ' — ' . $grupo->carrera : '' }} ({{ $grupo->grado }} | {{ $grupo->turno }})
+                                        {{ $grupo->nombre_grupo }}{{ $grupo->carrera ? ' · ' . $grupo->carrera : '' }} ({{ $grupo->grado }} | {{ $grupo->turno }})
                                     </option>
                                 @endforeach
                             </select>
@@ -65,7 +67,7 @@
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label fw-semibold">2. Selecciona la Asignatura</label>
+                            <label class="form-label fw-semibold">2. Selecciona la Asignatura <span class="text-danger">*</span></label>
                             <select id="select-materia" name="materia_id" class="form-select rounded-3" required disabled>
                                 <option id="placeholder-materia" value="" selected disabled>Primero selecciona un grupo</option>
                             </select>
@@ -87,7 +89,7 @@
                     <h5 class="fw-bold text-dark mb-1">Mis Matrículas y Solicitudes por Asignatura</h5>
                     <p class="text-muted small mb-3">Carga académica individual asociada a cada grupo y materia.</p>
                     <div class="table-responsive">
-                        <table class="table table-hover align-middle">
+                        <table class="table table-striped table-hover align-middle">
                             <thead class="table-light">
                                 <tr>
                                     <th>Grupo</th>

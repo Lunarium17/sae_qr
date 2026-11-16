@@ -148,7 +148,6 @@
             @foreach ($sesionesActivasPendientes as $sesionAct)
                 <div class="alert alert-success border-start border-success border-4 d-flex flex-wrap justify-content-between align-items-center rounded-3 mb-2 py-2">
                     <div>
-                        <i class="bi bi-broadcast me-2"></i>
                         <strong>¡Clase Activa en Curso!</strong> La materia <strong>{{ $sesionAct->materia->nombre_materia }}</strong>
                         {{ $sesionAct->materia->grupo ? '(' . $sesionAct->materia->grupo->nombre_grupo . ')' : '' }}
                         está abierta desde las {{ $sesionAct->hora_inicio }}. Presenta tu código QR de abajo a tu profesor.
@@ -161,7 +160,6 @@
             @foreach ($alertasMateriasFaltas as $alertaFalta)
                 <div class="alert {{ $alertaFalta['critico'] ? 'alert-danger border-danger' : 'alert-warning border-warning' }} border-start border-4 d-flex flex-wrap justify-content-between align-items-center rounded-3 mb-2 py-2">
                     <div>
-                        <i class="bi {{ $alertaFalta['critico'] ? 'bi-exclamation-octagon-fill' : 'bi-exclamation-triangle-fill' }} me-2"></i>
                         @if ($alertaFalta['critico'])
                             <strong>¡Sin Derecho a Examen Ordinario ({{ $alertaFalta['faltas'] }} / 3 faltas)!</strong> En <strong>{{ $alertaFalta['materia'] }}</strong> (Grupo {{ $alertaFalta['grupo'] }}) acumulas {{ $alertaFalta['faltas_directas'] }} falta(s) directa(s) + {{ $alertaFalta['faltas_retardos'] }} por {{ $alertaFalta['retardos'] }} retardo(s).
                         @else
@@ -219,7 +217,6 @@
                     <!-- Confirmación en Tiempo Real cuando el QR del Alumno es escaneado -->
                     <div id="qr-confirmacion-escaneo" data-estado-url="{{ route('qr.estado') }}" class="alert alert-success border-success border-2 rounded-4 py-2 px-3 mb-3 d-none shadow-sm text-start">
                         <div class="d-flex align-items-center">
-                            <i class="bi bi-patch-check-fill fs-3 text-success me-2"></i>
                             <div class="small">
                                 <div class="fw-bold text-success">¡Pase de Lista Confirmado Hoy!</div>
                                 <div id="qr-confirmacion-detalle" class="text-dark"></div>
@@ -261,28 +258,28 @@
 
                     <div class="row g-3 mb-4">
                         <div class="col-6 col-xl-3">
-                            <div class="h-100 rounded-4 border bg-success bg-opacity-10 text-center p-3">
+                            <div class="h-100 rounded-4 border-start border-4 border-success bg-success bg-opacity-10 text-center p-3">
                                 <i class="bi bi-check-circle-fill fs-4 text-success d-block mb-2"></i>
                                 <div class="fs-4 fw-bold text-success">{{ $asistenciasCount }}</div>
                                 <div class="small text-muted">Asistencias</div>
                             </div>
                         </div>
                         <div class="col-6 col-xl-3">
-                            <div class="h-100 rounded-4 border bg-warning bg-opacity-10 text-center p-3">
+                            <div class="h-100 rounded-4 border-start border-4 border-warning bg-warning bg-opacity-10 text-center p-3">
                                 <i class="bi bi-clock-fill fs-4 text-warning d-block mb-2"></i>
                                 <div class="fs-4 fw-bold text-dark">{{ $retardosCount }}</div>
                                 <div class="small text-muted">Retardos</div>
                             </div>
                         </div>
                         <div class="col-6 col-xl-3">
-                            <div class="h-100 rounded-4 border bg-danger bg-opacity-10 text-center p-3">
+                            <div class="h-100 rounded-4 border-start border-4 border-danger bg-danger bg-opacity-10 text-center p-3">
                                 <i class="bi bi-x-circle-fill fs-4 text-danger d-block mb-2"></i>
                                 <div class="fs-4 fw-bold text-danger">{{ $faltasCount }}</div>
                                 <div class="small text-muted">Faltas sin justificar</div>
                             </div>
                         </div>
                         <div class="col-6 col-xl-3">
-                            <div class="h-100 rounded-4 border bg-primary bg-opacity-10 text-center p-3">
+                            <div class="h-100 rounded-4 border-start border-4 border-primary bg-primary bg-opacity-10 text-center p-3">
                                 <i class="bi bi-file-earmark-check fs-4 text-primary d-block mb-2"></i>
                                 <div class="fs-4 fw-bold text-primary">{{ $permisosCount }}</div>
                                 <div class="small text-muted">Permiso / Justificado</div>
@@ -325,7 +322,7 @@
             </div>
 
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
+                    <table class="table table-striped table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
                             <th>Grupo / Carrera</th>

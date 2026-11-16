@@ -15,8 +15,8 @@
 <body class="bg-light">
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ route('alumno.dashboard') }}">
-                <i class="bi bi-arrow-left-circle me-2"></i>Volver al Panel
+            <a class="btn btn-light btn-sm text-primary fw-semibold rounded-3" href="{{ route('alumno.dashboard') }}">
+                <i class="bi bi-arrow-left me-1"></i>Volver al Panel
             </a>
             <span class="navbar-text text-white fw-bold">Carga Digital de Justificantes</span>
         </div>
@@ -41,8 +41,12 @@
             <!-- Formulario para subir justificante -->
             <div class="col-lg-5">
                 <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
-                    <h5 class="fw-bold text-dark mb-3">Subir Comprobante</h5>
-                    <p class="text-muted small">Selecciona la inasistencia o retardo que deseas justificar y adjunta tu documento médico o institucional si aplica.</p>
+                    <h5 class="fw-bold text-dark mb-4">Subir Comprobante
+                        <span class="info-icon" tabindex="0" role="button" aria-label="Elige la inasistencia o retardo a justificar y adjunta tu comprobante.">
+                            <i class="bi bi-info-circle"></i>
+                            <span class="info-icon-text" role="tooltip">Elige la inasistencia o retardo a justificar y adjunta tu comprobante.</span>
+                        </span>
+                    </h5>
 
                     <form id="form-justificante" action="{{ route('alumno.justificantes.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
@@ -90,7 +94,7 @@
                 <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
                     <h5 class="fw-bold text-dark mb-3">Historial de Solicitudes</h5>
                     <div class="table-responsive">
-                        <table class="table align-middle">
+                        <table class="table table-striped table-hover align-middle">
                             <thead class="table-light">
                                 <tr>
                                     <th>Fecha Clase</th>
