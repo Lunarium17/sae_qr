@@ -75,7 +75,7 @@
             <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
                 <div>
                     <h5 class="fw-bold text-dark mb-1">Mis Materias Inscritas y Derecho a Examen Ordinario</h5>
-                    <div class="text-muted small">3 retardos = 1 falta · máx. 3 faltas para conservar tu derecho a examen ordinario.</div>
+                    <div class="text-muted small">3 retardos = 1 falta · máx. 3 faltas.</div>
                 </div>
                 <span class="badge bg-primary rounded-pill">{{ $matriculasAceptadas->count() }} Materias Aceptadas</span>
             </div>
