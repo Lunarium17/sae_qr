@@ -13,7 +13,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container">
             <a class="navbar-brand fw-bold" href="{{ route('grupos.index') }}">
-                <i class="bi bi-pencil-square me-2"></i>SAE QR | Editar Grupo
+                SAE QR | Editar Grupo
             </a>
             <div class="d-flex align-items-center gap-2">
                 <a href="{{ route('grupos.show', $grupo->id) }}" class="btn btn-outline-info btn-sm">
@@ -42,7 +42,7 @@
 
                 <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden">
                     <div class="card-header bg-warning text-dark p-4 border-0">
-                        <h4 class="mb-0 fw-bold"><i class="bi bi-pencil-square me-2"></i>Editar Grupo Académico: {{ $grupo->nombre_grupo }}</h4>
+                        <h4 class="mb-0 fw-bold">Editar Grupo Académico: {{ $grupo->nombre_grupo }}</h4>
                     </div>
                     <div class="card-body p-5">
                         <form action="{{ route('grupos.update', $grupo->id) }}" method="POST">
@@ -59,7 +59,7 @@
                                 <!-- Carrera -->
                                 <div class="col-md-8">
                                     <label for="carrera" class="form-label fw-bold text-dark">Carrera / Programa Educativo <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control rounded-3 py-2" id="carrera" name="carrera" list="listaCarrerasEdit" value="{{ old('carrera', $grupo->carrera) }}" placeholder="Ej. Ingeniería en Sistemas Computacionales" maxlength="120" required>
+                                    <input type="text" class="form-control rounded-3 py-2" id="carrera" name="carrera" list="listaCarrerasEdit" value="{{ old('carrera', $grupo->carrera) }}" maxlength="120" required>
                                     <datalist id="listaCarrerasEdit">
                                         <option value="Ingeniería en Sistemas Computacionales"></option>
                                         <option value="Ingeniería en Tecnologías de la Información"></option>

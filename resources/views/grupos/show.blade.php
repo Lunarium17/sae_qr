@@ -6,6 +6,11 @@
     <title>Grupo {{ $grupo->nombre_grupo }} | Gestión y Estadísticas - SAE QR</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        .info-icon { position: relative; display: inline-flex; align-items: center; color: #0d6efd; cursor: help; vertical-align: middle; }
+        .info-icon .info-icon-text { position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); min-width: 240px; max-width: 320px; background: #212529; color: #fff; font-size: .75rem; font-weight: 400; line-height: 1.35; padding: .5rem .65rem; border-radius: .4rem; box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .2); opacity: 0; visibility: hidden; transition: opacity .15s; z-index: 10; text-align: left; }
+        .info-icon:hover .info-icon-text, .info-icon:focus .info-icon-text, .info-icon:focus-within .info-icon-text { opacity: 1; visibility: visible; }
+    </style>
 </head>
 <body class="bg-light">
 
@@ -19,10 +24,10 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container">
             <a class="navbar-brand fw-bold" href="{{ route('grupos.index') }}">
-                <i class="bi bi-collection me-2"></i>SAE QR | Grupo {{ $grupo->nombre_grupo }}
+                SAE QR | Grupo {{ $grupo->nombre_grupo }}
             </a>
             <div class="d-flex align-items-center gap-2">
-                <a href="{{ route('grupos.index') }}" class="btn btn-outline-light btn-sm">
+                <a href="{{ route('grupos.index') }}" class="btn btn-light btn-sm text-dark fw-semibold">
                     <i class="bi bi-arrow-left me-1"></i>Volver a Mis Grupos
                 </a>
                 <a href="{{ route('profesor.dashboard') }}" class="btn btn-outline-secondary btn-sm text-light">
@@ -72,11 +77,11 @@
                     </div>
                     <p class="text-muted mb-0 mt-2">
                         @if ($grupo->carrera)
-                            <span class="me-3"><i class="bi bi-building me-1 text-primary"></i><strong>Carrera:</strong> {{ $grupo->carrera }}</span>
+                            <span class="me-3"><strong>Carrera:</strong> {{ $grupo->carrera }}</span>
                         @endif
-                        <span class="me-3"><i class="bi bi-mortarboard-fill me-1 text-secondary"></i><strong>Semestre:</strong> {{ $grupo->grado }}</span>
-                        <span class="me-3"><i class="bi bi-clock-fill me-1 text-secondary"></i><strong>Turno:</strong> {{ $grupo->turno }}</span>
-                        <span><i class="bi bi-calendar-range-fill me-1 text-secondary"></i><strong>Periodo Semestral:</strong> {{ $grupo->periodo_lectivo }}</span>
+                        <span class="me-3"><strong>Semestre:</strong> {{ $grupo->grado }}</span>
+                        <span class="me-3"><strong>Turno:</strong> {{ $grupo->turno }}</span>
+                        <span><strong>Periodo Semestral:</strong> {{ preg_replace('/([A-Za-zÁÉÍÓÚáéíóú])(\d{4})/u', '$1 $2', $grupo->periodo_lectivo) }}</span>
                     </p>
                 </div>
                 <div class="d-flex flex-wrap gap-2 text-center">
@@ -105,7 +110,7 @@
             <div class="col-lg-5">
                 <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 class="fw-bold text-dark mb-0"><i class="bi bi-pie-chart-fill me-2 text-primary"></i>Incidencias en {{ $grupo->nombre_grupo }}</h6>
+                        <h6 class="fw-bold text-dark mb-0">Incidencias en {{ $grupo->nombre_grupo }}</h6>
                         <span class="badge bg-dark rounded-pill">{{ $statsGrupo['total_registros'] }} registros</span>
                     </div>
                     @if ($statsGrupo['total_registros'] > 0)
@@ -130,7 +135,7 @@
             <div class="col-lg-7">
                 <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 class="fw-bold text-dark mb-0"><i class="bi bi-bar-chart-fill me-2 text-success"></i>% de Asistencia por Materia del Grupo</h6>
+                        <h6 class="fw-bold text-dark mb-0">% de Asistencia por Materia del Grupo</h6>
                         <span class="small text-muted">Semáforo de rendimiento</span>
                     </div>
                     @if ($grupo->materias->isNotEmpty())
@@ -152,12 +157,13 @@
             <!-- Formulario lateral para agregar materias al grupo -->
             <div class="col-lg-4">
                 <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
-                    <h5 class="fw-bold text-dark mb-1">
-                        <i class="bi bi-plus-circle-fill me-2 text-primary"></i>Agregar Materia al Grupo
+                    <h5 class="fw-bold text-dark mb-3">
+                        Agregar Materia al Grupo
+                        <span class="info-icon" tabindex="0" role="button" aria-label="Registra una nueva asignatura que impartes dentro del grupo {{ $grupo->nombre_grupo }} ({{ $grupo->turno }}).">
+                            <i class="bi bi-info-circle"></i>
+                            <span class="info-icon-text" role="tooltip">Registra una nueva asignatura que impartes dentro del grupo {{ $grupo->nombre_grupo }} ({{ $grupo->turno }}).</span>
+                        </span>
                     </h5>
-                    <p class="text-muted small mb-4">
-                        Registra una nueva asignatura que impartes dentro del grupo <strong>{{ $grupo->nombre_grupo }} ({{ $grupo->turno }})</strong>.
-                    </p>
 
                     <form action="{{ route('materias.store') }}" method="POST">
                         @csrf
@@ -165,12 +171,12 @@
 
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Código / Clave de la Materia</label>
-                            <input type="text" name="codigo" value="{{ old('codigo') }}" class="form-control rounded-3" placeholder="Ej. ING-301" maxlength="30" required>
+                            <input type="text" name="codigo" value="{{ old('codigo') }}" class="form-control rounded-3" maxlength="30" required>
                         </div>
 
                         <div class="mb-4">
                             <label class="form-label fw-semibold">Nombre de la Materia</label>
-                            <input type="text" name="nombre_materia" value="{{ old('nombre_materia') }}" class="form-control rounded-3" placeholder="Ej. Fundamentos de Ciberseguridad" maxlength="100" required>
+                            <input type="text" name="nombre_materia" value="{{ old('nombre_materia') }}" class="form-control rounded-3" maxlength="100" required>
                         </div>
 
                         <button type="submit" class="btn btn-primary w-100 rounded-3 py-2 fw-semibold">
@@ -185,7 +191,7 @@
                 <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="fw-bold text-dark mb-0">
-                            <i class="bi bi-journal-bookmark-fill me-2 text-dark"></i>Materias Impartidas en {{ $grupo->nombre_grupo }}
+                            Materias Impartidas en {{ $grupo->nombre_grupo }}
                         </h5>
                         <span class="badge bg-dark rounded-pill">{{ $grupo->materias->count() }} Registradas</span>
                     </div>
@@ -330,7 +336,7 @@
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
                 <div>
                     <h5 class="fw-bold text-dark mb-0">
-                        <i class="bi bi-people-fill me-2 text-primary"></i>Alumnos Inscritos, Solicitudes y Derecho a Examen Ordinario
+                        Alumnos Inscritos, Solicitudes y Derecho a Examen Ordinario
                     </h5>
                     <p class="text-muted small mb-0">
                         Regla universitaria activa: <strong>cada 3 retardos acumulados en una misma asignatura equivalen a 1 falta</strong> (Límite para Derecho a Examen: máx. 2 faltas; con 3 faltas pasa a <strong>SD - Sin Derecho</strong>).
@@ -393,15 +399,15 @@
                                 <td class="text-center">
                                     @if ($faltasAlumno >= 3)
                                         <span class="badge bg-danger">
-                                            <i class="bi bi-x-octagon-fill me-1"></i>Sin Derecho a Examen (SD)
+                                            Sin Derecho a Examen (SD)
                                         </span>
                                     @elseif ($faltasAlumno === 2)
                                         <span class="badge bg-warning text-dark">
-                                            <i class="bi bi-exclamation-triangle-fill me-1"></i>En Riesgo / Preventivo (2/3)
+                                            En Riesgo / Preventivo (2/3)
                                         </span>
                                     @else
                                         <span class="badge bg-success bg-opacity-10 text-success border border-success">
-                                            <i class="bi bi-check-circle-fill me-1"></i>Con Derecho a Ordinario
+                                            Con Derecho a Ordinario
                                         </span>
                                     @endif
                                 </td>
