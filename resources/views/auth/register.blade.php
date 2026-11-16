@@ -52,13 +52,13 @@
                             <!-- Nombre Completo -->
                             <div class="mb-3">
                                 <label for="name" class="form-label fw-semibold">Nombre Completo <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control rounded-3" id="name" name="name" value="{{ old('name') }}" required maxlength="100" placeholder="Ej. Juan Pérez García">
+                                <input type="text" class="form-control rounded-3" id="name" name="name" value="{{ old('name') }}" required maxlength="100">
                             </div>
 
                             <!-- Correo Electrónico -->
                             <div class="mb-3">
                                 <label for="email" class="form-label fw-semibold">Correo Electrónico <span class="text-danger">*</span></label>
-                                <input type="email" class="form-control rounded-3" id="email" name="email" value="{{ old('email') }}" required maxlength="150" placeholder="ejemplo@saeqr.com">
+                                <input type="email" class="form-control rounded-3" id="email" name="email" value="{{ old('email') }}" required maxlength="150">
                             </div>
 
                             <!-- Matrícula / Clave Institucional -->
@@ -66,7 +66,7 @@
                                 <label for="matricula_codigo" class="form-label fw-semibold" id="labelMatricula">
                                     Matrícula Escolar <span class="text-danger" id="asteriscoMatricula">*</span>
                                 </label>
-                                <input type="text" class="form-control rounded-3" id="matricula_codigo" name="matricula_codigo" value="{{ old('matricula_codigo') }}" maxlength="30" placeholder="Ej. 20260001">
+                                <input type="text" class="form-control rounded-3" id="matricula_codigo" name="matricula_codigo" value="{{ old('matricula_codigo') }}" maxlength="30">
                                 <div class="form-text" id="ayudaMatricula">
                                     Tu matrícula escolar servirá para generar tu código QR de asistencia.
                                 </div>
@@ -77,7 +77,7 @@
                                 <label for="codigo_docente" class="form-label fw-semibold text-primary">
                                     Código de Acceso Docente <span class="text-danger">*</span>
                                 </label>
-                                <input type="text" class="form-control rounded-3 border-primary text-uppercase" id="codigo_docente" name="codigo_docente" maxlength="30" placeholder="Ej. DOC-XXXX-26">
+                                <input type="text" class="form-control rounded-3 border-primary text-uppercase" id="codigo_docente" name="codigo_docente" maxlength="30">
                                 <div class="form-text">
                                     Ingresa el código único de invitación proporcionado por el Administrador Escolar.
                                 </div>
@@ -134,8 +134,8 @@
                     inputCodigoDocente.setAttribute('required', 'required');
 
                     inputMatricula.removeAttribute('required');
-                    labelMatricula.innerHTML = 'Clave / Número de Empleado <span class="text-muted fw-normal small">(Opcional)</span>';
-                    inputMatricula.setAttribute('placeholder', 'Ej. DOC-001 (Opcional)');
+                    labelMatricula.innerHTML = 'Clave / Número de Empleado';
+                    inputMatricula.removeAttribute('placeholder');
                     ayudaMatricula.textContent = 'Opcional para docentes. Puedes dejarlo en blanco o registrar tu número de empleado.';
                 } else {
                     bloqueCodigoDocente.classList.add('d-none');
@@ -144,7 +144,7 @@
 
                     inputMatricula.setAttribute('required', 'required');
                     labelMatricula.innerHTML = 'Matrícula Escolar <span class="text-danger">*</span>';
-                    inputMatricula.setAttribute('placeholder', 'Ej. 20260001');
+                    inputMatricula.removeAttribute('placeholder');
                     ayudaMatricula.textContent = 'Tu matrícula escolar servirá para generar tu código QR de asistencia.';
                 }
             }
