@@ -6,6 +6,12 @@
     <title>Iniciar Sesión - SAE QR</title>
     <!-- Bootstrap 5 CSS CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        .info-icon { position: relative; display: inline-flex; align-items: center; color: #0d6efd; cursor: help; vertical-align: middle; font-size: .8em; margin-left: .15rem; padding: .1rem; }
+        .info-icon .info-icon-text { position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); min-width: 220px; max-width: 300px; background: #212529; color: #fff; font-size: .75rem; font-weight: 400; line-height: 1.35; padding: .45rem .6rem; border-radius: .4rem; box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .2); opacity: 0; visibility: hidden; transition: opacity .15s; z-index: 10; text-align: left; }
+        .info-icon:hover .info-icon-text, .info-icon:focus .info-icon-text, .info-icon:focus-within .info-icon-text { opacity: 1; visibility: visible; }
+    </style>
 </head>
 <body class="bg-light d-flex align-items-center justify-content-center min-vh-100 py-4">
 
@@ -45,12 +51,17 @@
                             @csrf
 
                             <div class="mb-3">
-                                <label for="email" class="form-label">Correo Electrónico:</label>
+                                <label for="email" class="form-label">Correo Electrónico
+                                    <span class="info-icon" tabindex="0" role="button" aria-label="Usa tu correo institucional.">
+                                        <i class="bi bi-info-circle"></i>
+                                        <span class="info-icon-text" role="tooltip">Usa tu correo institucional.</span>
+                                    </span>
+                                </label>
                                 <input type="email" class="form-control rounded-3" id="email" name="email" value="{{ old('email') }}" required autofocus>
                             </div>
 
                             <div class="mb-3">
-                                <label for="password" class="form-label">Contraseña:</label>
+                                <label for="password" class="form-label">Contraseña</label>
                                 <input type="password" class="form-control rounded-3" id="password" name="password" required>
                             </div>
 
