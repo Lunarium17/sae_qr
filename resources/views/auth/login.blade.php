@@ -46,12 +46,12 @@
 
                             <div class="mb-3">
                                 <label for="email" class="form-label">Correo Electrónico:</label>
-                                <input type="email" class="form-control rounded-3" id="email" name="email" value="{{ old('email') }}" required autofocus placeholder="ejemplo@saeqr.com">
+                                <input type="email" class="form-control rounded-3" id="email" name="email" value="{{ old('email') }}" required autofocus>
                             </div>
 
                             <div class="mb-3">
                                 <label for="password" class="form-label">Contraseña:</label>
-                                <input type="password" class="form-control rounded-3" id="password" name="password" required placeholder="********">
+                                <input type="password" class="form-control rounded-3" id="password" name="password" required>
                             </div>
 
                             <div class="d-grid gap-2 mt-4">
