@@ -7,8 +7,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <style>
-        .info-icon { position: relative; display: inline-flex; align-items: center; color: #0d6efd; cursor: help; vertical-align: middle; }
-        .info-icon .info-icon-text { position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); min-width: 260px; max-width: 340px; background: #212529; color: #fff; font-size: .75rem; font-weight: 400; line-height: 1.35; padding: .5rem .65rem; border-radius: .4rem; box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .2); opacity: 0; visibility: hidden; transition: opacity .15s; z-index: 10; text-align: left; }
+        .info-icon { position: relative; display: inline-flex; align-items: center; color: #0d6efd; cursor: help; vertical-align: middle; font-size: .8em; margin-left: .15rem; padding: .1rem; }
+        .info-icon .info-icon-text { position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); min-width: 240px; max-width: 320px; background: #212529; color: #fff; font-size: .75rem; font-weight: 400; line-height: 1.35; padding: .5rem .65rem; border-radius: .4rem; box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .2); opacity: 0; visibility: hidden; transition: opacity .15s; z-index: 10; text-align: left; }
         .info-icon:hover .info-icon-text, .info-icon:focus .info-icon-text, .info-icon:focus-within .info-icon-text { opacity: 1; visibility: visible; }
     </style>
 </head>
@@ -119,12 +119,12 @@
         <div class="container">
             <a class="navbar-brand fw-bold" href="#">SAE QR | Panel de Profesor</a>
             <div class="d-flex align-items-center gap-2">
-                <a href="{{ route('profesor.perfil') }}" class="btn btn-outline-info btn-sm rounded-3">
+                <a href="{{ route('profesor.perfil') }}" class="btn btn-light btn-sm text-dark fw-semibold rounded-3">
                     Mi Perfil
                 </a>
                 <form action="{{ route('logout') }}" method="POST" class="d-inline">
                     @csrf
-                    <button type="submit" class="btn btn-outline-light btn-sm rounded-3">Cerrar Sesión</button>
+                    <button type="submit" class="btn btn-danger btn-sm rounded-3">Cerrar Sesión</button>
                 </form>
             </div>
         </div>
@@ -135,25 +135,22 @@
         <div class="card border-0 shadow-sm rounded-4 p-4 bg-white text-center mb-4">
             <h3 class="fw-bold text-dark mb-1">Bienvenido, {{ \Illuminate\Support\Facades\Auth::user()->name }}</h3>
             <p class="text-muted small mb-1">
-                <i class="bi bi-envelope me-1"></i>{{ \Illuminate\Support\Facades\Auth::user()->email }}
-                | <i class="bi bi-card-heading ms-1 me-1"></i>{{ \Illuminate\Support\Facades\Auth::user()->matricula_codigo ? 'Clave Docente: ' . \Illuminate\Support\Facades\Auth::user()->matricula_codigo : 'Sin clave docente asignada' }}
+                {{ \Illuminate\Support\Facades\Auth::user()->email }}
+                | {{ \Illuminate\Support\Facades\Auth::user()->matricula_codigo ? 'Clave Docente: ' . \Illuminate\Support\Facades\Auth::user()->matricula_codigo : 'Sin clave docente asignada' }}
             </p>
 
             <div class="d-flex flex-wrap justify-content-center gap-3">
                 <a href="{{ route('sesiones.index') }}" class="btn btn-primary rounded-3 px-4 py-2">
-                    <i class="bi bi-camera-video me-2"></i>Iniciar Sesión y Escanear
+                    <i class="bi bi-qr-code-scan me-2"></i>Iniciar Sesión y Escanear
                 </a>
                 <a href="{{ route('grupos.index') }}" class="btn btn-outline-dark rounded-3 px-4 py-2">
                     <i class="bi bi-collection me-2"></i>Gestión de Grupos y Materias
                 </a>
                 <a href="{{ route('profesor.solicitudes') }}" class="btn btn-warning rounded-3 px-4 py-2">
-                    <i class="bi bi-person-lines-fill me-2"></i>Solicitudes de Alumnos
+                    <i class="bi bi-person-plus-fill me-2"></i>Solicitudes de Alumnos
                     @if($solicitudesPendientes > 0)
                         <span class="badge bg-danger ms-1">{{ $solicitudesPendientes }}</span>
                     @endif
-                </a>
-                <a href="{{ route('profesor.perfil') }}" class="btn btn-outline-secondary rounded-3 px-4 py-2">
-                    <i class="bi bi-pencil-square me-2"></i>Ver / Editar Mis Datos
                 </a>
             </div>
         </div>
@@ -196,7 +193,7 @@
                             <h3 class="fw-bold text-primary mb-0">{{ $totalSesiones }} Sesiones</h3>
                         </div>
                         <div class="bg-primary bg-opacity-10 text-primary rounded-4 p-3">
-                            <i class="bi bi-camera-video-fill fs-3"></i>
+                            <i class="bi bi-easel fs-3"></i>
                         </div>
                     </div>
                 </div>
@@ -215,10 +212,6 @@
                     </div>
                     <div class="progress rounded-pill" style="height: 8px;">
                         <div class="progress-bar bg-{{ $colorSemaforoGlobal }}" role="progressbar" data-width="{{ $porcentajeAsistencia }}"></div>
-                    </div>
-                    <div class="d-flex justify-content-between small text-muted mt-1">
-                        <span>A:{{ $asistenciasCount }} R:{{ $retardosCount }} P:{{ $permisosCount }}</span>
-                        <span class="text-danger fw-semibold">F:{{ $faltasCount }}</span>
                     </div>
                 </div>
             </div>
@@ -263,9 +256,8 @@
             <!-- Gráfica de Barras: Comparativa de Asistencia por Grupo -->
             <div class="col-lg-7">
                 <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="mb-3">
                         <h5 class="fw-bold text-dark mb-0">% de Asistencia por Grupo</h5>
-                        <a href="{{ route('grupos.index') }}" class="btn btn-sm btn-outline-secondary rounded-pill">Ver todos los grupos</a>
                     </div>
                     @if ($gruposCount > 0)
                         <div style="height: 280px;">
@@ -386,7 +378,7 @@
                     <p class="text-muted small">Revisa la carga digital de comprobantes para realizar el ajuste manual de inasistencias.</p>
 
                     <a href="{{ route('profesor.justificantes') }}" class="btn btn-outline-info btn-sm rounded-3 mt-auto">
-                        <i class="bi bi-envelope-paper me-1"></i>Revisar Justificantes Pendientes
+                        <i class="bi bi-file-earmark-text me-1"></i>Revisar Justificantes Pendientes
                     </a>
                 </div>
             </div>
