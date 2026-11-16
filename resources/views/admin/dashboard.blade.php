@@ -6,20 +6,25 @@
     <title>Panel de Administrador - SAE QR</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        .info-icon { position: relative; display: inline-flex; align-items: center; color: #0d6efd; cursor: help; vertical-align: middle; }
+        .info-icon .info-icon-text { position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); min-width: 260px; max-width: 340px; background: #212529; color: #fff; font-size: .75rem; font-weight: 400; line-height: 1.35; padding: .5rem .65rem; border-radius: .4rem; box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .2); opacity: 0; visibility: hidden; transition: opacity .15s; z-index: 10; text-align: left; }
+        .info-icon:hover .info-icon-text, .info-icon:focus .info-icon-text, .info-icon:focus-within .info-icon-text { opacity: 1; visibility: visible; }
+    </style>
 </head>
 <body class="bg-light">
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container">
             <a class="navbar-brand fw-bold" href="{{ route('admin.dashboard') }}">
-                <i class="bi bi-shield-lock-fill text-info me-2"></i>SAE QR | Panel de Administrador
+                SAE QR | Panel de Administrador
             </a>
             <div class="d-flex align-items-center gap-2">
-                <a href="{{ route('admin.codigos') }}" class="btn btn-outline-info btn-sm rounded-3">
-                    <i class="bi bi-key-fill me-1"></i>Códigos Docentes
+                <a href="{{ route('admin.codigos') }}" class="btn btn-light btn-sm text-dark fw-semibold rounded-3">
+                    Códigos Docentes
                 </a>
-                <a href="{{ route('admin.usuarios') }}" class="btn btn-outline-light btn-sm rounded-3">
-                    <i class="bi bi-people-fill me-1"></i>Usuarios
+                <a href="{{ route('admin.usuarios') }}" class="btn btn-light btn-sm text-dark fw-semibold rounded-3">
+                    Usuarios
                 </a>
                 <form action="{{ route('logout') }}" method="POST" class="d-inline">
                     @csrf
@@ -51,13 +56,16 @@
 
         <!-- 1. Bienvenida y Acciones Rápidas -->
         <div class="card border-0 shadow-sm rounded-4 p-4 bg-white text-center mb-4">
-            <h3 class="fw-bold text-dark mb-1">Bienvenido, {{ \Illuminate\Support\Facades\Auth::user()->name }}</h3>
-            <p class="text-muted small mb-1">
-                <i class="bi bi-envelope me-1"></i>{{ \Illuminate\Support\Facades\Auth::user()->email }}
-                | <i class="bi bi-person-badge ms-1 me-1"></i>Rol: <span class="badge bg-info text-dark">Administrador Escolar</span>
-            </p>
-            <p class="text-muted mb-3">
-                Genera <strong>códigos de invitación de un solo uso para nuevos profesores</strong>, administra cuentas de usuarios y supervisa las estadísticas generales de la institución.
+            <h3 class="fw-bold text-dark mb-3">
+                Bienvenido, {{ \Illuminate\Support\Facades\Auth::user()->name }}
+                <span class="info-icon" tabindex="0" role="button" aria-label="Genera códigos de invitación de un solo uso para nuevos profesores, administra cuentas de usuarios y supervisa las estadísticas generales de la institución.">
+                    <i class="bi bi-info-circle"></i>
+                    <span class="info-icon-text" role="tooltip">Genera códigos de invitación de un solo uso para nuevos profesores, administra cuentas de usuarios y supervisa las estadísticas generales de la institución.</span>
+                </span>
+            </h3>
+            <p class="text-muted small mb-4">
+                {{ \Illuminate\Support\Facades\Auth::user()->email }}
+                | Rol: <span class="badge bg-info text-dark">Administrador Escolar</span>
             </p>
 
             <div class="d-flex flex-wrap justify-content-center gap-3">
@@ -90,7 +98,6 @@
                         <div>
                             <div class="text-muted small fw-semibold">Total Alumnos</div>
                             <h3 class="fw-bold mb-0">{{ $totalAlumnos }}</h3>
-                            <small class="text-muted">Cuentas estudiantiles</small>
                         </div>
                     </div>
                 </div>
@@ -105,7 +112,6 @@
                         <div>
                             <div class="text-muted small fw-semibold">Total Profesores</div>
                             <h3 class="fw-bold mb-0">{{ $totalProfesores }}</h3>
-                            <small class="text-muted">Docentes activos</small>
                         </div>
                     </div>
                 </div>
@@ -120,7 +126,6 @@
                         <div>
                             <div class="text-muted small fw-semibold">Códigos Docentes</div>
                             <h3 class="fw-bold mb-0">{{ $codigosDisponiblesCount }} <span class="fs-6 fw-normal text-muted">disp.</span></h3>
-                            <small class="text-muted">{{ $codigosUsadosCount }} canjeados</small>
                         </div>
                     </div>
                 </div>
@@ -135,7 +140,6 @@
                         <div>
                             <div class="text-muted small fw-semibold">Grupos y Materias</div>
                             <h3 class="fw-bold mb-0">{{ $totalGrupos }} / {{ $totalMaterias }}</h3>
-                            <small class="text-muted">{{ $totalSesiones }} sesiones impartidas</small>
                         </div>
                     </div>
                 </div>
@@ -148,9 +152,12 @@
                 <div class="d-flex flex-wrap justify-content-between align-items-center mb-2">
                     <div>
                         <h6 class="fw-bold mb-0">
-                            <i class="bi bi-bar-chart-line-fill text-primary me-2"></i>Índice Global de Asistencia Escolar
+                            Índice Global de Asistencia Escolar
+                            <span class="info-icon" tabindex="0" role="button" aria-label="Promedio general de asistencia en todas las sesiones registradas ({{ $totalRegistros }} pases de lista).">
+                                <i class="bi bi-info-circle"></i>
+                                <span class="info-icon-text" role="tooltip">Promedio general de asistencia en todas las sesiones registradas ({{ $totalRegistros }} pases de lista).</span>
+                            </span>
                         </h6>
-                        <small class="text-muted">Promedio general de asistencia en todas las sesiones registradas ({{ $totalRegistros }} pases de lista)</small>
                     </div>
                     <span class="badge bg-{{ $colorSemaforoGlobal }} fs-6 px-3 py-2 rounded-pill">
                         {{ $porcentajeAsistencia }}% Asistencia Efectiva
@@ -193,8 +200,13 @@
                 <div class="card border-0 shadow-sm rounded-4 h-100">
                     <div class="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
                         <div>
-                            <h5 class="fw-bold mb-0"><i class="bi bi-key-fill text-primary me-2"></i>Códigos de Acceso Docente</h5>
-                            <small class="text-muted">Genera códigos de un solo uso para el registro de profesores</small>
+                            <h5 class="fw-bold mb-0">
+                                Códigos de Acceso Docente
+                                <span class="info-icon" tabindex="0" role="button" aria-label="Genera códigos de un solo uso para el registro de profesores.">
+                                    <i class="bi bi-info-circle"></i>
+                                    <span class="info-icon-text" role="tooltip">Genera códigos de un solo uso para el registro de profesores.</span>
+                                </span>
+                            </h5>
                         </div>
                         <a href="{{ route('admin.codigos') }}" class="btn btn-sm btn-outline-primary rounded-3">Ver todos</a>
                     </div>
@@ -202,8 +214,8 @@
                         <form action="{{ route('admin.codigos.generar') }}" method="POST" class="row g-2 mb-4 p-3 bg-light rounded-3 border">
                             @csrf
                             <div class="col-sm-8">
-                                <label for="descripcion_nota" class="form-label small fw-semibold mb-1">Nota o Nombre del Profesor (Opcional)</label>
-                                <input type="text" name="descripcion_nota" id="descripcion_nota" class="form-control form-control-sm rounded-3" maxlength="150" placeholder="Ej. Para Prof. Roberto Gómez">
+                                <label for="descripcion_nota" class="form-label small fw-semibold mb-1">Nota o Nombre del Profesor</label>
+                                <input type="text" name="descripcion_nota" id="descripcion_nota" class="form-control form-control-sm rounded-3" maxlength="150">
                             </div>
                             <div class="col-sm-4 d-flex align-items-end">
                                 <button type="submit" class="btn btn-primary btn-sm w-100 rounded-3 py-2 fw-semibold">
@@ -270,8 +282,13 @@
                 <div class="card border-0 shadow-sm rounded-4 h-100">
                     <div class="card-header bg-white border-0 pt-4 px-4 d-flex flex-wrap justify-content-between align-items-center gap-2">
                         <div>
-                            <h5 class="fw-bold mb-0"><i class="bi bi-building text-primary me-2"></i>Catálogo de Grupos Oficiales</h5>
-                            <small class="text-muted">Crea y administra los grupos oficiales por Carrera y Semestre</small>
+                            <h5 class="fw-bold mb-0">
+                                Catálogo de Grupos Oficiales
+                                <span class="info-icon" tabindex="0" role="button" aria-label="Crea y administra los grupos oficiales por carrera y semestre.">
+                                    <i class="bi bi-info-circle"></i>
+                                    <span class="info-icon-text" role="tooltip">Crea y administra los grupos oficiales por carrera y semestre.</span>
+                                </span>
+                            </h5>
                         </div>
                         <button type="button" class="btn btn-sm btn-primary rounded-3 fw-semibold" data-bs-toggle="modal" data-bs-target="#modalCrearGrupoAdmin">
                             <i class="bi bi-plus-circle me-1"></i>Nuevo Grupo Oficial
@@ -293,14 +310,12 @@
                                         <tr>
                                             <td>
                                                 <div class="fw-bold text-primary">{{ $grupo->nombre_grupo }}</div>
-                                                <div class="text-muted" style="font-size: 0.78rem;">
-                                                    <i class="bi bi-mortarboard me-1"></i>{{ $grupo->carrera ?: 'Carrera general' }}
-                                                </div>
+                                                <div class="text-muted" style="font-size: 0.78rem;">{{ $grupo->carrera ?: 'Carrera general' }}</div>
                                             </td>
                                             <td>
                                                 <div class="fw-semibold text-dark">{{ $grupo->grado }}</div>
                                                 <span class="badge bg-light text-dark border">{{ $grupo->turno }}</span>
-                                                <div class="text-muted" style="font-size: 0.72rem;">{{ $grupo->periodo_lectivo }}</div>
+                                                <div class="text-muted" style="font-size: 0.72rem;">{{ preg_replace('/([A-Za-zÁÉÍÓÚáéíóú])(\d{4})/u', '$1 $2', $grupo->periodo_lectivo) }}</div>
                                             </td>
                                             <td>
                                                 @forelse ($grupo->materias as $mat)
@@ -331,7 +346,7 @@
                                                         <div class="modal-content rounded-4 border-0 shadow">
                                                             <div class="modal-header bg-warning text-dark border-0">
                                                                 <h5 class="modal-title fw-bold">
-                                                                    <i class="bi bi-pencil-square me-2"></i>Editar Grupo Oficial: {{ $grupo->nombre_grupo }}
+                                                                    Editar Grupo Oficial: {{ $grupo->nombre_grupo }}
                                                                 </h5>
                                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                                                             </div>
@@ -355,7 +370,7 @@
                                                                         </div>
                                                                         <div class="col-12">
                                                                             <label class="form-label fw-semibold">Carrera / Programa Educativo <span class="text-danger">*</span></label>
-                                                                            <input type="text" name="carrera" class="form-control rounded-3" list="listaCarrerasAdmin" value="{{ $grupo->carrera }}" placeholder="Ej. Ingeniería en Sistemas Computacionales" maxlength="120" required>
+                                                                            <input type="text" name="carrera" class="form-control rounded-3" list="listaCarrerasAdmin" value="{{ $grupo->carrera }}" maxlength="120" required>
                                                                         </div>
                                                                         <div class="col-sm-6">
                                                                             <label class="form-label fw-semibold">Turno / Modalidad <span class="text-danger">*</span></label>
@@ -405,7 +420,7 @@
                 <div class="modal-content rounded-4 border-0 shadow">
                     <div class="modal-header bg-primary text-white border-0">
                         <h5 class="modal-title fw-bold">
-                            <i class="bi bi-building-add me-2"></i>Crear Grupo Oficial Universitario
+                            Crear Grupo Oficial Universitario
                         </h5>
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                     </div>
@@ -415,12 +430,12 @@
                             <div class="row g-3">
                                 <div class="col-sm-5">
                                     <label class="form-label fw-semibold">Clave del Grupo <span class="text-danger">*</span></label>
-                                    <input type="text" name="nombre_grupo" class="form-control rounded-3" placeholder="Ej. ISC-701, S7B" maxlength="50" required>
+                                    <input type="text" name="nombre_grupo" class="form-control rounded-3" maxlength="50" required>
                                 </div>
                                 <div class="col-sm-7">
                                     <label class="form-label fw-semibold">Semestre <span class="text-danger">*</span></label>
                                     <select name="grado" class="form-select rounded-3" required>
-                                        <option value="" selected disabled>Selecciona el semestre...</option>
+                                        <option value="" selected disabled>Selecciona el semestre</option>
                                         @for ($i = 1; $i <= 12; $i++)
                                             <option value="{{ $i }}° Semestre">{{ $i }}° Semestre</option>
                                         @endfor
@@ -428,7 +443,7 @@
                                 </div>
                                 <div class="col-12">
                                     <label class="form-label fw-semibold">Carrera / Programa Educativo <span class="text-danger">*</span></label>
-                                    <input type="text" name="carrera" class="form-control rounded-3" list="listaCarrerasAdmin" placeholder="Ej. Ingeniería en Sistemas Computacionales" maxlength="120" required>
+                                    <input type="text" name="carrera" class="form-control rounded-3" list="listaCarrerasAdmin" maxlength="120" required>
                                     <datalist id="listaCarrerasAdmin">
                                         <option value="Ingeniería en Sistemas Computacionales"></option>
                                         <option value="Ingeniería en Tecnologías de la Información"></option>
@@ -451,7 +466,7 @@
                                 </div>
                                 <div class="col-sm-6">
                                     <label class="form-label fw-semibold">Periodo Semestral <span class="text-danger">*</span></label>
-                                    <input type="text" name="periodo_lectivo" class="form-control rounded-3" placeholder="Ej. Ago-Dic 2026" maxlength="50" required>
+                                    <input type="text" name="periodo_lectivo" class="form-control rounded-3" maxlength="50" required>
                                 </div>
                             </div>
                         </div>
