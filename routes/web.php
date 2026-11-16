@@ -44,6 +44,7 @@ Route::middleware(['auth', \App\Http\Middleware\CheckRol::class . ':admin'])->gr
     Route::delete('/admin/usuarios/{id}', [AdminController::class, 'destroyUsuario'])->name('admin.usuarios.destroy');
 
     // Creación y Gestión de Grupos Oficiales Universitarios desde el Panel de Administrador
+    Route::get('/admin/grupos', [AdminController::class, 'grupos'])->name('admin.grupos');
     Route::post('/admin/grupos', [AdminController::class, 'storeGrupo'])->name('admin.grupos.store');
     Route::put('/admin/grupos/{id}', [AdminController::class, 'updateGrupo'])->name('admin.grupos.update');
     Route::delete('/admin/grupos/{id}', [AdminController::class, 'destroyGrupo'])->name('admin.grupos.destroy');

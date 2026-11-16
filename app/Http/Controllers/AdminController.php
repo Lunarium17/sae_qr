@@ -25,8 +25,8 @@ class AdminController extends Controller
         $totalProfesores = User::where('rol', 'profesor')->count();
         $totalAdmins     = User::where('rol', 'admin')->count();
 
-        $grupos        = Grupo::with('materias')->orderBy('nombre_grupo')->get();
-        $totalGrupos   = $grupos->count();
+        $totalUsuarios = $totalAlumnos + $totalProfesores + $totalAdmins;
+        $totalGrupos   = Grupo::count();
         $totalMaterias = Materia::count();
         $totalSesiones = SesionClase::count();
 
@@ -44,16 +44,11 @@ class AdminController extends Controller
 
         $colorSemaforoGlobal = $porcentajeAsistencia >= 85 ? 'success' : ($porcentajeAsistencia >= 70 ? 'warning' : 'danger');
 
-        $codigosRecientes = CodigoDocente::with(['usadoPor', 'creadoPor'])
-            ->orderByDesc('created_at')
-            ->take(6)
-            ->get();
-
         return view('admin.dashboard', compact(
             'totalAlumnos',
             'totalProfesores',
             'totalAdmins',
-            'grupos',
+            'totalUsuarios',
             'totalGrupos',
             'totalMaterias',
             'totalSesiones',
@@ -65,8 +60,23 @@ class AdminController extends Controller
             'faltasCount',
             'totalRegistros',
             'porcentajeAsistencia',
-            'colorSemaforoGlobal',
-            'codigosRecientes'
+            'colorSemaforoGlobal'
+        ));
+    }
+
+    /**
+     * Catálogo y gestión de Grupos Oficiales Universitarios.
+     */
+    public function grupos()
+    {
+        $grupos        = Grupo::with('materias')->orderBy('nombre_grupo')->get();
+        $totalGrupos   = $grupos->count();
+        $totalMaterias = Materia::count();
+
+        return view('admin.grupos', compact(
+            'grupos',
+            'totalGrupos',
+            'totalMaterias'
         ));
     }
 
