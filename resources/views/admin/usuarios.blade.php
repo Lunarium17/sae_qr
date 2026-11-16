@@ -40,10 +40,10 @@
             <div>
                 <h3 class="fw-bold mb-0">
                     Directorio y Gestión de Usuarios
-                    <span class="info-icon" tabindex="0" role="button" aria-label="Administra cuentas de profesores y alumnos, edita sus datos o restablece contraseñas olvidadas.">
-                        <i class="bi bi-info-circle"></i>
-                        <span class="info-icon-text" role="tooltip">Administra cuentas de profesores y alumnos, edita sus datos o restablece contraseñas olvidadas.</span>
-                    </span>
+        <span class="info-icon" tabindex="0" role="button" aria-label="Cuentas de profesores y alumnos: editar datos o restablecer contraseñas.">
+            <i class="bi bi-info-circle"></i>
+            <span class="info-icon-text" role="tooltip">Cuentas de profesores y alumnos: editar datos o restablecer contraseñas.</span>
+        </span>
                 </h3>
             </div>
             <div class="d-flex gap-2">

@@ -40,10 +40,10 @@
             <div>
                 <h3 class="fw-bold mb-0">
                     Códigos de Acceso Docente
-                    <span class="info-icon" tabindex="0" role="button" aria-label="Genera códigos únicos de un solo uso para autorizar el registro de nuevos profesores.">
-                        <i class="bi bi-info-circle"></i>
-                        <span class="info-icon-text" role="tooltip">Genera códigos únicos de un solo uso para autorizar el registro de nuevos profesores.</span>
-                    </span>
+        <span class="info-icon" tabindex="0" role="button" aria-label="Códigos de un solo uso para registrar profesores.">
+            <i class="bi bi-info-circle"></i>
+            <span class="info-icon-text" role="tooltip">Códigos de un solo uso para registrar profesores.</span>
+        </span>
                 </h3>
             </div>
             <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary rounded-3">

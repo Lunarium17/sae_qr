@@ -56,16 +56,12 @@
 
         <!-- 1. Bienvenida y Acciones Rápidas -->
         <div class="card border-0 shadow-sm rounded-4 p-4 bg-white text-center mb-4">
-            <h3 class="fw-bold text-dark mb-3">
+            <h3 class="fw-bold text-dark mb-2">
                 Bienvenido, {{ \Illuminate\Support\Facades\Auth::user()->name }}
-                <span class="info-icon" tabindex="0" role="button" aria-label="Genera códigos de invitación de un solo uso para nuevos profesores, administra cuentas de usuarios y supervisa las estadísticas generales de la institución.">
-                    <i class="bi bi-info-circle"></i>
-                    <span class="info-icon-text" role="tooltip">Genera códigos de invitación de un solo uso para nuevos profesores, administra cuentas de usuarios y supervisa las estadísticas generales de la institución.</span>
-                </span>
             </h3>
-            <p class="text-muted small mb-4">
+            <p class="text-muted small mb-3">
                 {{ \Illuminate\Support\Facades\Auth::user()->email }}
-                | Rol: <span class="badge bg-info text-dark">Administrador Escolar</span>
+                | <span class="badge bg-info text-dark">Administrador</span>
             </p>
 
             <div class="d-flex flex-wrap justify-content-center gap-3">
@@ -144,9 +140,9 @@
                     <div>
                         <h6 class="fw-bold mb-0">
                             Índice Global de Asistencia Escolar
-                            <span class="info-icon" tabindex="0" role="button" aria-label="Promedio general de asistencia en todas las sesiones registradas ({{ $totalRegistros }} pases de lista).">
+                            <span class="info-icon" tabindex="0" role="button" aria-label="Promedio de asistencia institucional ({{ $totalRegistros }} pases de lista).">
                                 <i class="bi bi-info-circle"></i>
-                                <span class="info-icon-text" role="tooltip">Promedio general de asistencia en todas las sesiones registradas ({{ $totalRegistros }} pases de lista).</span>
+                                <span class="info-icon-text" role="tooltip">Promedio de asistencia institucional ({{ $totalRegistros }} pases de lista).</span>
                             </span>
                         </h6>
                     </div>
@@ -193,10 +189,10 @@
                         <div>
                             <h5 class="fw-bold mb-0">
                                 Códigos de Acceso Docente
-                                <span class="info-icon" tabindex="0" role="button" aria-label="Genera códigos de un solo uso para el registro de profesores.">
-                                    <i class="bi bi-info-circle"></i>
-                                    <span class="info-icon-text" role="tooltip">Genera códigos de un solo uso para el registro de profesores.</span>
-                                </span>
+                            <span class="info-icon" tabindex="0" role="button" aria-label="Códigos de un solo uso para registrar profesores.">
+                                <i class="bi bi-info-circle"></i>
+                                <span class="info-icon-text" role="tooltip">Códigos de un solo uso para registrar profesores.</span>
+                            </span>
                             </h5>
                         </div>
                         <a href="{{ route('admin.codigos') }}" class="btn btn-sm btn-outline-primary rounded-3">Ver todos</a>
@@ -275,10 +271,10 @@
                         <div>
                             <h5 class="fw-bold mb-0">
                                 Catálogo de Grupos Oficiales
-                                <span class="info-icon" tabindex="0" role="button" aria-label="Crea y administra los grupos oficiales por carrera y semestre.">
-                                    <i class="bi bi-info-circle"></i>
-                                    <span class="info-icon-text" role="tooltip">Crea y administra los grupos oficiales por carrera y semestre.</span>
-                                </span>
+                            <span class="info-icon" tabindex="0" role="button" aria-label="Grupos oficiales por carrera y semestre.">
+                                <i class="bi bi-info-circle"></i>
+                                <span class="info-icon-text" role="tooltip">Grupos oficiales por carrera y semestre.</span>
+                            </span>
                             </h5>
                         </div>
                         <button type="button" class="btn btn-sm btn-primary rounded-3 fw-semibold" data-bs-toggle="modal" data-bs-target="#modalCrearGrupoAdmin">
