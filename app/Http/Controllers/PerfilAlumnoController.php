@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class PerfilAlumnoController extends Controller
@@ -37,6 +38,7 @@ class PerfilAlumnoController extends Controller
                 Rule::unique('users', 'matricula_codigo')->ignore($alumno->id),
             ],
             'password'         => 'nullable|string|min:6|confirmed',
+            'foto_perfil'      => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ], [
             'name.required'           => 'Tu nombre completo es obligatorio.',
             'email.required'          => 'El correo electrónico es obligatorio.',
@@ -45,6 +47,9 @@ class PerfilAlumnoController extends Controller
             'matricula_codigo.unique' => 'Esta matrícula o código escolar ya está registrado por otro alumno.',
             'password.min'            => 'La nueva contraseña debe tener al menos 6 caracteres.',
             'password.confirmed'      => 'La confirmación de la nueva contraseña no coincide.',
+            'foto_perfil.image'       => 'El archivo seleccionado debe ser una imagen.',
+            'foto_perfil.mimes'       => 'La foto debe ser JPG, PNG o WEBP.',
+            'foto_perfil.max'         => 'La foto no debe superar los 2 MB.',
         ]);
 
         $datos = [
@@ -57,9 +62,45 @@ class PerfilAlumnoController extends Controller
             $datos['password'] = Hash::make($request->password);
         }
 
+        $foto = $this->guardarFotoPerfil($request, $alumno, $datos);
+        if (!is_null($foto)) {
+            $datos['foto_perfil'] = $foto;
+        }
+
         $alumno->update($datos);
 
         return redirect()->route('alumno.perfil')->with('success', 'Tus datos personales se han actualizado correctamente.');
+    }
+
+    // Guarda (o elimina) la foto de perfil en el disco público y devuelve la ruta relativa
+    private function guardarFotoPerfil(Request $request, User $usuario, array &$datos): ?string
+    {
+        if ($request->boolean('eliminar_foto')) {
+            $this->borrarFotoAnterior($usuario);
+            $datos['foto_perfil'] = null;
+
+            return null;
+        }
+
+        if (!$request->hasFile('foto_perfil')) {
+            return null;
+        }
+
+        $archivo = $request->file('foto_perfil');
+        $extension = strtolower($archivo->getClientOriginalExtension() ?: 'jpg');
+        $ruta = 'avatars/user-' . $usuario->id . '.' . $extension;
+
+        $this->borrarFotoAnterior($usuario);
+        $archivo->storeAs('avatars', 'user-' . $usuario->id . '.' . $extension, 'public');
+
+        return $ruta;
+    }
+
+    private function borrarFotoAnterior(User $usuario): void
+    {
+        if ($usuario->foto_perfil && Storage::disk('public')->exists($usuario->foto_perfil)) {
+            Storage::disk('public')->delete($usuario->foto_perfil);
+        }
     }
 
     // Mostrar formulario con los datos personales del profesor
@@ -89,6 +130,7 @@ class PerfilAlumnoController extends Controller
                 Rule::unique('users', 'matricula_codigo')->ignore($profesor->id),
             ],
             'password'         => 'nullable|string|min:6|confirmed',
+            'foto_perfil'      => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ], [
             'name.required'           => 'Tu nombre completo es obligatorio.',
             'email.required'          => 'El correo electrónico es obligatorio.',
@@ -97,6 +139,9 @@ class PerfilAlumnoController extends Controller
             'matricula_codigo.unique' => 'Esta clave docente o número de empleado ya está registrado por otro usuario.',
             'password.min'            => 'La nueva contraseña debe tener al menos 6 caracteres.',
             'password.confirmed'      => 'La confirmación de la nueva contraseña no coincide.',
+            'foto_perfil.image'       => 'El archivo seleccionado debe ser una imagen.',
+            'foto_perfil.mimes'       => 'La foto debe ser JPG, PNG o WEBP.',
+            'foto_perfil.max'         => 'La foto no debe superar los 2 MB.',
         ]);
 
         $datos = [
@@ -107,6 +152,11 @@ class PerfilAlumnoController extends Controller
 
         if ($request->filled('password')) {
             $datos['password'] = Hash::make($request->password);
+        }
+
+        $foto = $this->guardarFotoPerfil($request, $profesor, $datos);
+        if (!is_null($foto)) {
+            $datos['foto_perfil'] = $foto;
         }
 
         $profesor->update($datos);

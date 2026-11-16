@@ -55,6 +55,10 @@ Route::middleware(['auth', \App\Http\Middleware\CheckRol::class . ':profesor'])-
         return view('profesor.dashboard');
     })->name('profesor.dashboard');
 
+    Route::get('/profesor/estadisticas', function () {
+        return view('profesor.estadisticas');
+    })->name('profesor.estadisticas');
+
     // Rutas para gestión académica (Sprint 4)
     Route::resource('/profesor/materias', MateriaController::class);
     Route::resource('/profesor/grupos', GrupoController::class);
