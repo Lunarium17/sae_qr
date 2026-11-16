@@ -115,7 +115,7 @@
                                 <i class="bi bi-keyboard me-1"></i>¿Probando en una sola PC o sin cámara? Pega aquí el código de respaldo del alumno:
                             </label>
                             <div class="input-group input-group-sm">
-                                <input type="text" id="inputCodigoRespaldo" class="form-control font-monospace">
+                                <input type="text" id="inputCodigoRespaldo" class="form-control font-monospace" placeholder="Ej. 5.1761509200.a8f39c1b4d2e07f1">
                                 <button type="button" class="btn btn-outline-primary fw-semibold" onclick="validarTokenManual()">
                                     Validar Código
                                 </button>
