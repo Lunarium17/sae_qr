@@ -11,8 +11,8 @@
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="#"><i class="bi bi-person-badge me-2"></i>SAE QR | Inscripción Modular por Asignatura</a>
-            <a href="{{ url('/alumno/dashboard') }}" class="btn btn-outline-light btn-sm">
+            <a class="navbar-brand fw-bold" href="#">SAE QR | Inscripción Modular por Asignatura</a>
+            <a href="{{ url('/alumno/dashboard') }}" class="btn btn-light btn-sm text-primary fw-semibold">
                 <i class="bi bi-arrow-left me-1"></i>Volver a mi Panel
             </a>
         </div>
@@ -39,7 +39,7 @@
                 <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
                     <h5 class="fw-bold text-dark mb-1">Solicitar Inscripción en Asignatura</h5>
                     <p class="text-muted small mb-4">
-                        Selecciona el grupo y busca la asignatura que deseas cursar. Las asignaturas se cargan dinámicamente para mantener la página rápida.
+                        Selecciona el grupo y busca la asignatura que deseas cursar.
                     </p>
 
                     <form action="{{ route('alumno.solicitar.guardar') }}" method="POST" id="formSolicitarAsignatura" data-base-url="{{ url('/alumno/grupos') }}">
@@ -47,7 +47,7 @@
                         <div class="mb-3">
                             <label class="form-label fw-semibold">1. Selecciona el Grupo Académico</label>
                             <select id="select-grupo" name="grupo_id" class="form-select rounded-3" required>
-                                <option value="" selected disabled>Elige un grupo académico...</option>
+                                <option value="" selected disabled>Elige un grupo académico</option>
                                 @foreach($grupos as $grupo)
                                     <option value="{{ $grupo->id }}">
                                         {{ $grupo->nombre_grupo }}{{ $grupo->carrera ? ' — ' . $grupo->carrera : '' }} ({{ $grupo->grado }} | {{ $grupo->turno }})
@@ -57,17 +57,17 @@
                         </div>
 
                         <div class="mb-3 d-none" id="bloque-buscador-materia">
-                            <label class="form-label fw-semibold small text-muted mb-1">Filtrar asignatura por nombre o clave (opcional)</label>
+                            <label class="form-label fw-semibold small text-muted mb-1">Filtrar asignatura por nombre o clave</label>
                             <div class="input-group input-group-sm">
                                 <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
-                                <input type="text" id="input-filtrar-materia" class="form-control" autocomplete="off" placeholder="Ej. Cálculo, ING-301...">
+                                <input type="text" id="input-filtrar-materia" class="form-control" autocomplete="off">
                             </div>
                         </div>
 
                         <div class="mb-4">
                             <label class="form-label fw-semibold">2. Selecciona la Asignatura</label>
                             <select id="select-materia" name="materia_id" class="form-select rounded-3" required disabled>
-                                <option id="placeholder-materia" value="" selected disabled>Primero selecciona un grupo...</option>
+                                <option id="placeholder-materia" value="" selected disabled>Primero selecciona un grupo</option>
                             </select>
                             <div id="ayuda-materia" class="form-text text-danger d-none mt-1">
                                 No se encontraron asignaturas disponibles en este grupo.
@@ -158,7 +158,7 @@
 
                 selectMateria.disabled = true;
                 btnEnviar.disabled = true;
-                selectMateria.innerHTML = '<option value="" selected disabled>Cargando asignaturas...</option>';
+                selectMateria.innerHTML = '<option value="" selected disabled>Cargando asignaturas</option>';
                 ayudaMateria.classList.add('d-none');
 
                 const url = baseUrl + '/' + encodeURIComponent(grupoId) + '/materias?q=' + encodeURIComponent(filtroTexto || '');
@@ -184,7 +184,7 @@
                         optDefault.value = '';
                         optDefault.disabled = true;
                         optDefault.selected = true;
-                        optDefault.textContent = 'Elige una asignatura de este grupo (' + materias.length + ')...';
+                        optDefault.textContent = 'Elige una asignatura de este grupo (' + materias.length + ')';
                         selectMateria.appendChild(optDefault);
 
                         materias.forEach(function (m) {

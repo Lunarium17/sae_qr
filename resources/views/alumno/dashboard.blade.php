@@ -118,9 +118,6 @@
                             <i class="bi bi-card-heading me-1"></i>{{ $alumno->matricula_codigo ? 'Matrícula: ' . $alumno->matricula_codigo : 'Sin matrícula registrada' }}
                         </span>
                     </div>
-                    <p class="text-muted small mb-0">
-                        <i class="bi bi-envelope me-1"></i>{{ $alumno->email }} — Consulta tus materias inscritas, avisos de asistencia y presenta tu código QR temporal en clase.
-                    </p>
                 </div>
                 <div class="d-flex flex-wrap align-items-center gap-2">
                     <a href="{{ route('alumno.solicitar') }}" class="btn btn-primary btn-sm rounded-3 px-3 py-2 fw-semibold">
@@ -140,7 +137,7 @@
         <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h5 class="fw-bold text-dark mb-0">
-                    <i class="bi bi-bell-fill me-2 text-warning"></i>Centro de Avisos y Recordatorios
+                    Centro de Avisos y Recordatorios
                 </h5>
                 @php
                     $totalAvisos = $sesionesActivasPendientes->count() + count($alertasMateriasFaltas) + $incidenciasPorJustificar->count();
@@ -210,7 +207,7 @@
                 </div>
             @elseif ($totalAvisos === 0)
                 <div class="text-center text-muted py-2">
-                    <i class="bi bi-check-circle-fill text-success me-1"></i>No tienes faltas pendientes por justificar ni alertas de asistencia en este momento.
+                    No tienes faltas pendientes por justificar ni alertas de asistencia en este momento.
                 </div>
             @endif
         </div>
@@ -252,7 +249,7 @@
                     </button>
 
                     <div class="mt-3 pt-2 border-top">
-                        <small class="text-muted d-block mb-1">Código de respaldo (para pruebas en la misma PC):</small>
+                        <small class="text-muted d-block mb-1">Código de respaldo:</small>
                         <code id="qr-token-respaldo" class="user-select-all bg-light px-2 py-1 rounded border small text-dark">—</code>
                     </div>
 
@@ -309,7 +306,7 @@
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
                 <div>
                     <h5 class="fw-bold text-dark mb-0">
-                        <i class="bi bi-journal-check me-2 text-primary"></i>Mis Materias Inscritas y Derecho a Examen Ordinario
+                        Mis Materias Inscritas y Derecho a Examen Ordinario
                     </h5>
                     <p class="text-muted small mb-0">
                         Regla universitaria: <strong>cada 3 retardos acumulados en una misma asignatura equivalen a 1 falta</strong> (Máx. permitido: 3 faltas).

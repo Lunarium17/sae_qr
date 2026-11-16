@@ -57,7 +57,7 @@
                             @method('PUT')
 
                             <h6 class="fw-bold text-uppercase text-muted small mb-3">
-                                <i class="bi bi-person-lines-fill me-1"></i>Información General
+                                Información General
                             </h6>
 
                             <div class="row g-3 mb-4">
@@ -73,16 +73,15 @@
 
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold">Matrícula / Número de Control</label>
-                                    <input type="text" name="matricula_codigo" value="{{ old('matricula_codigo', $alumno->matricula_codigo) }}" class="form-control rounded-3" placeholder="Ej. 202600123" maxlength="30">
+                                    <input type="text" name="matricula_codigo" value="{{ old('matricula_codigo', $alumno->matricula_codigo) }}" class="form-control rounded-3" maxlength="30">
                                 </div>
                             </div>
 
                             <hr class="my-4">
 
-                            <h6 class="fw-bold text-uppercase text-muted small mb-1">
-                                <i class="bi bi-shield-lock-fill me-1"></i>Seguridad y Contraseña
+                            <h6 class="fw-bold text-uppercase text-muted small mb-3">
+                                Seguridad y Contraseña
                             </h6>
-                            <p class="text-muted small mb-3">Deja estos campos en blanco si no deseas cambiar tu contraseña actual.</p>
 
                             <div class="row g-3 mb-4">
                                 <div class="col-md-6">

@@ -6,6 +6,11 @@
     <title>Mis Justificantes | SAE QR</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        .info-icon { position: relative; display: inline-flex; align-items: center; color: #0d6efd; cursor: help; vertical-align: middle; }
+        .info-icon .info-icon-text { position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); min-width: 220px; max-width: 280px; background: #212529; color: #fff; font-size: .75rem; font-weight: 400; line-height: 1.35; padding: .45rem .6rem; border-radius: .4rem; box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .2); opacity: 0; visibility: hidden; transition: opacity .15s; z-index: 10; text-align: left; }
+        .info-icon:hover .info-icon-text, .info-icon:focus .info-icon-text, .info-icon:focus-within .info-icon-text { opacity: 1; visibility: visible; }
+    </style>
 </head>
 <body class="bg-light">
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
@@ -36,17 +41,17 @@
             <!-- Formulario para subir justificante -->
             <div class="col-lg-5">
                 <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
-                    <h5 class="fw-bold text-dark mb-3"><i class="bi bi-upload me-2 text-primary"></i>Subir Comprobante</h5>
-                    <p class="text-muted small">Selecciona la inasistencia o retardo que deseas justificar y adjunta tu documento médico o institucional si aplica (PDF, JPG o PNG).</p>
+                    <h5 class="fw-bold text-dark mb-3">Subir Comprobante</h5>
+                    <p class="text-muted small">Selecciona la inasistencia o retardo que deseas justificar y adjunta tu documento médico o institucional si aplica.</p>
 
                     <form id="form-justificante" action="{{ route('alumno.justificantes.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div id="alerta-archivo" class="alert alert-danger rounded-3 shadow-sm d-none mb-3"></div>
 
                         <div class="mb-3">
-                            <label class="form-label fw-semibold">Incidencia a justificar</label>
+                            <label class="form-label fw-semibold">Incidencia a justificar <span class="text-danger">*</span></label>
                             <select name="registro_id" class="form-select" required>
-                                <option value="">-- Selecciona una sesión --</option>
+                                <option value="">Selecciona una sesión</option>
                                 @foreach($incidencias as $inc)
                                     @if(!$inc->justificante || $inc->justificante->estado_aprobacion !== 'aceptado')
                                         <option value="{{ $inc->id }}" {{ (isset($registroSeleccionado) && (int) $registroSeleccionado === (int) $inc->id) ? 'selected' : '' }}>
@@ -58,12 +63,18 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label fw-semibold">Motivo de la inasistencia</label>
+                            <label class="form-label fw-semibold">Motivo de la inasistencia <span class="text-danger">*</span></label>
                             <textarea name="motivo" rows="3" class="form-control" placeholder="Describe brevemente el motivo médico o académico..." required>{{ old('motivo') }}</textarea>
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label fw-semibold">Subir Justificante <span class="text-muted fw-normal">(Opcional - PDF, JPG, JPEG, PNG | Máx. 5 MB)</span></label>
+                            <label class="form-label fw-semibold">
+                                Subir Justificante
+                                <span class="info-icon" tabindex="0" role="button" aria-label="Formatos permitidos: PDF, JPG, JPEG y PNG. Tamaño máximo: 5 MB.">
+                                    <i class="bi bi-info-circle"></i>
+                                    <span class="info-icon-text" role="tooltip">Formatos permitidos: PDF, JPG, JPEG y PNG. Tamaño máximo: 5 MB.</span>
+                                </span>
+                            </label>
                             <input type="file" id="input-documento" name="documento" class="form-control" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png">
                         </div>
 
@@ -77,7 +88,7 @@
             <!-- Historial de justificantes enviados -->
             <div class="col-lg-7">
                 <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
-                    <h5 class="fw-bold text-dark mb-3"><i class="bi bi-clock-history me-2 text-secondary"></i>Historial de Solicitudes</h5>
+                    <h5 class="fw-bold text-dark mb-3">Historial de Solicitudes</h5>
                     <div class="table-responsive">
                         <table class="table align-middle">
                             <thead class="table-light">

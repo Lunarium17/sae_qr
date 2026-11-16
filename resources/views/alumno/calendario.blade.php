@@ -51,7 +51,7 @@
                 <div class="col-md-5">
                     <label class="form-label fw-semibold">Filtrar por Materia</label>
                     <select name="materia_id" class="form-select">
-                        <option value="">-- Todas mis materias --</option>
+                        <option value="">Todas mis materias</option>
                         @foreach($misMaterias as $mat)
                             <option value="{{ $mat->materia->id }}" {{ $materiaFiltro == $mat->materia->id ? 'selected' : '' }}>
                                 {{ $mat->materia->nombre_materia }} ({{ $mat->materia->codigo_materia }})
@@ -72,32 +72,32 @@
             <div class="col-6 col-md-3">
                 <div class="card border-0 shadow-sm rounded-4 p-3 bg-success bg-opacity-10 border-start border-success border-4">
                     <h3 class="fw-bold text-success mb-0">{{ $asistencias }}</h3>
-                    <small class="text-muted fw-semibold">Asistencias (Verde)</small>
+                    <small class="text-muted fw-semibold">Asistencias</small>
                 </div>
             </div>
             <div class="col-6 col-md-3">
                 <div class="card border-0 shadow-sm rounded-4 p-3 bg-warning bg-opacity-10 border-start border-warning border-4">
                     <h3 class="fw-bold text-warning mb-0">{{ $retardos }}</h3>
-                    <small class="text-muted fw-semibold">Retardos (3 Ret. = +{{ $faltasPorRetardos }} Falta)</small>
+                    <small class="text-muted fw-semibold">Retardos</small>
                 </div>
             </div>
             <div class="col-6 col-md-3">
                 <div class="card border-0 shadow-sm rounded-4 p-3 bg-info bg-opacity-10 border-start border-info border-4">
                     <h3 class="fw-bold text-info mb-0">{{ $permisos }}</h3>
-                    <small class="text-muted fw-semibold">Permisos (Azul)</small>
+                    <small class="text-muted fw-semibold">Permisos</small>
                 </div>
             </div>
             <div class="col-6 col-md-3">
                 <div class="card border-0 shadow-sm rounded-4 p-3 bg-danger bg-opacity-10 border-start border-danger border-4">
                     <h3 class="fw-bold text-danger mb-0">{{ $faltasTotales }}</h3>
-                    <small class="text-muted fw-semibold">Faltas Computadas ({{ $faltas }} dir. + {{ $faltasPorRetardos }} por ret.)</small>
+                    <small class="text-muted fw-semibold">Faltas Computadas</small>
                 </div>
             </div>
         </div>
 
         <!-- Tarjetas de sesiones del mes (Calendario Visual) -->
         <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
-            <h5 class="fw-bold text-dark mb-4"><i class="bi bi-calendar3 me-2 text-primary"></i>Registro Diario del Mes</h5>
+            <h5 class="fw-bold text-dark mb-4">Registro Diario del Mes</h5>
 
             <div class="row g-3">
                 @forelse($registros as $reg)
