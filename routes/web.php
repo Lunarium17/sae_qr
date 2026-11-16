@@ -91,6 +91,14 @@ Route::middleware(['auth', \App\Http\Middleware\CheckRol::class . ':alumno'])->g
         return view('alumno.dashboard');
     })->name('alumno.dashboard');
 
+    // Secciones modulares del panel de alumno
+    Route::get('/alumno/qr', function () {
+        return view('alumno.qr');
+    })->name('alumno.qr');
+    Route::get('/alumno/materias', function () {
+        return view('alumno.materias');
+    })->name('alumno.materias');
+
     // Rutas de solicitud de grupo (Sprint 4)
     Route::get('/alumno/solicitar-grupo', [MatriculaController::class, 'crearSolicitud'])->name('alumno.solicitar');
     Route::get('/alumno/grupos/{grupo}/materias', [MatriculaController::class, 'materiasPorGrupo'])->name('alumno.grupo.materias');
