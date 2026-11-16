@@ -10,8 +10,8 @@
 <body class="bg-light">
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ route('alumno.dashboard') }}">
-                <i class="bi bi-arrow-left-circle me-2"></i>Volver al Panel
+            <a class="btn btn-light btn-sm text-primary fw-semibold rounded-3" href="{{ route('alumno.dashboard') }}">
+                <i class="bi bi-arrow-left me-1"></i>Volver al Panel
             </a>
             <span class="navbar-text text-white fw-bold">Calendario e Historial Mensual</span>
         </div>
@@ -21,7 +21,6 @@
         <!-- Alerta de límite crítico de faltas y Derecho a Examen Ordinario (RF-14 + Regla Universitaria: 3 retardos = 1 falta) -->
         @if($alertaCritica)
             <div class="alert alert-danger d-flex align-items-center rounded-4 shadow-sm mb-4" role="alert">
-                <i class="bi bi-exclamation-triangle-fill fs-3 me-3"></i>
                 <div>
                     <h6 class="fw-bold mb-1">¡Alerta Crítica: Sin Derecho a Examen Ordinario ({{ $faltasTotales }} / 3 faltas acumuladas)!</h6>
                     <p class="mb-0 small">
@@ -31,7 +30,6 @@
             </div>
         @elseif(!empty($alertaPreventiva))
             <div class="alert alert-warning d-flex align-items-center rounded-4 shadow-sm mb-4" role="alert">
-                <i class="bi bi-exclamation-circle-fill fs-3 me-3"></i>
                 <div>
                     <h6 class="fw-bold mb-1">Aviso Preventivo de Derecho a Examen (2 / 3 faltas acumuladas)</h6>
                     <p class="mb-0 small">

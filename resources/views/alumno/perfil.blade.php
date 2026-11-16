@@ -10,8 +10,8 @@
 <body class="bg-light">
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ route('alumno.dashboard') }}">
-                <i class="bi bi-arrow-left-circle me-2"></i>Volver a mi Panel
+            <a class="btn btn-light btn-sm text-primary fw-semibold rounded-3" href="{{ route('alumno.dashboard') }}">
+                <i class="bi bi-arrow-left me-1"></i>Volver a mi Panel
             </a>
             <span class="navbar-text text-white fw-bold">Mis Datos Personales</span>
         </div>
@@ -22,7 +22,7 @@
             <div class="col-lg-7">
                 @if (session('success'))
                     <div class="alert alert-success alert-dismissible fade show rounded-3 shadow-sm mb-4">
-                        <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+                        {{ session('success') }}
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 @endif
