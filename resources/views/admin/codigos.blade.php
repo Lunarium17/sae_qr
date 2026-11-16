@@ -6,20 +6,25 @@
     <title>Códigos de Acceso Docente - SAE QR</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        .info-icon { position: relative; display: inline-flex; align-items: center; color: #0d6efd; cursor: help; vertical-align: middle; font-size: .8em; margin-left: .15rem; padding: .1rem; }
+        .info-icon .info-icon-text { position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); min-width: 240px; max-width: 320px; background: #212529; color: #fff; font-size: .75rem; font-weight: 400; line-height: 1.35; padding: .5rem .65rem; border-radius: .4rem; box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .2); opacity: 0; visibility: hidden; transition: opacity .15s; z-index: 10; text-align: left; }
+        .info-icon:hover .info-icon-text, .info-icon:focus .info-icon-text, .info-icon:focus-within .info-icon-text { opacity: 1; visibility: visible; }
+    </style>
 </head>
 <body class="bg-light">
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container">
             <a class="navbar-brand fw-bold" href="{{ route('admin.dashboard') }}">
-                <i class="bi bi-shield-lock-fill text-info me-2"></i>SAE QR | Panel de Administrador
+                SAE QR | Panel de Administrador
             </a>
             <div class="d-flex align-items-center gap-2">
-                <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-light btn-sm rounded-3">
-                    <i class="bi bi-speedometer2 me-1"></i>Dashboard
+                <a href="{{ route('admin.dashboard') }}" class="btn btn-light btn-sm text-dark fw-semibold rounded-3">
+                    Dashboard
                 </a>
-                <a href="{{ route('admin.usuarios') }}" class="btn btn-outline-light btn-sm rounded-3">
-                    <i class="bi bi-people-fill me-1"></i>Usuarios
+                <a href="{{ route('admin.usuarios') }}" class="btn btn-light btn-sm text-dark fw-semibold rounded-3">
+                    Usuarios
                 </a>
                 <form action="{{ route('logout') }}" method="POST" class="d-inline">
                     @csrf
@@ -33,8 +38,13 @@
 
         <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
             <div>
-                <h3 class="fw-bold mb-0"><i class="bi bi-key-fill text-primary me-2"></i>Códigos de Acceso Docente</h3>
-                <p class="text-muted mb-0">Genera códigos únicos de un solo uso para autorizar el registro de nuevos profesores.</p>
+                <h3 class="fw-bold mb-0">
+                    Códigos de Acceso Docente
+        <span class="info-icon" tabindex="0" role="button" aria-label="Códigos de un solo uso para registrar profesores.">
+            <i class="bi bi-info-circle"></i>
+            <span class="info-icon-text" role="tooltip">Códigos de un solo uso para registrar profesores.</span>
+        </span>
+                </h3>
             </div>
             <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary rounded-3">
                 <i class="bi bi-arrow-left me-1"></i>Volver al Panel
@@ -62,15 +72,15 @@
         <!-- Formulario para generar nuevo código -->
         <div class="card border-0 shadow-sm rounded-4 mb-4">
             <div class="card-body p-4">
-                <h5 class="fw-bold mb-3"><i class="bi bi-plus-circle-fill text-primary me-2"></i>Generar Nuevo Código Docente</h5>
+                <h5 class="fw-bold mb-3">Generar Nuevo Código Docente</h5>
                 <form action="{{ route('admin.codigos.generar') }}" method="POST" class="row g-3 align-items-end">
                     @csrf
                     <div class="col-md-5">
-                        <label for="descripcion_nota" class="form-label fw-semibold">Nota / Profesor Destinatario (Opcional)</label>
-                        <input type="text" class="form-control rounded-3" id="descripcion_nota" name="descripcion_nota" value="{{ old('descripcion_nota') }}" maxlength="150" placeholder="Ej. Entregar al Prof. Carlos Méndez (Matemáticas)">
+                        <label for="descripcion_nota" class="form-label fw-semibold">Nota / Profesor Destinatario</label>
+                        <input type="text" class="form-control rounded-3" id="descripcion_nota" name="descripcion_nota" value="{{ old('descripcion_nota') }}" maxlength="150">
                     </div>
                     <div class="col-md-4">
-                        <label for="codigo_personalizado" class="form-label fw-semibold">Código Personalizado (Opcional)</label>
+                        <label for="codigo_personalizado" class="form-label fw-semibold">Código Personalizado</label>
                         <input type="text" class="form-control rounded-3 text-uppercase font-monospace" id="codigo_personalizado" name="codigo_personalizado" value="{{ old('codigo_personalizado') }}" maxlength="30" placeholder="Dejar vacío para autogenerar">
                     </div>
                     <div class="col-md-3">
@@ -112,11 +122,11 @@
                                     <td>
                                         @if ($cod->usado)
                                             <span class="badge bg-secondary px-3 py-2 rounded-pill">
-                                                <i class="bi bi-check2-all me-1"></i>Canjeado
+                                                Canjeado
                                             </span>
                                         @else
                                             <span class="badge bg-success px-3 py-2 rounded-pill">
-                                                <i class="bi bi-unlock-fill me-1"></i>Disponible (1 uso)
+                                                Disponible (1 uso)
                                             </span>
                                         @endif
                                     </td>
