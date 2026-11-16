@@ -3,9 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Alumno - SAE QR</title>
+    <title>Inicio - SAE QR</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        .card-hover { transition: transform .15s ease, box-shadow .15s ease; }
+        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 .5rem 1.25rem rgba(0,0,0,.12) !important; }
+        .card-hover:active { transform: scale(.98); }
+        a.card-hover:focus-visible { outline: 3px solid rgba(13,110,253,.35); outline-offset: 2px; }
+    </style>
 </head>
 <body class="bg-light">
 
@@ -90,12 +96,19 @@
                 ];
             }
         }
+
+        $avHue = abs(crc32($alumno->name ?? 'U')) % 360;
     @endphp
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="#">SAE QR | Panel de Alumno</a>
+            <a class="navbar-brand fw-bold" href="#">SAE QR | Inicio</a>
             <div class="d-flex align-items-center gap-2">
+                @if ($alumno->foto_perfil)
+                    <img src="{{ asset('storage/' . $alumno->foto_perfil) }}" alt="Foto de perfil" class="rounded-circle" style="width: 34px; height: 34px; object-fit: cover; border: 2px solid rgba(255,255,255,.5);">
+                @else
+                    <span class="d-inline-flex align-items-center justify-content-center rounded-circle fw-bold text-white" style="width: 34px; height: 34px; background: hsl({{ $avHue }}, 65%, 45%); font-size: .85rem;">{{ mb_strtoupper(mb_substr($alumno->name ?? 'U', 0, 1)) }}</span>
+                @endif
                 <a href="{{ route('alumno.perfil') }}" class="btn btn-light btn-sm text-primary fw-semibold rounded-3">
                     Mi Perfil
                 </a>
@@ -150,7 +163,7 @@
                     <div>
                         <strong>¡Clase Activa en Curso!</strong> La materia <strong>{{ $sesionAct->materia->nombre_materia }}</strong>
                         {{ $sesionAct->materia->grupo ? '(' . $sesionAct->materia->grupo->nombre_grupo . ')' : '' }}
-                        está abierta desde las {{ $sesionAct->hora_inicio }}. Presenta tu código QR de abajo a tu profesor.
+                        está abierta desde las {{ $sesionAct->hora_inicio }}. <a href="{{ route('alumno.qr') }}" class="fw-semibold">Presenta tu código QR aquí</a>.
                     </div>
                     <span class="badge bg-success">Escaneo Pendiente</span>
                 </div>
@@ -207,299 +220,124 @@
             @endif
         </div>
 
-        <!-- 3. Código QR Temporal + Resumen General de Asistencia -->
-        <div class="row g-4 mb-4">
-            <!-- Columna del Código QR Dinámico -->
-            <div class="col-md-5">
-                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white text-center h-100">
-                    <h5 class="text-dark mb-3 fw-bold">Mi Código QR Temporal</h5>
-
-                    <!-- Confirmación en Tiempo Real cuando el QR del Alumno es escaneado -->
-                    <div id="qr-confirmacion-escaneo" data-estado-url="{{ route('qr.estado') }}" class="alert alert-success border-success border-2 rounded-4 py-2 px-3 mb-3 d-none shadow-sm text-start">
-                        <div class="d-flex align-items-center">
-                            <div class="small">
-                                <div class="fw-bold text-success">¡Pase de Lista Confirmado Hoy!</div>
-                                <div id="qr-confirmacion-detalle" class="text-dark"></div>
-                            </div>
-                        </div>
+        <!-- 3. Resumen Global de Asistencia (mosaicos clicables) -->
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-xl-3">
+                <a href="{{ route('alumno.calendario') }}" class="d-block text-decoration-none">
+                    <div class="h-100 rounded-4 border-start border-4 border-success bg-success bg-opacity-10 text-center p-3 card-hover">
+                        <i class="bi bi-check-circle-fill fs-4 text-success d-block mb-2"></i>
+                        <div class="fs-4 fw-bold text-success">{{ $asistenciasCount }}</div>
+                        <div class="small text-muted">Asistencias</div>
                     </div>
-                    
-                    <div class="p-3 bg-white border rounded-4 d-inline-flex align-items-center justify-content-center mx-auto mb-3 shadow-sm" style="width: 246px; height: 246px;">
-                        <div id="qrcode" data-qr-url="{{ route('qr.generar') }}"></div>
-                    </div>
-
-                    <div id="qr-error-sesion" class="alert alert-warning small py-2 px-3 d-none mb-2">
-                        Tu sesión de Alumno cambió porque iniciaste sesión como Profesor en otra pestaña del mismo navegador. Abre el perfil de Profesor o Alumno en una <strong>ventana de incógnito</strong> o en otro dispositivo.
-                    </div>
-
-                    <div class="mb-2">
-                        <span id="qr-timer" class="badge bg-primary bg-opacity-10 text-primary border border-primary px-3 py-2 rounded-pill">
-                            Actualizando en 60s
-                        </span>
-                    </div>
-
-                    <button onclick="generarNuevoQR()" class="btn btn-sm btn-outline-secondary rounded-pill mx-auto px-3 mt-1">
-                        <i class="bi bi-arrow-clockwise me-1"></i>Renovar QR ahora
-                    </button>
-
-                    <div class="mt-3 pt-2 border-top">
-                        <small class="text-muted d-block mb-1">Código de respaldo:</small>
-                        <code id="qr-token-respaldo" class="user-select-all bg-light px-2 py-1 rounded border small text-dark">—</code>
-                    </div>
-
-                    <p class="text-muted small mt-2 mb-0">Presenta esta pantalla frente a la cámara de tu profesor durante la clase activa.</p>
-                </div>
+                </a>
             </div>
-            
-            <!-- Columna de Resumen de Asistencia -->
-            <div class="col-md-7">
-                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
-                    <h5 class="text-dark fw-bold mb-4">Resumen Global de Asistencia</h5>
-
-                    <div class="row g-3 mb-4">
-                        <div class="col-6 col-xl-3">
-                            <div class="h-100 rounded-4 border-start border-4 border-success bg-success bg-opacity-10 text-center p-3">
-                                <i class="bi bi-check-circle-fill fs-4 text-success d-block mb-2"></i>
-                                <div class="fs-4 fw-bold text-success">{{ $asistenciasCount }}</div>
-                                <div class="small text-muted">Asistencias</div>
-                            </div>
-                        </div>
-                        <div class="col-6 col-xl-3">
-                            <div class="h-100 rounded-4 border-start border-4 border-warning bg-warning bg-opacity-10 text-center p-3">
-                                <i class="bi bi-clock-fill fs-4 text-warning d-block mb-2"></i>
-                                <div class="fs-4 fw-bold text-dark">{{ $retardosCount }}</div>
-                                <div class="small text-muted">Retardos</div>
-                            </div>
-                        </div>
-                        <div class="col-6 col-xl-3">
-                            <div class="h-100 rounded-4 border-start border-4 border-danger bg-danger bg-opacity-10 text-center p-3">
-                                <i class="bi bi-x-circle-fill fs-4 text-danger d-block mb-2"></i>
-                                <div class="fs-4 fw-bold text-danger">{{ $faltasCount }}</div>
-                                <div class="small text-muted">Faltas sin justificar</div>
-                            </div>
-                        </div>
-                        <div class="col-6 col-xl-3">
-                            <div class="h-100 rounded-4 border-start border-4 border-primary bg-primary bg-opacity-10 text-center p-3">
-                                <i class="bi bi-file-earmark-check fs-4 text-primary d-block mb-2"></i>
-                                <div class="fs-4 fw-bold text-primary">{{ $permisosCount }}</div>
-                                <div class="small text-muted">Permiso / Justificado</div>
-                            </div>
-                        </div>
+            <div class="col-6 col-xl-3">
+                <a href="{{ route('alumno.calendario') }}" class="d-block text-decoration-none">
+                    <div class="h-100 rounded-4 border-start border-4 border-warning bg-warning bg-opacity-10 text-center p-3 card-hover">
+                        <i class="bi bi-clock-fill fs-4 text-warning d-block mb-2"></i>
+                        <div class="fs-4 fw-bold text-dark">{{ $retardosCount }}</div>
+                        <div class="small text-muted">Retardos</div>
                     </div>
-
-                    <hr class="my-4">
-                    <div class="d-grid gap-3">
-                        <a href="{{ route('alumno.calendario') }}" class="btn btn-outline-primary rounded-3 text-start d-flex justify-content-between align-items-center">
-                            <span><i class="bi bi-calendar3 me-2"></i>Ver Calendario Mensual</span>
-                            <i class="bi bi-chevron-right"></i>
-                        </a>
-                        <a href="{{ route('alumno.justificantes') }}" class="btn btn-outline-secondary rounded-3 text-start d-flex justify-content-between align-items-center">
-                            <span>
-                                <i class="bi bi-upload me-2"></i>Carga Digital de Justificante
-                                @if ($incidenciasPorJustificar->count() > 0)
-                                    <span class="badge bg-danger ms-2">{{ $incidenciasPorJustificar->count() }} pendiente(s)</span>
-                                @endif
-                            </span>
-                            <i class="bi bi-chevron-right"></i>
-                        </a>
+                </a>
+            </div>
+            <div class="col-6 col-xl-3">
+                <a href="{{ route('alumno.justificantes') }}" class="d-block text-decoration-none">
+                    <div class="h-100 rounded-4 border-start border-4 border-danger bg-danger bg-opacity-10 text-center p-3 card-hover">
+                        <i class="bi bi-x-circle-fill fs-4 text-danger d-block mb-2"></i>
+                        <div class="fs-4 fw-bold text-danger">{{ $faltasCount }}</div>
+                        <div class="small text-muted">Faltas sin justificar</div>
                     </div>
-                </div>
+                </a>
+            </div>
+            <div class="col-6 col-xl-3">
+                <a href="{{ route('alumno.calendario') }}" class="d-block text-decoration-none">
+                    <div class="h-100 rounded-4 border-start border-4 border-primary bg-primary bg-opacity-10 text-center p-3 card-hover">
+                        <i class="bi bi-file-earmark-check fs-4 text-primary d-block mb-2"></i>
+                        <div class="fs-4 fw-bold text-primary">{{ $permisosCount }}</div>
+                        <div class="small text-muted">Permiso / Justificado</div>
+                    </div>
+                </a>
             </div>
         </div>
 
-        <!-- 4. Tabla de Mis Materias Inscritas, Regla Universitaria (3 Retardos = 1 Falta) y Derecho a Examen -->
+        <!-- 4. Accesos por Sección -->
         <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
-            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-                <div class="d-flex flex-wrap align-items-center gap-2">
-                    <h5 class="fw-bold text-dark mb-0">
-                        Mis Materias Inscritas y Derecho a Examen Ordinario
-                    </h5>
-                    <span class="badge bg-secondary bg-opacity-10 text-secondary border rounded-pill fw-normal">
-                        3 retardos = 1 falta · máx. 3 faltas
-                    </span>
+            <h5 class="fw-bold text-dark mb-3">Secciones</h5>
+            <div class="row g-3">
+                <div class="col-6 col-md-4">
+                    <a href="{{ route('alumno.qr') }}" class="d-block text-decoration-none">
+                        <div class="h-100 rounded-4 border bg-white p-3 card-hover">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span class="d-inline-flex align-items-center justify-content-center rounded-4 bg-primary bg-opacity-10 text-primary p-2"><i class="bi bi-qr-code fs-4"></i></span>
+                                <i class="bi bi-chevron-right text-muted"></i>
+                            </div>
+                            <div class="fw-semibold text-dark">Mi Código QR @if ($sesionesActivasPendientes->count() > 0)<span class="badge bg-success ms-1">Clase activa</span>@endif</div>
+                            <div class="small text-muted">Preséntalo en tu clase en curso</div>
+                        </div>
+                    </a>
                 </div>
-                <span class="badge bg-primary rounded-pill">{{ $matriculasAceptadas->count() }} Materias Aceptadas</span>
-            </div>
-
-            <div class="table-responsive">
-                    <table class="table table-striped table-hover align-middle mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Grupo / Carrera</th>
-                            <th>Materia</th>
-                            <th class="text-center">Registro (A / R / P / F)</th>
-                            <th style="min-width: 155px;">% Asistencia</th>
-                            <th class="text-center">Faltas Computadas</th>
-                            <th class="text-center">Derecho a Examen</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($matriculasAceptadas as $mat)
-                            @php
-                                $pctM = $mat->porcentaje_mat;
-                                $colorM = is_null($pctM) ? 'secondary' : ($pctM >= 85 ? 'success' : ($pctM >= 70 ? 'warning' : 'danger'));
-                            @endphp
-                            <tr>
-                                <td>
-                                    <span class="badge bg-primary bg-opacity-10 text-primary border border-primary">
-                                        {{ $mat->grupo->nombre_grupo ?? '-' }} ({{ $mat->grupo->turno ?? '-' }})
-                                    </span>
-                                    @if (!empty($mat->grupo->carrera) || !empty($mat->grupo->grado))
-                                        <div class="small text-muted mt-1">
-                                            {{ $mat->grupo->carrera ? $mat->grupo->carrera . ' — ' : '' }}{{ $mat->grupo->grado ?? '' }}
-                                        </div>
-                                    @endif
-                                </td>
-                                <td>
-                                    @if ($mat->materia)
-                                        <span class="badge bg-dark me-1">{{ $mat->materia->codigo_materia }}</span>
-                                        <span class="fw-semibold text-dark">{{ $mat->materia->nombre_materia }}</span>
-                                    @else
-                                        <span class="text-muted">Sin materia</span>
-                                    @endif
-                                </td>
-                                <td class="text-center">
-                                    <span class="badge bg-success me-1">A: {{ $mat->asistencias_mat }}</span>
-                                    <span class="badge bg-warning text-dark me-1">R: {{ $mat->retardos_mat }}</span>
-                                    <span class="badge bg-info text-dark me-1">P: {{ $mat->permisos_mat }}</span>
-                                    <span class="badge bg-danger">F: {{ $mat->faltas_mat }}</span>
-                                </td>
-                                <td>
-                                    @if (is_null($pctM))
-                                        <span class="text-muted small">Sin sesiones aún</span>
-                                    @else
-                                        <div class="d-flex justify-content-between small mb-1">
-                                            <span class="fw-bold text-{{ $colorM === 'warning' ? 'dark' : $colorM }}">{{ $pctM }}%</span>
-                                            <span class="text-muted">{{ $mat->total_sesiones }} sesiones</span>
-                                        </div>
-                                        <div class="progress rounded-pill" style="height: 7px;">
-                                            <div class="progress-bar bg-{{ $colorM }}" role="progressbar" data-width="{{ $pctM }}"></div>
-                                        </div>
-                                    @endif
-                                </td>
-                                <td class="text-center">
-                                    <div class="fw-bold {{ $mat->faltas_totales_mat >= 3 ? 'text-danger' : ($mat->faltas_totales_mat === 2 ? 'text-warning text-dark' : 'text-success') }}">
-                                        {{ $mat->faltas_totales_mat }} / 3 faltas
-                                    </div>
-                                    <div class="text-muted" style="font-size: 0.75rem;">
-                                        {{ $mat->faltas_mat }} dir. + {{ $mat->faltas_retardos_mat }} por {{ $mat->retardos_mat }} ret.
-                                    </div>
-                                </td>
-                                <td class="text-center">
-                                    @if ($mat->faltas_totales_mat >= 3)
-                                        <span class="badge bg-danger">
-                                            Sin Derecho a Examen (SD)
-                                        </span>
-                                    @elseif ($mat->faltas_totales_mat === 2)
-                                        <span class="badge bg-warning text-dark">
-                                            En Riesgo / Preventivo (2/3)
-                                        </span>
-                                    @else
-                                        <span class="badge bg-success bg-opacity-10 text-success border border-success">
-                                            Con Derecho a Ordinario
-                                        </span>
-                                    @endif
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="6" class="text-center py-4 text-muted">
-                                    Aún no tienes materias aceptadas. Haz clic en <strong>"Buscar y Solicitar Grupo"</strong> arriba para inscribirte.
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                <div class="col-6 col-md-4">
+                    <a href="{{ route('alumno.materias') }}" class="d-block text-decoration-none">
+                        <div class="h-100 rounded-4 border bg-white p-3 card-hover">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span class="d-inline-flex align-items-center justify-content-center rounded-4 bg-dark bg-opacity-10 text-dark p-2"><i class="bi bi-journal-bookmark fs-4"></i></span>
+                                <i class="bi bi-chevron-right text-muted"></i>
+                            </div>
+                            <div class="fw-semibold text-dark">Mis Materias <span class="badge bg-primary ms-1">{{ $matriculasAceptadas->count() }}</span></div>
+                            <div class="small text-muted">Derecho a examen ordinario</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-6 col-md-4">
+                    <a href="{{ route('alumno.calendario') }}" class="d-block text-decoration-none">
+                        <div class="h-100 rounded-4 border bg-white p-3 card-hover">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span class="d-inline-flex align-items-center justify-content-center rounded-4 bg-success bg-opacity-10 text-success p-2"><i class="bi bi-calendar3 fs-4"></i></span>
+                                <i class="bi bi-chevron-right text-muted"></i>
+                            </div>
+                            <div class="fw-semibold text-dark">Calendario</div>
+                            <div class="small text-muted">Historial del mes</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-6 col-md-4">
+                    <a href="{{ route('alumno.justificantes') }}" class="d-block text-decoration-none">
+                        <div class="h-100 rounded-4 border bg-white p-3 card-hover">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span class="d-inline-flex align-items-center justify-content-center rounded-4 bg-warning bg-opacity-10 text-warning p-2"><i class="bi bi-upload fs-4"></i></span>
+                                <i class="bi bi-chevron-right text-muted"></i>
+                            </div>
+                            <div class="fw-semibold text-dark">Justificantes @if ($incidenciasPorJustificar->count() > 0)<span class="badge bg-danger ms-1">{{ $incidenciasPorJustificar->count() }}</span>@endif</div>
+                            <div class="small text-muted">Sube tu comprobante</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-6 col-md-4">
+                    <a href="{{ route('alumno.solicitar') }}" class="d-block text-decoration-none">
+                        <div class="h-100 rounded-4 border bg-white p-3 card-hover">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span class="d-inline-flex align-items-center justify-content-center rounded-4 bg-info bg-opacity-10 text-info p-2"><i class="bi bi-search fs-4"></i></span>
+                                <i class="bi bi-chevron-right text-muted"></i>
+                            </div>
+                            <div class="fw-semibold text-dark">Solicitar Asignatura @if ($pendientesCount > 0)<span class="badge bg-warning text-dark ms-1">{{ $pendientesCount }}</span>@endif</div>
+                            <div class="small text-muted">Buscar grupo y materia</div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-6 col-md-4">
+                    <a href="{{ route('alumno.perfil') }}" class="d-block text-decoration-none">
+                        <div class="h-100 rounded-4 border bg-white p-3 card-hover">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span class="d-inline-flex align-items-center justify-content-center rounded-4 bg-secondary bg-opacity-10 text-secondary p-2"><i class="bi bi-person-gear fs-4"></i></span>
+                                <i class="bi bi-chevron-right text-muted"></i>
+                            </div>
+                            <div class="fw-semibold text-dark">Mi Perfil</div>
+                            <div class="small text-muted">Datos y contraseña</div>
+                        </div>
+                    </a>
+                </div>
             </div>
         </div>
     </div>
-
-    <!-- Librería para dibujar el QR en pantalla -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script>
-        let segundosRestantes = 60;
-
-        function generarNuevoQR() {
-            const contenedor = document.getElementById('qrcode');
-            const qrUrl = contenedor ? contenedor.getAttribute('data-qr-url') : '/alumno/qr/generar';
-            const alertaSesion = document.getElementById('qr-error-sesion');
-            const tokenRespaldoEl = document.getElementById('qr-token-respaldo');
-
-            fetch(qrUrl, {
-                headers: { "Accept": "application/json" }
-            })
-                .then(response => {
-                    if (response.redirected || !response.ok) {
-                        throw new Error('SESION_CAMBIADA');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.status === 'success') {
-                        if (alertaSesion) alertaSesion.classList.add('d-none');
-                        contenedor.innerHTML = ''; // Limpiar QR anterior
-                        new QRCode(contenedor, {
-                            text: data.qr_token,
-                            width: 210,
-                            height: 210,
-                            colorDark : "#000000",
-                            colorLight : "#ffffff",
-                            correctLevel : QRCode.CorrectLevel.L
-                        });
-                        if (tokenRespaldoEl) {
-                            tokenRespaldoEl.textContent = data.qr_token;
-                        }
-                        segundosRestantes = 60;
-                    }
-                })
-                .catch(() => {
-                    if (alertaSesion) alertaSesion.classList.remove('d-none');
-                });
-        }
-
-        // Contador regresivo de 60 segundos
-        setInterval(() => {
-            segundosRestantes--;
-            if (segundosRestantes <= 0) {
-                generarNuevoQR();
-            }
-            document.getElementById('qr-timer').innerText = `Expira en ${segundosRestantes}s`;
-        }, 1000);
-
-        // Confirmación en Tiempo Real cuando el QR del alumno es escaneado por el docente
-        function verificarConfirmacionEscaneo() {
-            const box = document.getElementById('qr-confirmacion-escaneo');
-            const detalle = document.getElementById('qr-confirmacion-detalle');
-            if (!box || !detalle) return;
-
-            const estadoUrl = box.getAttribute('data-estado-url');
-            if (!estadoUrl) return;
-
-            fetch(estadoUrl, { headers: { "Accept": "application/json" } })
-                .then(function (r) {
-                    if (!r.ok || r.redirected) return null;
-                    return r.json();
-                })
-                .then(function (data) {
-                    if (data && data.escaneado) {
-                        const etiquetaEstado = (data.estado || 'asistencia').toUpperCase();
-                        const textoGrupo = data.grupo ? ' (Grupo ' + data.grupo + ')' : '';
-                        detalle.textContent = data.materia + textoGrupo + ' — ' + etiquetaEstado + ' a las ' + data.hora;
-                        box.classList.remove('d-none');
-                    }
-                })
-                .catch(function () {});
-        }
-
-        // Generar QR, iniciar polling de confirmación en tiempo real e inicializar barras de progreso
-        document.addEventListener('DOMContentLoaded', function () {
-            generarNuevoQR();
-            verificarConfirmacionEscaneo();
-            setInterval(verificarConfirmacionEscaneo, 4000);
-            document.querySelectorAll('[data-width]').forEach(function (el) {
-                el.style.width = el.getAttribute('data-width') + '%';
-            });
-        });
-    </script>
 </body>
 </html>

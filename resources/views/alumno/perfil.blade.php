@@ -41,9 +41,13 @@
                 <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden">
                     <div class="card-header bg-primary text-white p-4 border-0">
                         <div class="d-flex align-items-center gap-3">
-                            <div class="bg-white text-primary rounded-circle d-flex align-items-center justify-content-center fw-bold fs-4" style="width: 52px; height: 52px;">
-                                {{ strtoupper(substr($alumno->name, 0, 1)) }}
-                            </div>
+                            @if ($alumno->foto_perfil)
+                                <img src="{{ asset('storage/' . $alumno->foto_perfil) }}" alt="Foto de perfil" class="rounded-circle" style="width: 52px; height: 52px; object-fit: cover; border: 2px solid rgba(255,255,255,.6);">
+                            @else
+                                <div class="bg-white text-primary rounded-circle d-flex align-items-center justify-content-center fw-bold fs-4" style="width: 52px; height: 52px;">
+                                    {{ strtoupper(substr($alumno->name, 0, 1)) }}
+                                </div>
+                            @endif
                             <div>
                                 <h4 class="mb-0 fw-bold">{{ $alumno->name }}</h4>
                                 <span class="small opacity-75">Perfil de Estudiante | {{ $alumno->matricula_codigo ? 'Matrícula: ' . $alumno->matricula_codigo : 'Sin matrícula asignada' }}</span>
@@ -52,9 +56,35 @@
                     </div>
 
                     <div class="card-body p-4 p-md-5">
-                        <form action="{{ route('alumno.perfil.update') }}" method="POST">
+                        <form action="{{ route('alumno.perfil.update') }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             @method('PUT')
+
+                            <h6 class="fw-bold text-uppercase text-muted small mb-3">
+                                Foto de Perfil
+                            </h6>
+
+                            <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
+                                <div class="rounded-circle overflow-hidden bg-light border d-flex align-items-center justify-content-center" style="width: 88px; height: 88px;">
+                                    <img id="previewFotoPerfil" src="{{ $alumno->foto_perfil ? asset('storage/' . $alumno->foto_perfil) : '' }}" class="{{ $alumno->foto_perfil ? '' : 'd-none' }}" alt="Vista previa" style="width: 88px; height: 88px; object-fit: cover;">
+                                    @if (!$alumno->foto_perfil)
+                                        <span id="inicialesFotoPerfil" class="fw-bold fs-3 text-secondary">{{ strtoupper(substr($alumno->name, 0, 1)) }}</span>
+                                    @endif
+                                </div>
+                                <div class="flex-grow-1" style="min-width: 220px;">
+                                    <label class="form-label fw-semibold" for="inputFotoPerfil">Cambiar foto</label>
+                                    <input type="file" name="foto_perfil" id="inputFotoPerfil" accept="image/jpeg,image/png,image/webp" class="form-control rounded-3">
+                                    <div class="form-text">JPG, PNG o WEBP · máximo 2 MB. La foto se actualizará al guardar los cambios.</div>
+                                    @if ($alumno->foto_perfil)
+                                        <div class="form-check mt-1">
+                                            <input class="form-check-input" type="checkbox" name="eliminar_foto" id="eliminarFoto" value="1">
+                                            <label class="form-check-label small" for="eliminarFoto">Quitar mi foto actual</label>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <hr class="my-4">
 
                             <h6 class="fw-bold text-uppercase text-muted small mb-3">
                                 Información General
@@ -109,6 +139,27 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const input = document.getElementById('inputFotoPerfil');
+            const preview = document.getElementById('previewFotoPerfil');
+            const iniciales = document.getElementById('inicialesFotoPerfil');
+
+            if (input && preview) {
+                input.addEventListener('change', function () {
+                    const archivo = input.files && input.files[0];
+                    if (!archivo) return;
+                    const lector = new FileReader();
+                    lector.onload = function (e) {
+                        preview.src = e.target.result;
+                        preview.classList.remove('d-none');
+                        if (iniciales) iniciales.classList.add('d-none');
+                    };
+                    lector.readAsDataURL(archivo);
+                });
+            }
+        });
+    </script>
 </body>
 </html>
 
