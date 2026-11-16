@@ -10,8 +10,8 @@
 <body class="bg-light">
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ route('alumno.dashboard') }}">
-                <i class="bi bi-arrow-left-circle me-2"></i>Volver al Panel
+            <a class="btn btn-light btn-sm text-primary fw-semibold rounded-3" href="{{ route('alumno.dashboard') }}">
+                <i class="bi bi-arrow-left me-1"></i>Volver al Panel
             </a>
             <span class="navbar-text text-white fw-bold">Calendario e Historial Mensual</span>
         </div>
@@ -21,7 +21,6 @@
         <!-- Alerta de límite crítico de faltas y Derecho a Examen Ordinario (RF-14 + Regla Universitaria: 3 retardos = 1 falta) -->
         @if($alertaCritica)
             <div class="alert alert-danger d-flex align-items-center rounded-4 shadow-sm mb-4" role="alert">
-                <i class="bi bi-exclamation-triangle-fill fs-3 me-3"></i>
                 <div>
                     <h6 class="fw-bold mb-1">¡Alerta Crítica: Sin Derecho a Examen Ordinario ({{ $faltasTotales }} / 3 faltas acumuladas)!</h6>
                     <p class="mb-0 small">
@@ -31,7 +30,6 @@
             </div>
         @elseif(!empty($alertaPreventiva))
             <div class="alert alert-warning d-flex align-items-center rounded-4 shadow-sm mb-4" role="alert">
-                <i class="bi bi-exclamation-circle-fill fs-3 me-3"></i>
                 <div>
                     <h6 class="fw-bold mb-1">Aviso Preventivo de Derecho a Examen (2 / 3 faltas acumuladas)</h6>
                     <p class="mb-0 small">
@@ -51,7 +49,7 @@
                 <div class="col-md-5">
                     <label class="form-label fw-semibold">Filtrar por Materia</label>
                     <select name="materia_id" class="form-select">
-                        <option value="">-- Todas mis materias --</option>
+                        <option value="">Todas mis materias</option>
                         @foreach($misMaterias as $mat)
                             <option value="{{ $mat->materia->id }}" {{ $materiaFiltro == $mat->materia->id ? 'selected' : '' }}>
                                 {{ $mat->materia->nombre_materia }} ({{ $mat->materia->codigo_materia }})
@@ -72,32 +70,32 @@
             <div class="col-6 col-md-3">
                 <div class="card border-0 shadow-sm rounded-4 p-3 bg-success bg-opacity-10 border-start border-success border-4">
                     <h3 class="fw-bold text-success mb-0">{{ $asistencias }}</h3>
-                    <small class="text-muted fw-semibold">Asistencias (Verde)</small>
+                    <small class="text-muted fw-semibold">Asistencias</small>
                 </div>
             </div>
             <div class="col-6 col-md-3">
                 <div class="card border-0 shadow-sm rounded-4 p-3 bg-warning bg-opacity-10 border-start border-warning border-4">
                     <h3 class="fw-bold text-warning mb-0">{{ $retardos }}</h3>
-                    <small class="text-muted fw-semibold">Retardos (3 Ret. = +{{ $faltasPorRetardos }} Falta)</small>
+                    <small class="text-muted fw-semibold">Retardos</small>
                 </div>
             </div>
             <div class="col-6 col-md-3">
                 <div class="card border-0 shadow-sm rounded-4 p-3 bg-info bg-opacity-10 border-start border-info border-4">
                     <h3 class="fw-bold text-info mb-0">{{ $permisos }}</h3>
-                    <small class="text-muted fw-semibold">Permisos (Azul)</small>
+                    <small class="text-muted fw-semibold">Permisos</small>
                 </div>
             </div>
             <div class="col-6 col-md-3">
                 <div class="card border-0 shadow-sm rounded-4 p-3 bg-danger bg-opacity-10 border-start border-danger border-4">
                     <h3 class="fw-bold text-danger mb-0">{{ $faltasTotales }}</h3>
-                    <small class="text-muted fw-semibold">Faltas Computadas ({{ $faltas }} dir. + {{ $faltasPorRetardos }} por ret.)</small>
+                    <small class="text-muted fw-semibold">Faltas Computadas</small>
                 </div>
             </div>
         </div>
 
         <!-- Tarjetas de sesiones del mes (Calendario Visual) -->
         <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
-            <h5 class="fw-bold text-dark mb-4"><i class="bi bi-calendar3 me-2 text-primary"></i>Registro Diario del Mes</h5>
+            <h5 class="fw-bold text-dark mb-4">Registro Diario del Mes</h5>
 
             <div class="row g-3">
                 @forelse($registros as $reg)
