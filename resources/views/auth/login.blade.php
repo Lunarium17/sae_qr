@@ -35,6 +35,14 @@
                             </div>
                         @endif
 
+                        <!-- Mensaje de sesión expirada (token vencido) -->
+                        @if (session('error'))
+                            <div class="alert alert-warning alert-dismissible fade show py-2 small" role="alert">
+                                {{ session('error') }}
+                                <button type="button" class="btn-close py-2" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                            </div>
+                        @endif
+
                         <!-- Errores de validación -->
                         @if ($errors->any())
                             <div class="alert alert-danger py-2">

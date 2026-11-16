@@ -15,5 +15,10 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\HttpExceptionInterface $e, \Illuminate\Http\Request $request) {
+            if ($e->getStatusCode() === 419) {
+                return redirect('/login')
+                    ->with('error', 'Tu sesión expiró. Vuelve a iniciar sesión.');
+            }
+        });
     })->create();
