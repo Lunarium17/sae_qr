@@ -28,14 +28,14 @@
     <div class="container my-5">
         @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show rounded-3 shadow-sm">
-                <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+                {{ session('success') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         @endif
 
         @if (session('error'))
             <div class="alert alert-danger alert-dismissible fade show rounded-3 shadow-sm">
-                <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ session('error') }}
+                {{ session('error') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         @endif
@@ -109,7 +109,7 @@
                 <span class="badge bg-secondary rounded-pill">{{ $solicitudes->total() }} registro(s)</span>
             </div>
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
+                    <table class="table table-striped table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
                             <th class="ps-4">Alumno / Matrícula</th>
@@ -217,7 +217,7 @@
                             <div class="mb-3">
                                 <label class="form-label fw-semibold">1. Selecciona tu Asignatura y Grupo</label>
                                 <select name="materia_id" id="selectMateriaModalSol" class="form-select rounded-3" required>
-                                    <option value="" selected disabled>-- Elige una asignatura que impartes --</option>
+                                    <option value="" selected disabled>Elige una asignatura que impartes</option>
                                     @foreach ($misMaterias as $mat)
                                         <option value="{{ $mat->id }}">
                                             [{{ $mat->codigo_materia }}] {{ $mat->nombre_materia }} — {{ $mat->grupo->nombre_grupo ?? 'Sin grupo' }}

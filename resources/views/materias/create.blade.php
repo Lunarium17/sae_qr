@@ -48,12 +48,12 @@
                     <form action="{{ route('materias.store') }}" method="POST">
                         @csrf
                         <div class="mb-3">
-                            <label for="codigo" class="form-label fw-semibold">Código o Clave de la Materia</label>
+                            <label for="codigo" class="form-label fw-semibold">Código o Clave de la Materia <span class="text-danger">*</span></label>
                             <input type="text" name="codigo" id="codigo" class="form-control rounded-3" value="{{ old('codigo') }}" required>
                         </div>
 
                         <div class="mb-4">
-                            <label for="nombre_materia" class="form-label fw-semibold">Nombre de la Materia</label>
+                            <label for="nombre_materia" class="form-label fw-semibold">Nombre de la Materia <span class="text-danger">*</span></label>
                             <input type="text" name="nombre_materia" id="nombre_materia" class="form-control rounded-3" value="{{ old('nombre_materia') }}" required>
                         </div>
 

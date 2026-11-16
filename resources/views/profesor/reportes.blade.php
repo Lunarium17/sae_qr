@@ -27,8 +27,8 @@
 <body class="bg-light">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ route('profesor.dashboard') }}">
-                <i class="bi bi-arrow-left-circle me-2"></i>Volver al Panel
+            <a class="btn btn-light btn-sm text-dark fw-semibold rounded-3" href="{{ route('profesor.dashboard') }}">
+                <i class="bi bi-arrow-left me-1"></i>Volver al Panel
             </a>
             <span class="navbar-text text-white fw-bold">Módulo Analítico de Reportes</span>
         </div>
@@ -58,7 +58,7 @@
                             <option value="{{ $mat->id }}" {{ $materiaId == $mat->id ? 'selected' : '' }}>
                                 {{ $mat->nombre_materia }} ({{ $mat->codigo_materia }})
                                 @if(optional($mat->grupo)->nombre_grupo)
-                                    — Grupo {{ $mat->grupo->nombre_grupo }}
+                                     · Grupo {{ $mat->grupo->nombre_grupo }}
                                 @endif
                             </option>
                         @endforeach
