@@ -79,7 +79,7 @@
                 | <span class="badge bg-info text-dark">Administrador</span>
             </p>
 
-            <div class="d-flex flex-wrap justify-content-center gap-3 mb-3">
+            <div class="d-flex flex-wrap justify-content-center gap-3">
                 <a href="{{ route('admin.codigos') }}" class="btn btn-primary rounded-3 px-4 py-2">
                     <i class="bi bi-key-fill me-2"></i>Gestionar Códigos de Acceso Docente
                 </a>
@@ -88,16 +88,6 @@
                 </a>
                 <a href="{{ route('admin.usuarios') }}" class="btn btn-dark rounded-3 px-4 py-2">
                     <i class="bi bi-people-fill me-2"></i>Directorio de Usuarios y Contraseñas
-                </a>
-            </div>
-
-            <div class="text-muted small fw-semibold mb-2">Acceso Rápido por Rol</div>
-            <div class="d-flex flex-wrap justify-content-center gap-3">
-                <a href="{{ route('admin.usuarios', ['rol' => 'profesor']) }}" class="btn btn-info text-dark rounded-3 px-4 py-2">
-                    <i class="bi bi-person-workspace me-2"></i>Ver Profesores ({{ $totalProfesores }})
-                </a>
-                <a href="{{ route('admin.usuarios', ['rol' => 'alumno']) }}" class="btn btn-warning text-dark rounded-3 px-4 py-2">
-                    <i class="bi bi-mortarboard-fill me-2"></i>Ver Alumnos ({{ $totalAlumnos }})
                 </a>
             </div>
         </div>
@@ -229,7 +219,7 @@
                     </div>
                     <h5 class="fw-bold text-dark">Códigos de Acceso Docente</h5>
                     <p class="text-muted small mb-2">Genera y administra códigos de un solo uso para registrar profesores.</p>
-                    <span class="text-warning small fw-semibold mt-auto">Abrir <i class="bi bi-arrow-right-short"></i></span>
+                    <span class="text-warning small fw-semibold mt-auto"><i class="bi bi-arrow-right-short"></i></span>
                 </a>
             </div>
 
@@ -243,7 +233,7 @@
                     </div>
                     <h5 class="fw-bold text-dark">Catálogo de Grupos Oficiales</h5>
                     <p class="text-muted small mb-2">Crea, edita o elimina los grupos oficiales por carrera, semestre y turno.</p>
-                    <span class="text-info small fw-semibold mt-auto">Abrir <i class="bi bi-arrow-right-short"></i></span>
+                    <span class="text-info small fw-semibold mt-auto"><i class="bi bi-arrow-right-short"></i></span>
                 </a>
             </div>
 
@@ -257,7 +247,7 @@
                     </div>
                     <h5 class="fw-bold text-dark">Directorio de Usuarios</h5>
                     <p class="text-muted small mb-2">Gestiona alumnos, profesores y administradores, y restablece contraseñas.</p>
-                    <span class="text-dark small fw-semibold mt-auto">Abrir <i class="bi bi-arrow-right-short"></i></span>
+                    <span class="text-dark small fw-semibold mt-auto"><i class="bi bi-arrow-right-short"></i></span>
                 </a>
             </div>
         </div>

@@ -62,10 +62,7 @@
         @endif
 
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
-            <div>
-                <h3 class="fw-bold text-dark mb-1">Catálogo de Grupos Oficiales</h3>
-                <div class="text-muted small">Grupos oficiales por carrera, semestre y turno. Materias vinculadas: {{ $totalMaterias }}.</div>
-            </div>
+            <h3 class="fw-bold text-dark mb-0">Catálogo de Grupos Oficiales</h3>
             <button type="button" class="btn btn-primary rounded-3 px-4 py-2 fw-semibold" data-bs-toggle="modal" data-bs-target="#modalCrearGrupoAdmin">
                 <i class="bi bi-plus-circle me-2"></i>Nuevo Grupo Oficial
             </button>
