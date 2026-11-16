@@ -12,7 +12,7 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ route('grupos.index') }}"><i class="bi bi-card-list me-2"></i>SAE QR | Gestión de Grupos</a>
+            <a class="navbar-brand fw-bold" href="{{ route('grupos.index') }}">SAE QR | Gestión de Grupos</a>
             <div class="d-flex align-items-center">
                 <a href="{{ route('grupos.index') }}" class="btn btn-outline-light btn-sm me-3">
                     <i class="bi bi-arrow-left me-1"></i>Volver a Mis Grupos
@@ -37,7 +37,7 @@
 
                 <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden">
                     <div class="card-header bg-primary text-white p-4 border-0">
-                        <h4 class="mb-0 fw-bold"><i class="bi bi-plus-circle me-2"></i>Crear Nuevo Grupo Académico</h4>
+                        <h4 class="mb-0 fw-bold">Crear Nuevo Grupo Académico</h4>
                     </div>
                     <div class="card-body p-5">
                         <!-- Formulario conectado a la ruta 'store' del Controlador -->
@@ -48,13 +48,13 @@
                                 <!-- Nombre del Grupo -->
                                 <div class="col-md-4">
                                     <label for="nombre_grupo" class="form-label fw-bold text-dark">Clave / Nombre del Grupo <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control rounded-3 py-2" id="nombre_grupo" name="nombre_grupo" value="{{ old('nombre_grupo') }}" placeholder="Ej. ISC-701, S7B, ADM-3A" required>
+                                    <input type="text" class="form-control rounded-3 py-2" id="nombre_grupo" name="nombre_grupo" value="{{ old('nombre_grupo') }}" required>
                                 </div>
 
                                 <!-- Carrera o Programa Educativo -->
                                 <div class="col-md-8">
                                     <label for="carrera" class="form-label fw-bold text-dark">Carrera / Programa Educativo <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control rounded-3 py-2" id="carrera" name="carrera" list="listaCarreras" value="{{ old('carrera') }}" placeholder="Ej. Ingeniería en Sistemas Computacionales" maxlength="120" required>
+                                    <input type="text" class="form-control rounded-3 py-2" id="carrera" name="carrera" list="listaCarreras" value="{{ old('carrera') }}" maxlength="120" required>
                                     <datalist id="listaCarreras">
                                         <option value="Ingeniería en Sistemas Computacionales"></option>
                                         <option value="Ingeniería en Tecnologías de la Información"></option>
@@ -94,7 +94,7 @@
                                 <!-- Periodo Lectivo -->
                                 <div class="col-md-4">
                                     <label for="periodo_lectivo" class="form-label fw-bold text-dark">Periodo Semestral <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control rounded-3 py-2" id="periodo_lectivo" name="periodo_lectivo" value="{{ old('periodo_lectivo') }}" placeholder="Ej. Ago-Dic 2026, 2026-2" required>
+                                    <input type="text" class="form-control rounded-3 py-2" id="periodo_lectivo" name="periodo_lectivo" value="{{ old('periodo_lectivo') }}" required>
                                 </div>
                             </div>
 

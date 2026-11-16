@@ -12,9 +12,9 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container">
             <a class="navbar-brand fw-bold" href="{{ route('grupos.index') }}">
-                <i class="bi bi-pencil-square me-2"></i>SAE QR | Editar Materia
+                SAE QR | Editar Materia
             </a>
-            <a href="{{ $materia->grupo_id ? route('grupos.show', $materia->grupo_id) : route('grupos.index') }}" class="btn btn-outline-light btn-sm">
+            <a href="{{ $materia->grupo_id ? route('grupos.show', $materia->grupo_id) : route('grupos.index') }}" class="btn btn-light btn-sm text-dark fw-semibold">
                 <i class="bi bi-arrow-left me-1"></i>Volver al Grupo
             </a>
         </div>
@@ -36,7 +36,7 @@
 
                 <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden">
                     <div class="card-header bg-warning text-dark p-4 border-0">
-                        <h5 class="mb-0 fw-bold"><i class="bi bi-pencil-square me-2"></i>Editar Materia: {{ $materia->nombre_materia }}</h5>
+                        <h5 class="mb-0 fw-bold">Editar Materia: {{ $materia->nombre_materia }}</h5>
                     </div>
                     <div class="card-body p-4">
                         <form action="{{ route('materias.update', $materia->id) }}" method="POST">

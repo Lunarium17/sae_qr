@@ -6,15 +6,20 @@
     <title>Solicitudes e Inscripciones de Alumnos - SAE QR</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        .info-icon { position: relative; display: inline-flex; align-items: center; color: #0d6efd; cursor: help; vertical-align: middle; font-size: .8em; margin-left: .15rem; padding: .1rem; }
+        .info-icon .info-icon-text { position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); min-width: 240px; max-width: 320px; background: #212529; color: #fff; font-size: .75rem; font-weight: 400; line-height: 1.35; padding: .5rem .65rem; border-radius: .4rem; box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .2); opacity: 0; visibility: hidden; transition: opacity .15s; z-index: 10; text-align: left; }
+        .info-icon:hover .info-icon-text, .info-icon:focus .info-icon-text, .info-icon:focus-within .info-icon-text { opacity: 1; visibility: visible; }
+    </style>
 </head>
 <body class="bg-light">
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container">
             <a class="navbar-brand fw-bold" href="{{ route('profesor.dashboard') }}">
-                <i class="bi bi-person-lines-fill me-2"></i>SAE QR | Solicitudes e Inscripciones
+                SAE QR | Solicitudes e Inscripciones
             </a>
-            <a href="{{ url('/profesor/dashboard') }}" class="btn btn-outline-light btn-sm">
+            <a href="{{ url('/profesor/dashboard') }}" class="btn btn-light btn-sm text-dark fw-semibold">
                 <i class="bi bi-arrow-left me-1"></i>Volver al Panel
             </a>
         </div>
@@ -37,8 +42,13 @@
 
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
             <div>
-                <h2 class="fw-bold text-dark mb-0">Validación y Gestión de Alumnos en mis Asignaturas</h2>
-                <p class="text-muted mt-1 mb-0">Aprueba, rechaza, busca o inscribe estudiantes en las asignaturas y grupos que impartes.</p>
+                <h2 class="fw-bold text-dark mb-0">
+                    Validación y Gestión de Alumnos en mis Asignaturas
+                    <span class="info-icon" tabindex="0" role="button" aria-label="Aprueba, rechaza o inscribe estudiantes en tus materias.">
+                        <i class="bi bi-info-circle"></i>
+                        <span class="info-icon-text" role="tooltip">Aprueba, rechaza o inscribe estudiantes en tus materias.</span>
+                    </span>
+                </h2>
             </div>
             @if ($misMaterias->isNotEmpty())
                 <button type="button" class="btn btn-primary rounded-3 px-3 py-2 fw-semibold shadow-sm" data-bs-toggle="modal" data-bs-target="#modalInscribirDesdeSolicitudes">
@@ -55,7 +65,7 @@
                         <label for="buscar" class="form-label fw-semibold small">Buscar Alumno (Nombre, Matrícula o Correo)</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
-                            <input type="text" name="buscar" id="buscar" value="{{ $buscar }}" class="form-control" placeholder="Ej. nombre, matrícula o correo...">
+                            <input type="text" name="buscar" id="buscar" value="{{ $buscar }}" class="form-control" placeholder="Buscar por nombre, matrícula o correo">
                         </div>
                     </div>
 
@@ -196,7 +206,7 @@
                 <div class="modal-content rounded-4 border-0 shadow">
                     <div class="modal-header bg-primary text-white border-0">
                         <h5 class="modal-title fw-bold">
-                            <i class="bi bi-person-plus-fill me-2"></i>Inscribir Alumno por Búsqueda
+                            Inscribir Alumno por Búsqueda
                         </h5>
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                     </div>

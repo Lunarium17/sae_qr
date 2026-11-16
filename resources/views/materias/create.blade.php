@@ -6,13 +6,18 @@
     <title>Nueva Materia - SAE QR</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        .info-icon { position: relative; display: inline-flex; align-items: center; color: #0d6efd; cursor: help; vertical-align: middle; font-size: .8em; margin-left: .15rem; padding: .1rem; }
+        .info-icon .info-icon-text { position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); min-width: 240px; max-width: 320px; background: #212529; color: #fff; font-size: .75rem; font-weight: 400; line-height: 1.35; padding: .5rem .65rem; border-radius: .4rem; box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .2); opacity: 0; visibility: hidden; transition: opacity .15s; z-index: 10; text-align: left; }
+        .info-icon:hover .info-icon-text, .info-icon:focus .info-icon-text, .info-icon:focus-within .info-icon-text { opacity: 1; visibility: visible; }
+    </style>
 </head>
 <body class="bg-light">
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="#"><i class="bi bi-journal-plus me-2"></i>SAE QR | Registrar Materia</a>
-            <a href="{{ route('materias.index') }}" class="btn btn-outline-light btn-sm">
+            <a class="navbar-brand fw-bold" href="#">SAE QR | Registrar Materia</a>
+            <a href="{{ route('materias.index') }}" class="btn btn-light btn-sm text-dark fw-semibold">
                 <i class="bi bi-arrow-left me-1"></i>Volver al Listado
             </a>
         </div>
@@ -22,8 +27,13 @@
         <div class="row justify-content-center">
             <div class="col-md-6">
                 <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
-                    <h4 class="fw-bold text-dark mb-1">Registrar Nueva Materia</h4>
-                    <p class="text-muted small mb-4">Ingresa los datos de la asignatura para el catálogo académico.</p>
+                    <h4 class="fw-bold text-dark mb-4">
+                        Registrar Nueva Materia
+                        <span class="info-icon" tabindex="0" role="button" aria-label="Datos de la nueva asignatura del catálogo.">
+                            <i class="bi bi-info-circle"></i>
+                            <span class="info-icon-text" role="tooltip">Datos de la nueva asignatura del catálogo.</span>
+                        </span>
+                    </h4>
 
                     @if ($errors->any())
                         <div class="alert alert-danger rounded-3">
@@ -39,12 +49,12 @@
                         @csrf
                         <div class="mb-3">
                             <label for="codigo" class="form-label fw-semibold">Código o Clave de la Materia</label>
-                            <input type="text" name="codigo" id="codigo" class="form-control rounded-3" placeholder="Ej. ING-SW-01" value="{{ old('codigo') }}" required>
+                            <input type="text" name="codigo" id="codigo" class="form-control rounded-3" value="{{ old('codigo') }}" required>
                         </div>
 
                         <div class="mb-4">
                             <label for="nombre_materia" class="form-label fw-semibold">Nombre de la Materia</label>
-                            <input type="text" name="nombre_materia" id="nombre_materia" class="form-control rounded-3" placeholder="Ej. Gestión de Proyectos de Software" value="{{ old('nombre_materia') }}" required>
+                            <input type="text" name="nombre_materia" id="nombre_materia" class="form-control rounded-3" value="{{ old('nombre_materia') }}" required>
                         </div>
 
                         <div class="d-grid gap-2">
