@@ -10,11 +10,13 @@
 <body class="bg-light">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container">
-            <a class="btn btn-light btn-sm text-dark fw-semibold rounded-3" href="{{ route('profesor.dashboard') }}">
-                <i class="bi bi-arrow-left me-1"></i>Volver al Panel
-            </a>
-               @include('partials.campana')
-               <span class="navbar-text text-white fw-bold">Revisión de Permisos y Justificantes</span>
+            <span class="navbar-text text-white fw-bold">Revisión de Permisos y Justificantes</span>
+            <div class="d-flex align-items-center gap-3">
+                <a class="btn btn-light btn-sm text-dark fw-semibold rounded-3" href="{{ route('profesor.dashboard') }}">
+                    <i class="bi bi-arrow-left me-1"></i>Volver al Panel
+                </a>
+                @include('partials.campana')
+            </div>
         </div>
     </nav>
 

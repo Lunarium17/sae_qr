@@ -18,10 +18,12 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container">
             <a class="navbar-brand fw-bold" href="{{ route('profesor.dashboard') }}">SAE QR | Control de Sesiones y Escáner</a>
-            <a href="{{ url('/profesor/dashboard') }}" class="btn btn-light btn-sm text-dark fw-semibold rounded-3">
-                <i class="bi bi-arrow-left me-1"></i>Volver al Panel
-            </a>
-            @include('partials.campana')
+            <div class="d-flex align-items-center gap-3">
+                <a href="{{ url('/profesor/dashboard') }}" class="btn btn-light btn-sm text-dark fw-semibold rounded-3">
+                    <i class="bi bi-arrow-left me-1"></i>Volver al Panel
+                </a>
+                @include('partials.campana')
+            </div>
         </div>
     </nav>
 

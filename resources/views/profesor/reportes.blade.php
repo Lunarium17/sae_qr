@@ -7,31 +7,42 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <style>
-        .table-excel thead th {
-            background-color: #1e3a8a;
-            color: #ffffff;
-            font-size: 0.84rem;
+        .table-moderna thead th {
+            background-color: #f8fafc;
+            color: #334155;
+            font-size: .78rem;
             font-weight: 600;
-            border-color: #172554;
+            text-transform: uppercase;
+            letter-spacing: .03em;
+            border-bottom: 1px solid #e2e8f0;
             white-space: nowrap;
+            padding: .75rem .85rem;
         }
-        .table-excel tbody td {
-            font-size: 0.85rem;
+        .table-moderna tbody td {
+            font-size: .85rem;
+            color: #1e293b;
+            border-bottom: 1px solid #eef2f7;
+            padding: .7rem .85rem;
             vertical-align: middle;
         }
-        .table-excel tbody tr:nth-of-type(even) {
-            background-color: #f8fafc;
-        }
+        .table-moderna tbody tr:hover { background-color: #f8fafc; }
+        .badge-estado { border-radius: 50rem; font-weight: 600; text-transform: uppercase; font-size: .68rem; padding: .35rem .65rem; }
+        .badge-asistencia { background: #dcfce7; color: #14532d; }
+        .badge-retardo { background: #fef9c3; color: #713f12; }
+        .badge-permiso { background: #dbeafe; color: #1e3a8a; }
+        .badge-falta { background: #fee2e2; color: #7f1d1d; }
     </style>
 </head>
 <body class="bg-light">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container">
-            <a class="btn btn-light btn-sm text-dark fw-semibold rounded-3" href="{{ route('profesor.dashboard') }}">
-                <i class="bi bi-arrow-left me-1"></i>Volver al Panel
-            </a>
-               @include('partials.campana')
-               <span class="navbar-text text-white fw-bold">Módulo Analítico de Reportes</span>
+            <span class="navbar-text text-white fw-bold">Módulo Analítico de Reportes</span>
+            <div class="d-flex align-items-center gap-3">
+                <a class="btn btn-light btn-sm text-dark fw-semibold rounded-3" href="{{ route('profesor.dashboard') }}">
+                    <i class="bi bi-arrow-left me-1"></i>Volver al Panel
+                </a>
+                @include('partials.campana')
+            </div>
         </div>
     </nav>
 
@@ -97,16 +108,16 @@
                     <p class="text-muted small mb-0">Docente: {{ Auth::user()->name }} | Fecha de consulta: {{ date('Y-m-d H:i') }}</p>
                 </div>
                 <div class="d-flex flex-wrap gap-2">
-                    <span class="badge bg-dark fs-6">{{ $registros->count() }} Registros</span>
-                    <span class="badge bg-success fs-6">Asistencias: {{ $cntAsistencia }}</span>
-                    <span class="badge bg-warning text-dark fs-6">Retardos: {{ $cntRetardo }}</span>
-                    <span class="badge bg-info text-dark fs-6">Permisos: {{ $cntPermiso }}</span>
-                    <span class="badge bg-danger fs-6">Faltas: {{ $cntFalta }}</span>
+                    <span class="badge bg-light text-dark border fs-6">{{ $registros->count() }} Registros</span>
+                    <span class="badge badge-estado badge-asistencia fs-6">Asistencias: {{ $cntAsistencia }}</span>
+                    <span class="badge badge-estado badge-retardo fs-6">Retardos: {{ $cntRetardo }}</span>
+                    <span class="badge badge-estado badge-permiso fs-6">Permisos: {{ $cntPermiso }}</span>
+                    <span class="badge badge-estado badge-falta fs-6">Faltas: {{ $cntFalta }}</span>
                 </div>
             </div>
 
             <div class="table-responsive">
-                <table class="table table-bordered table-excel align-middle mb-0">
+                <table class="table table-moderna align-middle mb-0">
                     <thead>
                         <tr>
                             <th>Fecha Sesión</th>
@@ -124,11 +135,11 @@
                     <tbody>
                         @forelse($registros as $reg)
                             @php
-                                $badgeColor = match($reg->estado_incidencia) {
-                                    'asistencia' => 'success',
-                                    'retardo'    => 'warning text-dark',
-                                    'permiso'    => 'info text-dark',
-                                    default      => 'danger',
+                                $badgeEstado = match($reg->estado_incidencia) {
+                                    'asistencia' => 'badge-asistencia',
+                                    'retardo'    => 'badge-retardo',
+                                    'permiso'    => 'badge-permiso',
+                                    default      => 'badge-falta',
                                 };
                                 $nombreGrupo = optional($reg->sesion->grupo)->nombre_grupo
                                     ?? optional(optional($reg->sesion->materia)->grupo)->nombre_grupo
@@ -138,7 +149,7 @@
                                 <td class="text-nowrap">{{ $reg->sesion->fecha ?? '-' }}</td>
                                 <td class="fw-semibold text-nowrap">{{ $nombreGrupo }}</td>
                                 <td class="text-nowrap">
-                                    <span class="badge bg-secondary">{{ $reg->sesion->materia->codigo_materia ?? '-' }}</span>
+                                    <span class="badge rounded-pill bg-secondary bg-opacity-10 text-secondary">{{ $reg->sesion->materia->codigo_materia ?? '-' }}</span>
                                 </td>
                                 <td>{{ $reg->sesion->materia->nombre_materia ?? '-' }}</td>
                                 <td class="text-nowrap">{{ $reg->alumno->matricula_codigo ?? 'S/M' }}</td>
@@ -146,7 +157,7 @@
                                 <td class="small text-muted">{{ $reg->alumno->email ?? '-' }}</td>
                                 <td class="text-nowrap">{{ $reg->timestamp_escaneo ?? $reg->hora_pase ?? '--:--' }}</td>
                                 <td class="text-center">
-                                    <span class="badge bg-{{ $badgeColor }} text-uppercase">{{ $reg->estado_incidencia }}</span>
+                                    <span class="badge badge-estado {{ $badgeEstado }}">{{ $reg->estado_incidencia }}</span>
                                 </td>
                                 <td class="small">{{ $reg->observaciones ?? '-' }}</td>
                             </tr>

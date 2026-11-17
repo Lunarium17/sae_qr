@@ -264,7 +264,7 @@
                                                         <i class="bi bi-people me-1"></i>Alumnos
                                                     </a>
 
-                                                    <a href="{{ route('profesor.materias.importar') }}" class="btn btn-sm btn-outline-success rounded-3" title="Inscribir alumnos por CSV en esta materia">
+                                                    <a href="{{ route('profesor.materias.importar', ['grupo_id' => $grupo->id]) }}" class="btn btn-sm btn-outline-success rounded-3" title="Inscribir alumnos por CSV en esta materia">
                                                         <i class="bi bi-file-earmark-arrow-up me-1"></i>Importar
                                                     </a>
 

@@ -25,9 +25,21 @@
                 @else
                     <span class="d-inline-flex align-items-center justify-content-center rounded-circle fw-bold text-white" style="width: 34px; height: 34px; background: hsl({{ $avHue }}, 65%, 45%); font-size: .85rem;">{{ mb_strtoupper(mb_substr($usuario->name ?? 'U', 0, 1)) }}</span>
                 @endif
-                <a href="{{ url('/profesor/dashboard') }}" class="btn btn-light btn-sm text-dark fw-semibold rounded-3">
-                    <i class="bi bi-arrow-left me-1"></i>Volver al Panel
-                </a>
+                @php
+                    $grupoOrigen = request('grupo_id') ? \App\Models\Grupo::find(request('grupo_id')) : null;
+                @endphp
+                @if ($grupoOrigen)
+                    <a href="{{ route('grupos.show', $grupoOrigen->id) }}" class="btn btn-light btn-sm text-dark fw-semibold rounded-3">
+                        <i class="bi bi-arrow-left me-1"></i>Volver al Grupo {{ $grupoOrigen->nombre_grupo }}
+                    </a>
+                    <a href="{{ route('profesor.dashboard') }}" class="btn btn-outline-secondary btn-sm text-light">
+                        <i class="bi bi-house-door me-1"></i>Panel Principal
+                    </a>
+                @else
+                    <a href="{{ url('/profesor/dashboard') }}" class="btn btn-light btn-sm text-dark fw-semibold rounded-3">
+                        <i class="bi bi-arrow-left me-1"></i>Volver al Panel
+                    </a>
+                @endif
                 @include('partials.campana')
                 <form action="{{ route('logout') }}" method="POST" class="d-inline">
                     @csrf

@@ -18,7 +18,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container">
             <a class="navbar-brand fw-bold" href="#">SAE QR | Gestión de Grupos y Materias</a>
-            <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center gap-3">
                 <a href="{{ url('/profesor/dashboard') }}" class="btn btn-light btn-sm text-dark fw-semibold me-3">
                     <i class="bi bi-arrow-left me-1"></i>Volver al Panel
                 </a>

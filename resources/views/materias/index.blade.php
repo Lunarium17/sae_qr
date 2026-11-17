@@ -18,7 +18,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container">
             <a class="navbar-brand fw-bold" href="#">SAE QR | Gestión de Materias</a>
-            <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center gap-2">
                 <a href="{{ url('/profesor/grupos') }}" class="btn btn-outline-info btn-sm me-2">
                     <i class="bi bi-card-list me-1"></i>Ver Grupos
                 </a>
