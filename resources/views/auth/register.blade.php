@@ -6,8 +6,11 @@
     <title>Crear Cuenta - SAE QR</title>
     <!-- Bootstrap 5 CSS CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .bg-sae-dark { background: linear-gradient(160deg, #1e2124 0%, #0d4b96 100%); }
+    </style>
 </head>
-<body class="bg-light d-flex align-items-center justify-content-center min-vh-100 py-4">
+<body class="bg-sae-dark d-flex align-items-center justify-content-center min-vh-100 py-4">
 
     <div class="container">
         <div class="row justify-content-center">
