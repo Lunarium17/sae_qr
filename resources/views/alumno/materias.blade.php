@@ -20,9 +20,10 @@
             ->where('estado', 'aceptado')
             ->get();
 
-        // Estadísticas por cada materia inscrita
+        // Estadísticas por cada materia inscrita (solo sesiones del semestre vigente)
         $registrosAlumno = \App\Models\RegistroAsistencia::with('sesion')
             ->where('user_id', $userId)
+            ->whereHas('sesion', fn($q) => $q->where('archivado', false))
             ->get();
 
         foreach ($matriculasAceptadas as $mat) {

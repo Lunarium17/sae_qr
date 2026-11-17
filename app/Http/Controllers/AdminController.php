@@ -381,5 +381,183 @@ class AdminController extends Controller
 
         return back()->with('success', "El grupo oficial {$nombre} fue eliminado del catálogo institucional.");
     }
+
+    /**
+     * Archivo de Semestres: sesiones vigentes por periodo y semestres ya cerrados (archivados).
+     * El historial completo del sistema vive aqui; los docentes solo ven lo vigente.
+     */
+    public function archivo()
+    {
+        // Periodos con sesiones vigentes (semestre en curso): candidato a cierre
+        $sesionesVigentes = SesionClase::with(['grupo', 'materia'])
+            ->vigente()
+            ->orderBy('periodo_lectivo')
+            ->get();
+
+        $semestresVigentes = $sesionesVigentes
+            ->groupBy('periodo_lectivo')
+            ->map(function ($sesiones, $periodo) {
+                $ids = $sesiones->pluck('id');
+                $activas = $sesiones->where('estado', 'activa')->count();
+
+                $regs = RegistroAsistencia::whereIn('sesion_clase_id', $ids)->get();
+
+                return (object) [
+                    'periodo'      => $periodo ?: 'Sin periodo',
+                    'sesiones'     => $sesiones->count(),
+                    'activas'      => $activas,
+                    'registros'    => $regs->count(),
+                    'asistencias'  => $regs->where('estado_incidencia', 'asistencia')->count(),
+                    'retardos'     => $regs->where('estado_incidencia', 'retardo')->count(),
+                    'permisos'     => $regs->where('estado_incidencia', 'permiso')->count(),
+                    'faltas'       => $regs->where('estado_incidencia', 'falta')->count(),
+                ];
+            })
+            ->sortBy('periodo')
+            ->values();
+
+        // Periodos archivados (semestres cerrados): historial conservado solo para el admin
+        $sesionesArchivadas = SesionClase::with(['grupo', 'materia'])
+            ->archivadas()
+            ->orderBy('periodo_lectivo')
+            ->get();
+
+        $semestresArchivados = $sesionesArchivadas
+            ->groupBy('periodo_lectivo')
+            ->map(function ($sesiones, $periodo) {
+                $ids = $sesiones->pluck('id');
+                $regs = RegistroAsistencia::whereIn('sesion_clase_id', $ids)->get();
+
+                return (object) [
+                    'periodo'      => $periodo ?: 'Sin periodo',
+                    'sesiones'     => $sesiones->count(),
+                    'registros'    => $regs->count(),
+                    'asistencias'  => $regs->where('estado_incidencia', 'asistencia')->count(),
+                    'retardos'     => $regs->where('estado_incidencia', 'retardo')->count(),
+                    'permisos'     => $regs->where('estado_incidencia', 'permiso')->count(),
+                    'faltas'       => $regs->where('estado_incidencia', 'falta')->count(),
+                    'carreras'     => $sesiones->map(fn($s) => optional($s->grupo)->carrera)->filter()->unique()->values(),
+                ];
+            })
+            ->sortByDesc('periodo')
+            ->values();
+
+        return view('admin.archivo', compact('semestresVigentes', 'semestresArchivados'));
+    }
+
+    /**
+     * Cerrar un semestre: finaliza sesiones abiertas y archiva todas las sesiones del periodo.
+     * El docente arranca el siguiente semestre desde cero; el admin conserva todo aqui.
+     */
+    public function cerrarSemestre(Request $request)
+    {
+        $request->validate([
+            'periodo' => 'required|string|max:50',
+        ]);
+
+        $periodo = trim($request->periodo);
+
+        $sesionesVigentes = SesionClase::vigente()->where('periodo_lectivo', $periodo)->get();
+
+        if ($sesionesVigentes->isEmpty()) {
+            return back()->with('error', "No hay sesiones vigentes del periodo {$periodo} para cerrar.");
+        }
+
+        $total = $sesionesVigentes->count();
+
+        // Cerrar las sesiones que sigan activas antes de archivar
+        $sesionesVigentes->where('estado', 'activa')->each(function ($sesion) {
+            $sesion->update([
+                'estado'   => 'finalizada',
+                'hora_fin' => $sesion->hora_fin ?? now()->toTimeString(),
+            ]);
+        });
+
+        SesionClase::where('periodo_lectivo', $periodo)
+            ->where('archivado', false)
+            ->update(['archivado' => true]);
+
+        return back()->with('success', "Semestre {$periodo} cerrado: {$total} sesiones archivadas. Los docentes inician el nuevo semestre desde cero y el historial queda en este archivo.");
+    }
+
+    /**
+     * Descargar CSV del historial completo de un semestre archivado (solo datos archivados).
+     */
+    public function exportarArchivoCsv(Request $request)
+    {
+        $rawPeriodo = $request->input('periodo');
+        $periodo = is_string($rawPeriodo) ? trim($rawPeriodo) : '';
+
+        if ($periodo === '') {
+            return back()->with('error', 'Selecciona el semestre a descargar.');
+        }
+
+        $sesionesIds = SesionClase::archivadas()->where('periodo_lectivo', $periodo)->pluck('id');
+
+        if ($sesionesIds->isEmpty()) {
+            return back()->with('error', "No hay sesiones archivadas del periodo {$periodo}.");
+        }
+
+        $registros = RegistroAsistencia::with(['alumno', 'sesion.grupo', 'sesion.materia'])
+            ->whereIn('sesion_clase_id', $sesionesIds)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $filename = 'archivo_semestre_' . preg_replace('/[^A-Za-z0-9\-]+/', '_', $periodo) . '_' . date('Ymd_His') . '.csv';
+
+        return new \Symfony\Component\HttpFoundation\StreamedResponse(function () use ($registros) {
+            $handle = fopen('php://output', 'w');
+            fprintf($handle, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
+            fputcsv($handle, [
+                'Fecha Sesion',
+                'Periodo',
+                'Grupo',
+                'Codigo Materia',
+                'Materia',
+                'Matricula',
+                'Alumno',
+                'Correo',
+                'Hora Escaneo',
+                'Estado Incidencia',
+                'Observaciones',
+            ]);
+
+            foreach ($registros as $reg) {
+                $nombreGrupo = optional($reg->sesion->grupo)->nombre_grupo
+                    ?? optional(optional($reg->sesion->materia)->grupo)->nombre_grupo
+                    ?? 'N/A';
+
+                fputcsv($handle, [
+                    $this->sanitizarCeldaCsv($reg->sesion->fecha ?? ''),
+                    $this->sanitizarCeldaCsv($reg->sesion->periodo_lectivo ?? ''),
+                    $this->sanitizarCeldaCsv($nombreGrupo),
+                    $this->sanitizarCeldaCsv($reg->sesion->materia->codigo_materia ?? ''),
+                    $this->sanitizarCeldaCsv($reg->sesion->materia->nombre_materia ?? ''),
+                    $this->sanitizarCeldaCsv($reg->alumno->matricula_codigo ?? 'S/M'),
+                    $this->sanitizarCeldaCsv($reg->alumno->name ?? ''),
+                    $this->sanitizarCeldaCsv($reg->alumno->email ?? ''),
+                    $this->sanitizarCeldaCsv($reg->timestamp_escaneo ?? '--:--'),
+                    $this->sanitizarCeldaCsv(strtoupper($reg->estado_incidencia ?? '')),
+                    $this->sanitizarCeldaCsv($reg->observaciones ?? ''),
+                ]);
+            }
+
+            fclose($handle);
+        }, 200, [
+            'Content-Type'        => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ]);
+    }
+
+    // Evita que Excel ejecute fórmulas si una celda inicia con =, +, -, @, tab o retorno de carro
+    private function sanitizarCeldaCsv(?string $valor): string
+    {
+        $texto = (string) $valor;
+        if ($texto !== '' && in_array($texto[0], ['=', '+', '-', '@', "\t", "\r"], true)) {
+            return "'" . $texto;
+        }
+        return $texto;
+    }
 }
 

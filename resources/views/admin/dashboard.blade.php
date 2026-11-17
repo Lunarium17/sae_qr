@@ -250,6 +250,20 @@
                     <span class="text-dark small fw-semibold mt-auto"><i class="bi bi-arrow-right-short"></i></span>
                 </a>
             </div>
+
+            <div class="col-md-6 col-lg-4">
+                <a href="{{ route('admin.archivo') }}" class="card card-hover border-0 shadow-sm rounded-4 p-4 bg-white h-100 text-decoration-none">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="bg-secondary bg-opacity-10 text-secondary rounded-4 p-3">
+                            <i class="bi bi-archive-fill fs-3"></i>
+                        </div>
+                        <span class="badge bg-dark rounded-pill">historial</span>
+                    </div>
+                    <h5 class="fw-bold text-dark">Archivo de Semestres</h5>
+                    <p class="text-muted small mb-2">Cierra semestres terminados y consulta o descarga el historial completo de asistencias.</p>
+                    <span class="text-secondary small fw-semibold mt-auto"><i class="bi bi-arrow-right-short"></i></span>
+                </a>
+            </div>
         </div>
 
     </div>

@@ -20,7 +20,25 @@ class SesionClase extends Model
         'hora_fin',
         'tolerancia_minutos',
         'estado', // 'activa', 'finalizada'
+        'archivado',
+        'periodo_lectivo',
     ];
+
+    protected $casts = [
+        'archivado' => 'boolean',
+    ];
+
+    // Solo sesiones del semestre en curso (no archivadas)
+    public function scopeVigente($query)
+    {
+        return $query->where('archivado', false);
+    }
+
+    // Solo sesiones archivadas (semestres cerrados por el admin)
+    public function scopeArchivadas($query)
+    {
+        return $query->where('archivado', true);
+    }
 
     // Docente que imparte la sesión
     public function profesor()

@@ -34,8 +34,8 @@
         }])->get();
         $gruposCount = $grupos->count();
 
-        $totalSesiones = \App\Models\SesionClase::where('profesor_id', $profesorId)->count();
-        $sesionesActivasCount = \App\Models\SesionClase::where('profesor_id', $profesorId)->where('estado', 'activa')->count();
+        $totalSesiones = \App\Models\SesionClase::where('profesor_id', $profesorId)->vigente()->count();
+        $sesionesActivasCount = \App\Models\SesionClase::where('profesor_id', $profesorId)->where('estado', 'activa')->vigente()->count();
 
         $alumnosAceptadosCount = $misMateriaIds->isNotEmpty()
             ? \App\Models\Matricula::whereIn('materia_id', $misMateriaIds)->where('estado', 'aceptado')->count()
@@ -45,18 +45,19 @@
             : 0;
         $justificantesPendientes = \App\Models\Justificante::where('estado_aprobacion', 'pendiente')
             ->whereHas('registroAsistencia.sesion', function ($q) use ($profesorId) {
-                $q->where('profesor_id', $profesorId);
+                $q->where('profesor_id', $profesorId)
+                  ->where('archivado', false);
             })
             ->count();
 
         $asistenciasCount = \App\Models\RegistroAsistencia::where('estado_incidencia', 'asistencia')
-            ->whereHas('sesion', fn($q) => $q->where('profesor_id', $profesorId))->count();
+            ->whereHas('sesion', fn($q) => $q->where('profesor_id', $profesorId)->where('archivado', false))->count();
         $retardosCount    = \App\Models\RegistroAsistencia::where('estado_incidencia', 'retardo')
-            ->whereHas('sesion', fn($q) => $q->where('profesor_id', $profesorId))->count();
+            ->whereHas('sesion', fn($q) => $q->where('profesor_id', $profesorId)->where('archivado', false))->count();
         $permisosCount    = \App\Models\RegistroAsistencia::where('estado_incidencia', 'permiso')
-            ->whereHas('sesion', fn($q) => $q->where('profesor_id', $profesorId))->count();
+            ->whereHas('sesion', fn($q) => $q->where('profesor_id', $profesorId)->where('archivado', false))->count();
         $faltasCount      = \App\Models\RegistroAsistencia::where('estado_incidencia', 'falta')
-            ->whereHas('sesion', fn($q) => $q->where('profesor_id', $profesorId))->count();
+            ->whereHas('sesion', fn($q) => $q->where('profesor_id', $profesorId)->where('archivado', false))->count();
 
         $totalRegistros = $asistenciasCount + $retardosCount + $permisosCount + $faltasCount;
         $asistenciasEfectivas = $asistenciasCount + $retardosCount + $permisosCount;

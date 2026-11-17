@@ -117,7 +117,8 @@ class ReporteController extends Controller
 
         $registros = RegistroAsistencia::with(['alumno', 'sesion.grupo', 'sesion.materia.grupo'])
             ->whereHas('sesion', function ($q) use ($profesorId, $materiaId, $mes) {
-                $q->where('profesor_id', $profesorId);
+                $q->where('profesor_id', $profesorId)
+                  ->where('archivado', false);
                 if ($materiaId) {
                     $q->where('materia_id', $materiaId);
                 }

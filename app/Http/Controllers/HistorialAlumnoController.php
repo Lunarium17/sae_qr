@@ -32,7 +32,8 @@ class HistorialAlumnoController extends Controller
         $query = RegistroAsistencia::with(['sesion.materia'])
             ->where('user_id', $alumnoId)
             ->whereHas('sesion', function ($q) use ($mesActual, $materiaFiltro) {
-                $q->where('fecha', 'like', $mesActual . '%');
+                $q->where('fecha', 'like', $mesActual . '%')
+                  ->where('archivado', false);
                 if ($materiaFiltro) {
                     $q->where('materia_id', $materiaFiltro);
                 }

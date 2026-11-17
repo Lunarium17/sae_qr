@@ -47,11 +47,12 @@
         // Carreras en las que imparte este docente (derivadas de sus grupos)
         $carrerasDocente = $grupos->pluck('carrera')->filter()->unique()->values();
 
-        // Alcance de las incidencias según el filtro activo
+        // Alcance de las incidencias según el filtro activo (solo sesiones del semestre vigente)
         $countIncidencias = function ($estado) use ($profesorId, $materiaSel) {
             return \App\Models\RegistroAsistencia::where('estado_incidencia', $estado)
                 ->whereHas('sesion', function ($q) use ($profesorId, $materiaSel) {
-                    $q->where('profesor_id', $profesorId);
+                    $q->where('profesor_id', $profesorId)
+                      ->where('archivado', false);
                     if ($materiaSel) {
                         $q->where('materia_id', $materiaSel->id);
                     }
@@ -72,7 +73,9 @@
             if ($mIds->isEmpty()) continue;
             $nombresGruposChart[] = $g->nombre_grupo . ' (' . $g->turno . ')';
             $regsG = \App\Models\RegistroAsistencia::whereHas('sesion', function ($q) use ($mIds, $profesorId) {
-                $q->where('profesor_id', $profesorId)->whereIn('materia_id', $mIds);
+                $q->where('profesor_id', $profesorId)
+                  ->where('archivado', false)
+                  ->whereIn('materia_id', $mIds);
             })->get();
             $totG = $regsG->count();
             $efecG = $regsG->whereIn('estado_incidencia', ['asistencia', 'retardo', 'permiso'])->count();
@@ -83,7 +86,9 @@
         $porcentajesMateriasChart = [];
         foreach ($misMaterias as $m) {
             $regsM = \App\Models\RegistroAsistencia::whereHas('sesion', function ($q) use ($m, $profesorId) {
-                $q->where('profesor_id', $profesorId)->where('materia_id', $m->id);
+                $q->where('profesor_id', $profesorId)
+                  ->where('archivado', false)
+                  ->where('materia_id', $m->id);
             })->get();
             $totM = $regsM->count();
             $efecM = $regsM->whereIn('estado_incidencia', ['asistencia', 'retardo', 'permiso'])->count();
@@ -100,7 +105,9 @@
                 ->unique();
             if ($mIdsCarrera->isEmpty()) continue;
             $regsC = \App\Models\RegistroAsistencia::whereHas('sesion', function ($q) use ($mIdsCarrera, $profesorId) {
-                $q->where('profesor_id', $profesorId)->whereIn('materia_id', $mIdsCarrera);
+                $q->where('profesor_id', $profesorId)
+                  ->where('archivado', false)
+                  ->whereIn('materia_id', $mIdsCarrera);
             })->get();
             $totC = $regsC->count();
             $efecC = $regsC->whereIn('estado_incidencia', ['asistencia', 'retardo', 'permiso'])->count();
@@ -149,6 +156,7 @@
             $regsAlumnoMat = \App\Models\RegistroAsistencia::where('user_id', $mat->user_id)
                 ->whereHas('sesion', function ($q) use ($mat, $profesorId) {
                     $q->where('profesor_id', $profesorId)
+                      ->where('archivado', false)
                       ->where('materia_id', $mat->materia_id);
                 })
                 ->get();

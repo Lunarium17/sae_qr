@@ -50,6 +50,7 @@ class GrupoController extends Controller
 
             $registros = RegistroAsistencia::whereHas('sesion', function ($q) use ($misMateriaIds, $grupo) {
                 $q->whereIn('materia_id', $misMateriaIds)
+                  ->where('archivado', false)
                   ->where(function ($sub) use ($grupo) {
                       $sub->where('grupo_id', $grupo->id)
                           ->orWhereNull('grupo_id');

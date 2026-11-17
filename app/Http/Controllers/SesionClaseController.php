@@ -31,11 +31,13 @@ class SesionClaseController extends Controller
         $sesionActiva = SesionClase::with(['grupo', 'materia.grupo', 'asistencias.alumno'])
             ->where('profesor_id', $profesorId)
             ->where('estado', 'activa')
+            ->vigente()
             ->first();
 
         // Historial de sesiones anteriores impartidas por este docente (con detalle de alumnos para consulta y ajuste)
         $historialSesiones = SesionClase::with(['grupo', 'materia.grupo', 'asistencias.alumno'])
             ->where('profesor_id', $profesorId)
+            ->vigente()
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -73,6 +75,7 @@ class SesionClaseController extends Controller
             'hora_fin'           => Carbon::now()->addHours(2)->toTimeString(),
             'tolerancia_minutos' => $request->tolerancia_minutos,
             'estado'             => 'activa',
+            'periodo_lectivo'    => optional($materia->grupo)->periodo_lectivo,
         ]);
 
         return redirect()->route('sesiones.index')

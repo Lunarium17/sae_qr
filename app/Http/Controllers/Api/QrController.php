@@ -96,9 +96,9 @@ class QrController extends Controller
                 return response()->json(['status' => 'error', 'message' => 'Alumno no válido.'], 404);
             }
 
-            // Regla 2: Verificar que la sesión de clase esté activa y pertenezca al docente autenticado
+            // Regla 2: Verificar que la sesión de clase esté activa, vigente (no archivada) y pertenezca al docente autenticado
             $sesion = SesionClase::with(['grupo', 'materia.grupo'])->find($request->sesion_clase_id);
-            if (!$sesion || $sesion->estado !== 'activa') {
+            if (!$sesion || $sesion->estado !== 'activa' || $sesion->archivado) {
                 return response()->json(['status' => 'error', 'message' => 'La sesión de clase ya fue cerrada.'], 400);
             }
 

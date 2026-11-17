@@ -48,6 +48,11 @@ Route::middleware(['auth', \App\Http\Middleware\CheckRol::class . ':admin'])->gr
     Route::post('/admin/grupos', [AdminController::class, 'storeGrupo'])->name('admin.grupos.store');
     Route::put('/admin/grupos/{id}', [AdminController::class, 'updateGrupo'])->name('admin.grupos.update');
     Route::delete('/admin/grupos/{id}', [AdminController::class, 'destroyGrupo'])->name('admin.grupos.destroy');
+
+    // Archivo de Semestres: cierre de semestre e historial conservado para el administrador
+    Route::get('/admin/archivo', [AdminController::class, 'archivo'])->name('admin.archivo');
+    Route::post('/admin/archivo/cerrar', [AdminController::class, 'cerrarSemestre'])->name('admin.archivo.cerrar');
+    Route::get('/admin/archivo/exportar', [AdminController::class, 'exportarArchivoCsv'])->name('admin.archivo.exportar');
 });
 
 // Panel protegido exclusivamente para PROFESORES
