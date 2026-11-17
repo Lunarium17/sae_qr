@@ -14,33 +14,42 @@
         #jsCampanaBtn { color: #334155; border-color: #CBD5E1; }
         #jsCampanaBtn:hover, #jsCampanaBtn:focus { background: #F1F5F9; color: #0F172A; }
 
-        .barra-avisos { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 1rem; }
         .badge-suave-verde { background: #ECFDF5; color: #047857; border: 1px solid #A7F3D0; }
         .badge-suave-carmesi { background: #FFF1F2; color: #BE123C; border: 1px solid #FECDD3; }
-        .chip-ambar { background: #FEF3C7; color: #92400E; }
-        .chip-carmesi { background: #FFE4E6; color: #9F1239; }
-        .btn-carmesi { background: #E11D48; color: #FFFFFF; }
-        .btn-carmesi:hover, .btn-carmesi:focus { background: #BE123C; color: #FFFFFF; }
+        .texto-slate { color: #334155; }
 
         .bento {
             background: #FFFFFF;
-            border: 1px solid rgba(226, 232, 240, .8);
+            border: 1px solid rgba(203, 213, 225, .9);
             border-radius: 1.25rem;
             overflow: hidden;
-            box-shadow: 0 1px 2px rgba(15, 23, 42, .05), 0 10px 28px -14px rgba(15, 23, 42, .14);
+            box-shadow: 0 4px 6px -2px rgba(15, 23, 42, .07), 0 12px 24px -10px rgba(15, 23, 42, .12);
             transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
         }
         .bento:hover {
             transform: translateY(-3px);
-            box-shadow: 0 2px 4px rgba(15, 23, 42, .06), 0 18px 36px -14px rgba(15, 23, 42, .20);
+            box-shadow: 0 6px 10px -4px rgba(15, 23, 42, .10), 0 20px 32px -12px rgba(15, 23, 42, .18);
         }
         .metrica-prota { background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 100%); border: none; color: #FFFFFF; }
+        .metrica-ambar { background: linear-gradient(180deg, #FFFBEB 0%, #FFFFFF 55%); border-top: 3px solid #D97706; }
+        .metrica-coral { background: linear-gradient(180deg, #FFF1F2 0%, #FFFFFF 55%); border-top: 3px solid #E11D48; }
+        .metrica-cielo { background: linear-gradient(180deg, #EFF6FF 0%, #FFFFFF 55%); border-top: 3px solid #2563EB; }
         .numero-hero { font-size: 2.75rem; font-weight: 800; line-height: 1; letter-spacing: -.02em; }
         .numero-bento { font-size: 3rem; font-weight: 800; color: #0F172A; line-height: 1; letter-spacing: -.02em; }
         .punto-estado { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
 
-        .bento-qr { background: rgba(239, 246, 255, .7); border-color: #BFDBFE; }
-        .pildora-materia { background: #F8FAFC; border: 1px solid #E2E8F0; font-size: .9rem; }
+        .bento-azul { background: #EFF6FF; border-color: #BFDBFE; }
+        .bento-indigo { background: #EEF2FF; border-color: #C7D2FE; }
+        .bento-esmeralda { background: #ECFDF5; border-color: #A7F3D0; }
+        .bento-marcada { background: #FFFFFF; border-color: #94A3B8; }
+
+        .pildora-materia { font-size: .92rem; }
+        .pildora-azul { background: #EFF6FF; border: 1px solid #BFDBFE; }
+        .pildora-esmeralda { background: #ECFDF5; border: 1px solid #A7F3D0; }
+        .pildora-ambar { background: #FEF3C7; border: 1px solid #FCD34D; }
+        .pildora-coral { background: #FFF1F2; border: 1px solid #FECDD3; }
+
+        .hr-divisor { border-top: 1px solid #CBD5E1; opacity: 1; margin: 0; }
 
         .hoja-calendario {
             background: #FFFFFF;
@@ -62,7 +71,7 @@
         .bento:hover .flecha-circular i { color: #FFFFFF; transform: rotate(-45deg); }
     </style>
 </head>
-<body class="bg-light">
+<body style="background: #E2E8F0;">
 
     @php
         $alumno = \Illuminate\Support\Facades\Auth::user();
@@ -103,48 +112,6 @@
             ->filter(function ($reg) {
                 return !$reg->justificante || $reg->justificante->estado_aprobacion === 'rechazado';
             });
-
-        // Estadísticas por cada materia inscrita y alertas de límite de 3 faltas
-        $registrosAlumno = \App\Models\RegistroAsistencia::with('sesion')
-            ->where('user_id', $userId)
-            ->get();
-
-        $alertasMateriasFaltas = [];
-        foreach ($matriculasAceptadas as $mat) {
-            if (!$mat->materia) continue;
-            $regsMat = $registrosAlumno->filter(fn($r) => $r->sesion && (int) $r->sesion->materia_id === (int) $mat->materia_id);
-            $totMat  = $regsMat->count();
-            $asistM  = $regsMat->where('estado_incidencia', 'asistencia')->count();
-            $retM    = $regsMat->where('estado_incidencia', 'retardo')->count();
-            $permM   = $regsMat->where('estado_incidencia', 'permiso')->count();
-            $faltM   = $regsMat->where('estado_incidencia', 'falta')->count();
-            $efecM   = $asistM + $retM + $permM;
-
-            // Regla Universitaria: Cada 3 retardos acumulados en una misma asignatura equivalen a 1 falta
-            $faltasPorRetM  = intdiv($retM, 3);
-            $faltasTotalesM = $faltM + $faltasPorRetM;
-
-            $mat->asistencias_mat     = $asistM;
-            $mat->retardos_mat        = $retM;
-            $mat->permisos_mat        = $permM;
-            $mat->faltas_mat          = $faltM;
-            $mat->faltas_retardos_mat = $faltasPorRetM;
-            $mat->faltas_totales_mat  = $faltasTotalesM;
-            $mat->total_sesiones      = $totMat;
-            $mat->porcentaje_mat      = $totMat > 0 ? round(($efecM / $totMat) * 100) : null;
-
-            if ($faltasTotalesM >= 2) {
-                $alertasMateriasFaltas[] = [
-                    'materia'         => $mat->materia->nombre_materia,
-                    'grupo'           => $mat->grupo->nombre_grupo ?? '-',
-                    'faltas'          => $faltasTotalesM,
-                    'faltas_directas' => $faltM,
-                    'retardos'        => $retM,
-                    'faltas_retardos' => $faltasPorRetM,
-                    'critico'         => $faltasTotalesM >= 3,
-                ];
-            }
-        }
 
         $avHue = abs(crc32($alumno->name ?? 'U')) % 360;
 
@@ -231,97 +198,8 @@
             </div>
         </div>
 
-        <!-- 2. Barra de Avisos y Recordatorios -->
-        @php
-            $totalAvisos = $sesionesActivasPendientes->count() + count($alertasMateriasFaltas) + $incidenciasPorJustificar->count();
-        @endphp
-        <div class="barra-avisos d-flex flex-wrap justify-content-between align-items-center gap-2 px-4 py-3 mb-4">
-            <div class="d-flex align-items-center gap-2 text-secondary small">
-                <i class="bi bi-bell {{ $totalAvisos > 0 ? 'text-danger' : '' }} fs-6"></i>
-                @if ($totalAvisos === 0)
-                    <span>No tienes faltas pendientes por justificar ni alertas de asistencia en este momento.</span>
-                @else
-                    <span>Tienes <strong class="text-dark">{{ $totalAvisos }}</strong> {{ $totalAvisos === 1 ? 'aviso importante' : 'avisos importantes' }} que revisar en esta pantalla.</span>
-                @endif
-            </div>
-            @if ($totalAvisos === 0)
-                <span class="badge badge-suave-verde rounded-pill px-3 py-2">Todo al día</span>
-            @else
-                <span class="badge badge-suave-carmesi rounded-pill px-3 py-2">{{ $totalAvisos }} {{ $totalAvisos === 1 ? 'aviso' : 'avisos' }}</span>
-            @endif
-        </div>
-
-        @if ($totalAvisos > 0)
-            <div class="mb-4">
-                <!-- Aviso A: Sesiones de clase activas en este momento -->
-                @foreach ($sesionesActivasPendientes as $sesionAct)
-                    <div class="alert alert-success border-start border-4 d-flex flex-wrap justify-content-between align-items-center rounded-3 mb-2 py-2" style="border-start-color: #059669;">
-                        <div>
-                            <strong>Clase activa en curso.</strong>
-                            La materia <strong>{{ $sesionAct->materia->nombre_materia }}</strong>
-                            {{ $sesionAct->materia->grupo ? 'del grupo ' . $sesionAct->materia->grupo->nombre_grupo : '' }}
-                            está abierta desde las {{ $sesionAct->hora_inicio }}. <a href="{{ route('alumno.qr') }}" class="fw-semibold">Presenta tu código QR aquí</a>.
-                        </div>
-                        <span class="badge bg-success">Escaneo pendiente</span>
-                    </div>
-                @endforeach
-
-                <!-- Aviso B: Alertas de Derecho a Examen Ordinario y límite de 3 faltas (3 retardos = 1 falta) -->
-                @foreach ($alertasMateriasFaltas as $alertaFalta)
-                    <div class="alert {{ $alertaFalta['critico'] ? 'alert-danger' : 'alert-warning' }} border-start border-4 d-flex flex-wrap justify-content-between align-items-center rounded-3 mb-2 py-2" style="border-start-color: {{ $alertaFalta['critico'] ? '#E11D48' : '#D97706' }};">
-                        <div>
-                            @if ($alertaFalta['critico'])
-                                <strong>Sin derecho a examen ordinario: {{ $alertaFalta['faltas'] }} de 3 faltas.</strong>
-                            @else
-                                <strong>Aviso preventivo: 2 de 3 faltas.</strong>
-                            @endif
-                            En <strong>{{ $alertaFalta['materia'] }}</strong>{{ $alertaFalta['grupo'] !== '-' ? ' · Grupo ' . $alertaFalta['grupo'] : '' }}
-                            acumulas {{ $alertaFalta['faltas_directas'] }} {{ $alertaFalta['faltas_directas'] === 1 ? 'falta' : 'faltas' }} directa{{ $alertaFalta['faltas_directas'] === 1 ? '' : 's' }}
-                            + {{ $alertaFalta['faltas_retardos'] }} por {{ $alertaFalta['retardos'] }} {{ $alertaFalta['retardos'] === 1 ? 'retardo' : 'retardos' }}.
-                            @if (!$alertaFalta['critico'])
-                                Estás a una falta de perder el derecho a examen ordinario.
-                            @endif
-                        </div>
-                        <a href="{{ route('alumno.justificantes') }}" class="btn btn-sm {{ $alertaFalta['critico'] ? 'btn-carmesi' : 'btn-dark' }} rounded-3">
-                            <i class="bi bi-upload me-1"></i>Ir a Justificantes
-                        </a>
-                    </div>
-                @endforeach
-
-                <!-- Aviso C: Faltas o retardos específicos pendientes de justificar -->
-                @if ($incidenciasPorJustificar->isNotEmpty())
-                    <div class="mt-2">
-                        <h6 class="fw-bold text-secondary small text-uppercase mb-2">
-                            <i class="bi bi-clipboard-check me-1"></i>Inasistencias y retardos que puedes justificar
-                        </h6>
-                        <div class="list-group list-group-flush border rounded-3">
-                            @foreach ($incidenciasPorJustificar->take(5) as $inc)
-                                <div class="list-group-item d-flex flex-wrap justify-content-between align-items-center gap-2 py-2">
-                                    <div>
-                                        <span class="badge text-uppercase me-2 {{ $inc->estado_incidencia === 'falta' ? 'chip-carmesi' : 'chip-ambar' }}">
-                                            {{ $inc->estado_incidencia }}
-                                        </span>
-                                        <strong class="text-dark">{{ $inc->sesion->materia->nombre_materia ?? 'Materia' }}</strong>
-                                        <span class="text-muted small ms-2">
-                                            <i class="bi bi-calendar-event me-1"></i>Fecha: {{ $inc->sesion->fecha ?? '-' }}
-                                        </span>
-                                        @if ($inc->justificante && $inc->justificante->estado_aprobacion === 'rechazado')
-                                            <span class="badge bg-secondary ms-1">Justificante anterior rechazado</span>
-                                        @endif
-                                    </div>
-                                    <a href="{{ route('alumno.justificantes', ['registro_id' => $inc->id]) }}" class="btn btn-sm btn-outline-primary rounded-3">
-                                        <i class="bi bi-send-check me-1"></i>Justificar ahora
-                                    </a>
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
-                @endif
-            </div>
-        @endif
-
-        <!-- 3. Métricas Bento -->
-        <div class="row g-3 mb-4">
+        <!-- 2. Métricas Bento -->
+        <div class="row g-4 mb-5">
             <div class="col-12 col-md-6">
                 <a href="{{ route('alumno.calendario') }}" class="d-block text-decoration-none h-100">
                     <div class="bento metrica-prota h-100 p-4 d-flex align-items-center justify-content-between gap-3">
@@ -342,13 +220,13 @@
             </div>
             <div class="col-6 col-md-2">
                 <a href="{{ route('alumno.calendario') }}" class="d-block text-decoration-none h-100">
-                    <div class="bento h-100 p-3 d-flex flex-column justify-content-between" style="min-height: 168px;">
+                    <div class="bento metrica-ambar h-100 p-3 d-flex flex-column justify-content-between" style="min-height: 184px;">
                         <div class="d-flex justify-content-between align-items-start">
-                            <span class="text-secondary small fw-semibold">Retardos</span>
+                            <span class="texto-slate small fw-semibold">Retardos</span>
                             <i class="bi bi-clock fs-6" style="color: #94A3B8;"></i>
                         </div>
                         <div class="numero-bento">{{ $retardosCount }}</div>
-                        <div class="d-flex align-items-center gap-2 text-secondary" style="font-size: .72rem;">
+                        <div class="d-flex align-items-center gap-2 texto-slate" style="font-size: .72rem;">
                             <span class="punto-estado" style="background: #D97706;"></span>Cada 3 retardos = 1 falta
                         </div>
                     </div>
@@ -356,18 +234,18 @@
             </div>
             <div class="col-6 col-md-2">
                 <a href="{{ route('alumno.justificantes') }}" class="d-block text-decoration-none h-100">
-                    <div class="bento h-100 p-3 d-flex flex-column justify-content-between" style="min-height: 168px;">
+                    <div class="bento metrica-coral h-100 p-3 d-flex flex-column justify-content-between" style="min-height: 184px;">
                         <div class="d-flex justify-content-between align-items-start">
-                            <span class="text-secondary small fw-semibold">Faltas</span>
+                            <span class="texto-slate small fw-semibold">Faltas</span>
                             <i class="bi bi-x-circle fs-6" style="color: #94A3B8;"></i>
                         </div>
                         <div class="numero-bento">{{ $faltasCount }}</div>
                         @if ($incidenciasPorJustificar->isEmpty())
-                            <div class="d-flex align-items-center gap-2 text-secondary" style="font-size: .72rem;">
+                            <div class="d-flex align-items-center gap-2 texto-slate" style="font-size: .72rem;">
                                 <span class="punto-estado" style="background: #059669;"></span>Todo justificado
                             </div>
                         @else
-                            <div class="d-flex align-items-center gap-2 text-secondary" style="font-size: .72rem;">
+                            <div class="d-flex align-items-center gap-2 texto-slate" style="font-size: .72rem;">
                                 <span class="punto-estado" style="background: #E11D48;"></span>{{ $incidenciasPorJustificar->count() }} por justificar
                             </div>
                         @endif
@@ -376,13 +254,13 @@
             </div>
             <div class="col-6 col-md-2">
                 <a href="{{ route('alumno.calendario') }}" class="d-block text-decoration-none h-100">
-                    <div class="bento h-100 p-3 d-flex flex-column justify-content-between" style="min-height: 168px;">
+                    <div class="bento metrica-cielo h-100 p-3 d-flex flex-column justify-content-between" style="min-height: 184px;">
                         <div class="d-flex justify-content-between align-items-start">
-                            <span class="text-secondary small fw-semibold">Permisos</span>
+                            <span class="texto-slate small fw-semibold">Permisos</span>
                             <i class="bi bi-file-earmark-check fs-6" style="color: #94A3B8;"></i>
                         </div>
                         <div class="numero-bento">{{ $permisosCount }}</div>
-                        <div class="d-flex align-items-center gap-2 text-secondary" style="font-size: .72rem;">
+                        <div class="d-flex align-items-center gap-2 texto-slate" style="font-size: .72rem;">
                             <span class="punto-estado" style="background: #2563EB;"></span>Justificados
                         </div>
                     </div>
@@ -390,18 +268,21 @@
             </div>
         </div>
 
-        <!-- 4. Secciones Bento 2x2 -->
-        <h5 class="fw-bold text-dark mb-3 px-1">Secciones</h5>
-        <div class="row g-3">
+        <!-- 3. Secciones Bento 2x2 -->
+        <div class="d-flex align-items-center gap-3 mb-4 px-1">
+            <h5 class="fw-bold text-dark mb-0" style="color: #0F172A;">Secciones</h5>
+            <div class="hr-divisor flex-grow-1"></div>
+        </div>
+        <div class="row g-4">
             <div class="col-md-6">
                 <a href="{{ route('alumno.qr') }}" class="d-block text-decoration-none h-100">
-                    <div class="bento bento-qr h-100 p-4 position-relative" style="min-height: 200px;">
+                    <div class="bento bento-azul h-100 p-4 position-relative" style="min-height: 216px;">
                         @if ($sesionesActivasPendientes->count() > 0)
                             <span class="badge bg-success position-absolute rounded-pill" style="top: 1rem; right: 1rem;">Clase activa</span>
                         @endif
                         <div style="max-width: 65%;">
-                            <h6 class="fw-bold text-dark mb-1">Mi Código QR</h6>
-                            <p class="text-secondary small mb-0">Preséntalo en tu clase en curso para registrar tu asistencia.</p>
+                            <h6 class="fw-bold text-dark mb-1" style="color: #0F172A;">Mi Código QR</h6>
+                            <p class="texto-slate small mb-0">Preséntalo en tu clase en curso para registrar tu asistencia.</p>
                         </div>
                         <svg viewBox="0 0 100 100" class="position-absolute" style="width: 150px; height: 150px; right: -22px; bottom: -22px; transform: rotate(6deg);" aria-hidden="true">
                             <rect width="100" height="100" rx="10" fill="#EFF6FF"></rect>
@@ -428,23 +309,23 @@
             </div>
             <div class="col-md-6">
                 <a href="{{ route('alumno.materias') }}" class="d-block text-decoration-none h-100">
-                    <div class="bento h-100 p-4 position-relative" style="min-height: 200px;">
+                    <div class="bento bento-indigo h-100 p-4 position-relative" style="min-height: 216px;">
                         <div class="d-flex justify-content-between align-items-start gap-2">
                             <div>
-                                <h6 class="fw-bold text-dark mb-1">Mis Materias</h6>
-                                <p class="text-secondary small mb-0">Consulta tu registro de asistencia y derecho a examen ordinario.</p>
+                                <h6 class="fw-bold text-dark mb-1" style="color: #0F172A;">Mis Materias</h6>
+                                <p class="texto-slate small mb-0">Consulta tu registro de asistencia y derecho a examen ordinario.</p>
                             </div>
                             <span class="badge bg-primary rounded-pill px-3 py-2 fs-6 flex-shrink-0">{{ $matriculasAceptadas->count() }}</span>
                         </div>
                         <div class="d-flex flex-wrap gap-2 mt-4">
                             @forelse ($siglasMaterias as $i => $materiaBento)
-                                <span class="d-inline-flex align-items-center gap-2 pildora-materia rounded-3 px-3 py-2">
-                                    <span class="punto-estado" style="background: {{ $i === 0 ? '#2563EB' : '#059669' }};"></span>
-                                    <span class="fw-bold text-dark">{{ $materiaBento['sigla'] }}</span>
-                                    <span class="text-secondary">· {{ $materiaBento['nombre'] }}</span>
+                                <span class="d-inline-flex align-items-center gap-2 pildora-materia pildora-{{ ['azul', 'esmeralda', 'ambar', 'coral'][$i % 4] }} rounded-3 px-3 py-2">
+                                    <span class="punto-estado" style="background: {{ ['#2563EB', '#059669', '#D97706', '#E11D48'][$i % 4] }};"></span>
+                                    <span class="fw-bold text-dark" style="color: #0F172A;">{{ $materiaBento['sigla'] }}</span>
+                                    <span class="nombre-pill">· {{ $materiaBento['nombre'] }}</span>
                                 </span>
                             @empty
-                                <span class="text-secondary" style="font-size: .72rem;">Aún no tienes materias inscritas.</span>
+                                <span class="texto-slate" style="font-size: .72rem;">Aún no tienes materias inscritas.</span>
                             @endforelse
                         </div>
                     </div>
@@ -452,10 +333,10 @@
             </div>
             <div class="col-md-6">
                 <a href="{{ route('alumno.calendario') }}" class="d-block text-decoration-none h-100">
-                    <div class="bento h-100 p-4 d-flex justify-content-between align-items-center gap-3" style="min-height: 200px;">
+                    <div class="bento bento-esmeralda h-100 p-4 d-flex justify-content-between align-items-center gap-3" style="min-height: 216px;">
                         <div>
-                            <h6 class="fw-bold text-dark mb-1">Calendario</h6>
-                            <p class="text-secondary small mb-0">Historial de asistencias, retardos y faltas del mes actual.</p>
+                            <h6 class="fw-bold text-dark mb-1" style="color: #0F172A;">Calendario</h6>
+                            <p class="texto-slate small mb-0">Historial de asistencias, retardos y faltas del mes actual.</p>
                         </div>
                         <div class="hoja-calendario flex-shrink-0" style="height: 84px;">
                             <div class="text-center fw-bold text-white" style="background: #2563EB; font-size: .78rem; padding: .32rem 0;">{{ $mesHoy }}</div>
@@ -466,10 +347,10 @@
             </div>
             <div class="col-md-6">
                 <a href="{{ route('alumno.justificantes') }}" class="d-block text-decoration-none h-100">
-                    <div class="bento h-100 p-4 d-flex justify-content-between align-items-center gap-3" style="min-height: 200px;">
+                    <div class="bento bento-marcada h-100 p-4 d-flex justify-content-between align-items-center gap-3" style="min-height: 216px;">
                         <div>
-                            <h6 class="fw-bold text-dark mb-1">Justificantes</h6>
-                            <p class="text-secondary small mb-0">Sube tu comprobante para justificar faltas y retardos ante el docente.</p>
+                            <h6 class="fw-bold text-dark mb-1" style="color: #0F172A;">Justificantes</h6>
+                            <p class="texto-slate small mb-0">Sube tu comprobante para justificar faltas y retardos ante el docente.</p>
                             <div class="mt-3">
                                 @if ($incidenciasPorJustificar->isEmpty())
                                     <span class="badge badge-suave-verde rounded-pill px-3 py-2 d-inline-flex align-items-center gap-2">
