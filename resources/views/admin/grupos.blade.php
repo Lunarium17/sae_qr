@@ -85,8 +85,10 @@
                             @forelse ($grupos as $grupo)
                                 <tr>
                                     <td>
-                                        <div class="fw-bold text-primary">{{ $grupo->nombre_grupo }}</div>
-                                        <div class="text-muted" style="font-size: 0.78rem;">{{ $grupo->carrera ?: 'Carrera general' }}</div>
+                                        <div class="fw-bold" style="color: {{ \App\Support\CarreraColor::color($grupo->carrera ?? '') }};">{{ $grupo->nombre_grupo }}</div>
+                                        <span class="badge rounded-pill px-2 py-1 mt-1" style="{{ \App\Support\CarreraColor::badge($grupo->carrera ?? '') }}">
+                                            <i class="bi bi-mortarboard-fill me-1"></i>{{ $grupo->carrera ?: 'Carrera general' }}
+                                        </span>
                                     </td>
                                     <td>
                                         <div class="fw-semibold text-dark">{{ $grupo->grado }}</div>

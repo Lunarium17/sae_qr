@@ -85,7 +85,7 @@
                         <h4 class="fw-bold text-dark mb-1">{{ $sesionActiva->materia->nombre_materia }}</h4>
                         @if($sesionActiva->materia->grupo)
                             <div class="mb-1">
-                                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary rounded-pill px-3 py-1">
+                                <span class="badge rounded-pill px-3 py-1" style="{{ \App\Support\CarreraColor::suave($sesionActiva->materia->grupo->carrera ?? '') }}">
                                     Grupo: {{ $sesionActiva->materia->grupo->nombre_grupo }} ({{ $sesionActiva->materia->grupo->turno }})
                                 </span>
                             </div>
@@ -425,11 +425,13 @@
                                 </td>
                                 <td>
                                     @if($grupoHist)
-                                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary">
+                                        <span class="badge rounded-pill" style="{{ \App\Support\CarreraColor::suave($grupoHist->carrera ?? '') }}">
                                             {{ $grupoHist->nombre_grupo }} ({{ $grupoHist->grado }})
                                         </span>
                                         @if($grupoHist->carrera)
-                                            <div class="text-muted small mt-1">{{ $grupoHist->carrera }}</div>
+                                            <span class="badge rounded-pill px-2 py-1 mt-1" style="{{ \App\Support\CarreraColor::badge($grupoHist->carrera) }}">
+                                                <i class="bi bi-mortarboard me-1"></i>{{ $grupoHist->carrera }}
+                                            </span>
                                         @endif
                                     @else
                                         <span class="text-muted">-</span>

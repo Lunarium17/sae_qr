@@ -90,11 +90,13 @@
                                     <tr>
                                         <td class="ps-4 fw-bold text-secondary">{{ $grupo->id }}</td>
                                         <td>
-                                            <a href="{{ route('grupos.show', $grupo->id) }}" class="badge bg-primary bg-opacity-10 text-primary border border-primary rounded-pill px-3 py-2 fs-6 text-decoration-none">
+                                            <a href="{{ route('grupos.show', $grupo->id) }}" class="badge rounded-pill px-3 py-2 fs-6 text-decoration-none" style="{{ \App\Support\CarreraColor::suave($grupo->carrera ?? '') }}">
                                                 {{ $grupo->nombre_grupo }}
                                             </a>
                                             @if ($grupo->carrera)
-                                                <div class="small text-muted mt-1"><i class="bi bi-mortarboard me-1"></i>{{ $grupo->carrera }}</div>
+                                                <span class="badge rounded-pill px-2 py-1 mt-1" style="{{ \App\Support\CarreraColor::badge($grupo->carrera) }}">
+                                                    <i class="bi bi-mortarboard me-1"></i>{{ $grupo->carrera }}
+                                                </span>
                                             @endif
                                         </td>
                                         <td>
