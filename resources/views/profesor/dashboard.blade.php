@@ -64,6 +64,11 @@
         $porcentajeAsistencia = $totalRegistros > 0 ? round(($asistenciasEfectivas / $totalRegistros) * 100) : 0;
 
         $colorSemaforoGlobal = $porcentajeAsistencia >= 85 ? 'success' : ($porcentajeAsistencia >= 70 ? 'warning' : 'danger');
+
+        // Saludo dinamico y datos del periodo activo
+        $saludo = now()->hour < 12 ? 'Buenos días' : (now()->hour < 19 ? 'Buenas tardes' : 'Buenas noches');
+        $fechaHoy = ucfirst(now()->locale('es')->translatedFormat('l, j \d\e F \d\e Y'));
+        $periodosActivos = $misMaterias->pluck('grupo.periodo_lectivo')->filter()->unique()->values();
     @endphp
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
@@ -90,46 +95,28 @@
     <div class="container my-5">
         <!-- 1. Panel Principal de Bienvenida y Acciones Rápidas -->
         <div class="card border-0 shadow-sm rounded-4 p-4 bg-white text-center mb-4">
-            <h3 class="fw-bold text-dark mb-1">Bienvenido, {{ $profesor->name }}</h3>
+            <h3 class="fw-bold text-dark mb-1">{{ $saludo }}, {{ $profesor->name }}</h3>
             <p class="text-muted small mb-3">
-                {{ $profesor->email }}
+                <i class="bi bi-calendar3 me-1"></i>{{ $fechaHoy }}
+                @if ($periodosActivos->isNotEmpty())
+                    <span class="mx-1">·</span>
+                    <i class="bi bi-calendar-week me-1"></i>Periodo escolar {{ $periodosActivos->first() }}
+                @endif
             </p>
-
-            @php
-                $carrerasDocente = $grupos->pluck('carrera')->filter()->unique()->values();
-            @endphp
-            @if ($carrerasDocente->isNotEmpty())
-                <div class="d-flex flex-wrap justify-content-center gap-2 mb-3">
-                    @foreach ($carrerasDocente as $c)
-                        <span class="badge rounded-pill px-3 py-2 d-inline-flex align-items-center gap-2" style="{{ \App\Support\CarreraColor::suave($c) }}">
-                            <span class="d-inline-block rounded-circle flex-shrink-0" style="width: 8px; height: 8px; background: {{ \App\Support\CarreraColor::color($c) }};"></span>{{ $c }}
-                        </span>
-                    @endforeach
-                </div>
-            @endif
 
             <div class="d-flex flex-wrap justify-content-center gap-3">
                 <a href="{{ route('sesiones.index') }}" class="btn btn-primary rounded-3 px-4 py-2">
-                    <i class="bi bi-qr-code-scan me-2"></i>Iniciar Sesión y Escanear
+                    <i class="bi bi-qr-code-scan me-2"></i>Iniciar Pase de Lista QR
                 </a>
                 <a href="{{ route('grupos.index') }}" class="btn btn-outline-dark rounded-3 px-4 py-2">
                     <i class="bi bi-collection me-2"></i>Gestión de Grupos y Materias
-                </a>
-                <a href="{{ route('profesor.solicitudes') }}" class="btn btn-warning rounded-3 px-4 py-2">
-                    <i class="bi bi-person-plus-fill me-2"></i>Solicitudes de Alumnos
-                    @if($solicitudesPendientes > 0)
-                        <span class="badge bg-danger ms-1">{{ $solicitudesPendientes }}</span>
-                    @endif
-                </a>
-                <a href="{{ route('profesor.materias.importar') }}" class="btn btn-success rounded-3 px-4 py-2">
-                    <i class="bi bi-file-earmark-arrow-up me-2"></i>Importar Alumnos por CSV
                 </a>
             </div>
         </div>
 
         <!-- 2. Tarjetas de KPIs Clicables en Tiempo Real -->
         <div class="row g-3 mb-4">
-            <div class="col-md-3 col-sm-6">
+            <div class="col-md-4 col-sm-6">
                 <a href="{{ route('grupos.index') }}" class="d-block text-decoration-none text-reset h-100">
                     <div class="card card-hover border-0 border-start border-4 border-primary shadow-sm rounded-4 p-3 bg-white h-100">
                         <div class="d-flex justify-content-between align-items-center">
@@ -145,7 +132,7 @@
                 </a>
             </div>
 
-            <div class="col-md-3 col-sm-6">
+            <div class="col-md-4 col-sm-6">
                 <a href="{{ route('profesor.solicitudes') }}" class="d-block text-decoration-none text-reset h-100">
                     <div class="card card-hover border-0 border-start border-4 border-info shadow-sm rounded-4 p-3 bg-white h-100">
                         <div class="d-flex justify-content-between align-items-center">
@@ -161,7 +148,7 @@
                 </a>
             </div>
 
-            <div class="col-md-3 col-sm-6">
+            <div class="col-md-4 col-sm-6">
                 <a href="{{ route('sesiones.index') }}" class="d-block text-decoration-none text-reset h-100">
                     <div class="card card-hover border-0 border-start border-4 border-primary shadow-sm rounded-4 p-3 bg-white h-100">
                         <div class="d-flex justify-content-between align-items-center">
@@ -177,24 +164,6 @@
                 </a>
             </div>
 
-            <div class="col-md-3 col-sm-6">
-                <a href="{{ route('profesor.estadisticas') }}" class="d-block text-decoration-none text-reset h-100">
-                    <div class="card card-hover border-0 border-start border-4 border-{{ $colorSemaforoGlobal }} shadow-sm rounded-4 p-3 bg-white h-100">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <div>
-                                <h6 class="text-muted small text-uppercase fw-bold mb-1">Asistencia Global</h6>
-                                <h3 class="fw-bold text-{{ $colorSemaforoGlobal }} mb-0">{{ $porcentajeAsistencia }}%</h3>
-                            </div>
-                            <div class="bg-{{ $colorSemaforoGlobal }} bg-opacity-10 text-{{ $colorSemaforoGlobal }} rounded-4 p-3">
-                                <i class="bi bi-graph-up-arrow fs-3"></i>
-                            </div>
-                        </div>
-                        <div class="progress rounded-pill" style="height: 8px;">
-                            <div class="progress-bar bg-{{ $colorSemaforoGlobal }}" role="progressbar" data-width="{{ $porcentajeAsistencia }}"></div>
-                        </div>
-                    </div>
-                </a>
-            </div>
         </div>
 
         <!-- 3. Secciones del Panel -->
@@ -281,6 +250,9 @@
                         <div class="bg-secondary bg-opacity-10 text-secondary rounded-4 p-3">
                             <i class="bi bi-graph-up-arrow fs-3"></i>
                         </div>
+                        <span class="badge bg-{{ $colorSemaforoGlobal }} {{ $colorSemaforoGlobal === 'warning' ? 'text-dark' : '' }} rounded-pill">
+                            {{ $porcentajeAsistencia }}% asistencia
+                        </span>
                     </div>
                     <h5 class="fw-bold text-dark">Estadísticas y Riesgo</h5>
                     <p class="text-muted small mb-2">Gráficas de incidencias y control del derecho a examen ordinario por alumno.</p>
