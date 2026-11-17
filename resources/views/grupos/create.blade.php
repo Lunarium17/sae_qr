@@ -54,17 +54,7 @@
                                 <!-- Carrera o Programa Educativo -->
                                 <div class="col-md-8">
                                     <label for="carrera" class="form-label fw-bold text-dark">Carrera / Programa Educativo <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control rounded-3 py-2" id="carrera" name="carrera" list="listaCarreras" value="{{ old('carrera') }}" maxlength="120" required>
-                                    <datalist id="listaCarreras">
-                                        <option value="Ingeniería en Sistemas Computacionales"></option>
-                                        <option value="Ingeniería en Tecnologías de la Información"></option>
-                                        <option value="Ingeniería Industrial"></option>
-                                        <option value="Ingeniería Mecatrónica"></option>
-                                        <option value="Licenciatura en Administración"></option>
-                                        <option value="Licenciatura en Contaduría Pública"></option>
-                                        <option value="Licenciatura en Derecho"></option>
-                                        <option value="Arquitectura"></option>
-                                    </datalist>
+                                    <input type="text" class="form-control rounded-3 py-2" id="carrera" name="carrera" value="{{ old('carrera') }}" maxlength="120" required placeholder="Escribe el nombre de la carrera o programa educativo">
                                 </div>
                                 
                                 <!-- Semestre -->

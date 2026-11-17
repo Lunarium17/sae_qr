@@ -429,9 +429,10 @@
                                             {{ $grupoHist->nombre_grupo }} ({{ $grupoHist->grado }})
                                         </span>
                                         @if($grupoHist->carrera)
-                                            <span class="badge rounded-pill px-2 py-1 mt-1" style="{{ \App\Support\CarreraColor::badge($grupoHist->carrera) }}">
-                                                <i class="bi bi-mortarboard me-1"></i>{{ $grupoHist->carrera }}
-                                            </span>
+                                            <div class="small mt-1 d-flex align-items-start gap-1">
+                                                <span class="d-inline-block rounded-circle flex-shrink-0 mt-1" style="width: 8px; height: 8px; background: {{ \App\Support\CarreraColor::color($grupoHist->carrera) }};"></span>
+                                                <span class="fw-semibold" style="color: {{ \App\Support\CarreraColor::color($grupoHist->carrera) }}; font-size: .75rem; line-height: 1.25;">{{ $grupoHist->carrera }}</span>
+                                            </div>
                                         @endif
                                     @else
                                         <span class="text-muted">-</span>

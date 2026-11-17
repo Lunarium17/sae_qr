@@ -76,7 +76,6 @@
             </h3>
             <p class="text-muted small mb-3">
                 {{ $admin->email }}
-                | <span class="badge bg-info text-dark">Administrador</span>
             </p>
 
             <div class="d-flex flex-wrap justify-content-center gap-3">
@@ -135,7 +134,7 @@
                             </div>
                             <div>
                                 <div class="text-muted small fw-semibold">Códigos Docentes</div>
-                                <h3 class="fw-bold mb-0">{{ $codigosDisponiblesCount }} <span class="fs-6 fw-normal text-muted">disp.</span></h3>
+                                <h3 class="fw-bold mb-0">{{ $codigosDisponiblesCount }} <span class="fs-6 fw-normal text-muted">disponibles</span></h3>
                             </div>
                         </div>
                     </div>
@@ -168,7 +167,7 @@
                             Índice Global de Asistencia Escolar
                             <span class="info-icon" tabindex="0" role="button" aria-label="Promedio de asistencia institucional ({{ $totalRegistros }} pases de lista).">
                                 <i class="bi bi-info-circle"></i>
-                                <span class="info-icon-text" role="tooltip">Promedio de asistencia institucional ({{ $totalRegistros }} pases de lista).</span>
+                                <span class="info-icon-text" role="tooltip">Promedio de asistencia institucional sobre {{ $totalRegistros }} pases de lista.</span>
                             </span>
                         </h6>
                     </div>
@@ -194,7 +193,7 @@
                     </div>
                     <div class="col-6 col-md-3">
                         <div class="p-2 rounded-3 bg-info bg-opacity-10 text-dark fw-semibold">
-                            Permisos / Justif.: {{ $permisosCount }}
+                            Permisos / Justificados: {{ $permisosCount }}
                         </div>
                     </div>
                     <div class="col-6 col-md-3">
@@ -215,7 +214,7 @@
                         <div class="bg-warning bg-opacity-10 text-warning rounded-4 p-3">
                             <i class="bi bi-key-fill fs-3"></i>
                         </div>
-                        <span class="badge bg-success rounded-pill">{{ $codigosDisponiblesCount }} disp.</span>
+                        <span class="badge bg-success rounded-pill">{{ $codigosDisponiblesCount }} disponibles</span>
                     </div>
                     <h5 class="fw-bold text-dark">Códigos de Acceso Docente</h5>
                     <p class="text-muted small mb-2">Genera y administra códigos de un solo uso para registrar profesores.</p>
@@ -257,7 +256,6 @@
                         <div class="bg-secondary bg-opacity-10 text-secondary rounded-4 p-3">
                             <i class="bi bi-archive-fill fs-3"></i>
                         </div>
-                        <span class="badge bg-dark rounded-pill">historial</span>
                     </div>
                     <h5 class="fw-bold text-dark">Archivo de Semestres</h5>
                     <p class="text-muted small mb-2">Cierra semestres terminados y consulta o descarga el historial completo de asistencias.</p>

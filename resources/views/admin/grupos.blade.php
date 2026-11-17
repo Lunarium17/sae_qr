@@ -86,9 +86,10 @@
                                 <tr>
                                     <td>
                                         <div class="fw-bold" style="color: {{ \App\Support\CarreraColor::color($grupo->carrera ?? '') }};">{{ $grupo->nombre_grupo }}</div>
-                                        <span class="badge rounded-pill px-2 py-1 mt-1" style="{{ \App\Support\CarreraColor::badge($grupo->carrera ?? '') }}">
-                                            <i class="bi bi-mortarboard-fill me-1"></i>{{ $grupo->carrera ?: 'Carrera general' }}
-                                        </span>
+                                        <div class="small mt-1 d-flex align-items-start gap-1">
+                                            <span class="d-inline-block rounded-circle flex-shrink-0 mt-1" style="width: 8px; height: 8px; background: {{ \App\Support\CarreraColor::color($grupo->carrera ?? '') }};"></span>
+                                            <span class="fw-semibold" style="color: {{ \App\Support\CarreraColor::color($grupo->carrera ?? '') }}; font-size: .75rem; line-height: 1.25;">{{ $grupo->carrera ?: 'Carrera general' }}</span>
+                                        </div>
                                     </td>
                                     <td>
                                         <div class="fw-semibold text-dark">{{ $grupo->grado }}</div>
@@ -148,7 +149,7 @@
                                                                 </div>
                                                                 <div class="col-12">
                                                                     <label class="form-label fw-semibold">Carrera / Programa Educativo <span class="text-danger">*</span></label>
-                                                                    <input type="text" name="carrera" class="form-control rounded-3" list="listaCarrerasAdmin" value="{{ $grupo->carrera }}" maxlength="120" required>
+                                                                    <input type="text" name="carrera" class="form-control rounded-3" value="{{ $grupo->carrera }}" maxlength="120" required placeholder="Escribe el nombre de la carrera o programa educativo">
                                                                 </div>
                                                                 <div class="col-sm-6">
                                                                     <label class="form-label fw-semibold">Turno / Modalidad <span class="text-danger">*</span></label>
@@ -219,17 +220,7 @@
                                 </div>
                                 <div class="col-12">
                                     <label class="form-label fw-semibold">Carrera / Programa Educativo <span class="text-danger">*</span></label>
-                                    <input type="text" name="carrera" class="form-control rounded-3" list="listaCarrerasAdmin" maxlength="120" required>
-                                    <datalist id="listaCarrerasAdmin">
-                                        <option value="Ingeniería en Sistemas Computacionales"></option>
-                                        <option value="Ingeniería en Tecnologías de la Información"></option>
-                                        <option value="Ingeniería Industrial"></option>
-                                        <option value="Ingeniería Mecatrónica"></option>
-                                        <option value="Licenciatura en Administración"></option>
-                                        <option value="Licenciatura en Contaduría Pública"></option>
-                                        <option value="Licenciatura en Derecho"></option>
-                                        <option value="Arquitectura"></option>
-                                    </datalist>
+                                    <input type="text" name="carrera" class="form-control rounded-3" maxlength="120" required placeholder="Escribe el nombre de la carrera o programa educativo">
                                 </div>
                                 <div class="col-sm-6">
                                     <label class="form-label fw-semibold">Turno / Modalidad <span class="text-danger">*</span></label>

@@ -105,11 +105,10 @@
                                         {{ $mat->grupo->nombre_grupo ?? '-' }} ({{ $mat->grupo->turno ?? '-' }})
                                     </span>
                                     @if (!empty($mat->grupo->carrera) || !empty($mat->grupo->grado))
-                                        <div class="small mt-1">
+                                        <div class="small mt-1 d-flex align-items-start gap-1">
                                             @if ($mat->grupo->carrera)
-                                                <span class="badge rounded-pill px-2 py-1" style="{{ \App\Support\CarreraColor::badge($mat->grupo->carrera) }}">
-                                                    <i class="bi bi-mortarboard me-1"></i>{{ $mat->grupo->carrera }}
-                                                </span>
+                                                <span class="d-inline-block rounded-circle flex-shrink-0 mt-1" style="width: 8px; height: 8px; background: {{ \App\Support\CarreraColor::color($mat->grupo->carrera) }};"></span>
+                                                <span class="fw-semibold" style="color: {{ \App\Support\CarreraColor::color($mat->grupo->carrera) }}; font-size: .75rem; line-height: 1.25;">{{ $mat->grupo->carrera }}</span>
                                             @endif
                                             @if (!empty($mat->grupo->grado))
                                                 <span class="text-muted ms-1">{{ $mat->grupo->grado }}</span>

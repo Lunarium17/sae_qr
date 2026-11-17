@@ -87,12 +87,25 @@
     </nav>
 
     <div class="container my-5">
-        <!-- 1. Panel Principal de Bienvenida y Acciones Rápidas (Parte Superior) -->
+        <!-- 1. Panel Principal de Bienvenida y Acciones Rápidas -->
         <div class="card border-0 shadow-sm rounded-4 p-4 bg-white text-center mb-4">
             <h3 class="fw-bold text-dark mb-1">Bienvenido, {{ $profesor->name }}</h3>
             <p class="text-muted small mb-3">
                 {{ $profesor->email }}
             </p>
+
+            @php
+                $carrerasDocente = $grupos->pluck('carrera')->filter()->unique()->values();
+            @endphp
+            @if ($carrerasDocente->isNotEmpty())
+                <div class="d-flex flex-wrap justify-content-center gap-2 mb-3">
+                    @foreach ($carrerasDocente as $c)
+                        <span class="badge rounded-pill px-3 py-2 d-inline-flex align-items-center gap-2" style="{{ \App\Support\CarreraColor::suave($c) }}">
+                            <span class="d-inline-block rounded-circle flex-shrink-0" style="width: 8px; height: 8px; background: {{ \App\Support\CarreraColor::color($c) }};"></span>{{ $c }}
+                        </span>
+                    @endforeach
+                </div>
+            @endif
 
             <div class="d-flex flex-wrap justify-content-center gap-3">
                 <a href="{{ route('sesiones.index') }}" class="btn btn-primary rounded-3 px-4 py-2">
@@ -106,6 +119,9 @@
                     @if($solicitudesPendientes > 0)
                         <span class="badge bg-danger ms-1">{{ $solicitudesPendientes }}</span>
                     @endif
+                </a>
+                <a href="{{ route('profesor.materias.importar') }}" class="btn btn-success rounded-3 px-4 py-2">
+                    <i class="bi bi-file-earmark-arrow-up me-2"></i>Importar Alumnos por CSV
                 </a>
             </div>
         </div>
@@ -268,6 +284,19 @@
                     <h5 class="fw-bold text-dark">Estadísticas y Riesgo</h5>
                     <p class="text-muted small mb-2">Gráficas de incidencias y control del derecho a examen ordinario por alumno.</p>
                     <span class="text-secondary small fw-semibold mt-auto"><i class="bi bi-arrow-right-short"></i></span>
+                </a>
+            </div>
+
+            <div class="col-md-6 col-lg-4">
+                <a href="{{ route('profesor.materias.importar') }}" class="card card-hover border-0 shadow-sm rounded-4 p-4 bg-white h-100 text-decoration-none">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="bg-success bg-opacity-10 text-success rounded-4 p-3">
+                            <i class="bi bi-file-earmark-arrow-up fs-3"></i>
+                        </div>
+                    </div>
+                    <h5 class="fw-bold text-dark">Importar Alumnos por CSV</h5>
+                    <p class="text-muted small mb-2">Inscribe a un grupo completo desde un archivo, con revisión previa antes de confirmar.</p>
+                    <span class="text-success small fw-semibold mt-auto"><i class="bi bi-arrow-right-short"></i></span>
                 </a>
             </div>
 
