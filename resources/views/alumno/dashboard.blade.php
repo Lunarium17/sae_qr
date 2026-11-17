@@ -6,12 +6,7 @@
     <title>Inicio - SAE QR</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <style>
-        .card-hover { transition: transform .15s ease, box-shadow .15s ease; }
-        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 .5rem 1.25rem rgba(0,0,0,.12) !important; }
-        .card-hover:active { transform: scale(.98); }
-        a.card-hover:focus-visible { outline: 3px solid rgba(13,110,253,.35); outline-offset: 2px; }
-    </style>
+    @include('partials.panel-css')
 </head>
 <body class="bg-light">
 
@@ -98,6 +93,11 @@
         }
 
         $avHue = abs(crc32($alumno->name ?? 'U')) % 360;
+
+        // Saludo dinamico y datos del periodo activo
+        $saludo = now()->hour < 12 ? 'Buenos días' : (now()->hour < 19 ? 'Buenas tardes' : 'Buenas noches');
+        $fechaHoy = ucfirst(now()->locale('es')->translatedFormat('l, j \d\e F \d\e Y'));
+        $periodosActivos = $matriculasAceptadas->pluck('grupo.periodo_lectivo')->filter()->unique()->values();
     @endphp
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
@@ -122,20 +122,30 @@
     </nav>
 
     <div class="container my-5">
-        <!-- 1. Tarjeta Superior de Bienvenida y Datos del Estudiante -->
-        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
-            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <!-- 1. Banner de Bienvenida y Acciones -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 banner-institucional text-white mb-4">
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
                 <div>
                     <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
-                        <h3 class="fw-bold text-dark mb-0">Hola, {{ $alumno->name }}</h3>
-                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary rounded-pill px-3 py-1">
+                        <h3 class="fw-bold mb-0">{{ $saludo }}, {{ $alumno->name }}</h3>
+                        <span class="badge rounded-pill px-3 py-1" style="background: rgba(255,255,255,.16);">
                             {{ $alumno->matricula_codigo ? 'Matrícula: ' . $alumno->matricula_codigo : 'Sin matrícula registrada' }}
                         </span>
                     </div>
+                    <p class="small mb-0 text-white-50">
+                        <i class="bi bi-calendar3 me-1"></i>{{ $fechaHoy }}
+                        @if ($periodosActivos->isNotEmpty())
+                            <span class="mx-1">·</span>
+                            <i class="bi bi-calendar-week me-1"></i>Periodo escolar {{ $periodosActivos->first() }}
+                        @endif
+                    </p>
                 </div>
-                <div class="d-flex flex-wrap align-items-center gap-2">
-                    <a href="{{ route('alumno.solicitar') }}" class="btn btn-primary btn-sm rounded-3 px-3 py-2 fw-semibold">
-                        <i class="bi bi-search me-1"></i>Buscar y Solicitar Grupo
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="{{ route('alumno.qr') }}" class="btn btn-light rounded-3 px-4 py-2 fw-semibold" style="color: #19376d;">
+                        <i class="bi bi-qr-code me-2"></i>Mi Código QR
+                    </a>
+                    <a href="{{ route('alumno.solicitar') }}" class="btn btn-banner-translucido rounded-3 px-4 py-2 fw-semibold">
+                        <i class="bi bi-search me-2"></i>Buscar y Solicitar Grupo
                         @if ($pendientesCount > 0)
                             <span class="badge bg-warning text-dark ms-1">{{ $pendientesCount }}</span>
                         @endif
@@ -232,13 +242,13 @@
         <div class="row g-3 mb-4">
             <div class="col-6 col-xl-3">
                 <a href="{{ route('alumno.calendario') }}" class="d-block text-decoration-none text-reset h-100">
-                    <div class="card card-hover border-0 border-start border-4 border-success shadow-sm rounded-4 h-100">
+                    <div class="card card-hover border-0 border-start border-4 border-success shadow-sm rounded-4 h-100 kpi-esmeralda">
                         <div class="card-body d-flex align-items-center p-4">
-                            <div class="bg-success bg-opacity-10 text-success rounded-4 p-3 me-3">
+                            <div class="rounded-4 p-3 me-3 text-white" style="background: #059669;">
                                 <i class="bi bi-check-circle-fill fs-3"></i>
                             </div>
                             <div>
-                                <div class="text-muted small fw-semibold">Asistencias</div>
+                                <div class="text-secondary small fw-semibold">Asistencias</div>
                                 <h3 class="fw-bold text-success mb-0">{{ $asistenciasCount }}</h3>
                             </div>
                         </div>
@@ -247,13 +257,13 @@
             </div>
             <div class="col-6 col-xl-3">
                 <a href="{{ route('alumno.calendario') }}" class="d-block text-decoration-none text-reset h-100">
-                    <div class="card card-hover border-0 border-start border-4 border-warning shadow-sm rounded-4 h-100">
+                    <div class="card card-hover border-0 border-start border-4 border-warning shadow-sm rounded-4 h-100 kpi-ambar">
                         <div class="card-body d-flex align-items-center p-4">
-                            <div class="bg-warning bg-opacity-10 text-warning rounded-4 p-3 me-3">
+                            <div class="rounded-4 p-3 me-3 text-white" style="background: #d97706;">
                                 <i class="bi bi-clock-fill fs-3"></i>
                             </div>
                             <div>
-                                <div class="text-muted small fw-semibold">Retardos</div>
+                                <div class="text-secondary small fw-semibold">Retardos</div>
                                 <h3 class="fw-bold text-warning mb-0">{{ $retardosCount }}</h3>
                             </div>
                         </div>
@@ -262,13 +272,13 @@
             </div>
             <div class="col-6 col-xl-3">
                 <a href="{{ route('alumno.justificantes') }}" class="d-block text-decoration-none text-reset h-100">
-                    <div class="card card-hover border-0 border-start border-4 border-danger shadow-sm rounded-4 h-100">
+                    <div class="card card-hover border-0 border-start border-4 border-danger shadow-sm rounded-4 h-100 kpi-rojo">
                         <div class="card-body d-flex align-items-center p-4">
-                            <div class="bg-danger bg-opacity-10 text-danger rounded-4 p-3 me-3">
+                            <div class="rounded-4 p-3 me-3 text-white" style="background: #dc2626;">
                                 <i class="bi bi-x-circle-fill fs-3"></i>
                             </div>
                             <div>
-                                <div class="text-muted small fw-semibold">Faltas sin justificar</div>
+                                <div class="text-secondary small fw-semibold">Faltas sin justificar</div>
                                 <h3 class="fw-bold text-danger mb-0">{{ $faltasCount }}</h3>
                             </div>
                         </div>
@@ -277,13 +287,13 @@
             </div>
             <div class="col-6 col-xl-3">
                 <a href="{{ route('alumno.calendario') }}" class="d-block text-decoration-none text-reset h-100">
-                    <div class="card card-hover border-0 border-start border-4 border-primary shadow-sm rounded-4 h-100">
+                    <div class="card card-hover border-0 border-start border-4 border-primary shadow-sm rounded-4 h-100 kpi-azul">
                         <div class="card-body d-flex align-items-center p-4">
-                            <div class="bg-primary bg-opacity-10 text-primary rounded-4 p-3 me-3">
+                            <div class="rounded-4 p-3 me-3 text-white" style="background: #2563eb;">
                                 <i class="bi bi-file-earmark-check fs-3"></i>
                             </div>
                             <div>
-                                <div class="text-muted small fw-semibold">Permisos y justificados</div>
+                                <div class="text-secondary small fw-semibold">Permisos y justificados</div>
                                 <h3 class="fw-bold text-primary mb-0">{{ $permisosCount }}</h3>
                             </div>
                         </div>
@@ -297,7 +307,7 @@
             <h5 class="fw-bold text-dark mb-3">Secciones</h5>
             <div class="row g-3">
                 <div class="col-md-6 col-lg-4">
-                    <a href="{{ route('alumno.qr') }}" class="card card-hover border-0 shadow-sm rounded-4 p-4 bg-white h-100 text-decoration-none">
+                    <a href="{{ route('alumno.qr') }}" class="card tile-card tile-primaria shadow-sm rounded-4 p-4 bg-white h-100 text-decoration-none">
                         <div class="d-flex justify-content-between align-items-start mb-3">
                             <div class="bg-primary bg-opacity-10 text-primary rounded-4 p-3">
                                 <i class="bi bi-qr-code fs-3"></i>
@@ -306,11 +316,11 @@
                         </div>
                         <h5 class="fw-bold text-dark">Mi Código QR</h5>
                         <p class="text-muted small mb-2">Preséntalo en tu clase en curso para registrar tu asistencia.</p>
-                        <span class="text-primary small fw-semibold mt-auto"><i class="bi bi-arrow-right-short"></i></span>
+                        <span class="text-primary small fw-semibold mt-auto"><i class="bi bi-arrow-right-short tile-flecha"></i></span>
                     </a>
                 </div>
                 <div class="col-md-6 col-lg-4">
-                    <a href="{{ route('alumno.materias') }}" class="card card-hover border-0 shadow-sm rounded-4 p-4 bg-white h-100 text-decoration-none">
+                    <a href="{{ route('alumno.materias') }}" class="card tile-card tile-gris shadow-sm rounded-4 p-4 bg-white h-100 text-decoration-none">
                         <div class="d-flex justify-content-between align-items-start mb-3">
                             <div class="bg-dark bg-opacity-10 text-dark rounded-4 p-3">
                                 <i class="bi bi-journal-bookmark fs-3"></i>
@@ -319,11 +329,11 @@
                         </div>
                         <h5 class="fw-bold text-dark">Mis Materias</h5>
                         <p class="text-muted small mb-2">Consulta tu registro de asistencia y derecho a examen ordinario.</p>
-                        <span class="text-dark small fw-semibold mt-auto"><i class="bi bi-arrow-right-short"></i></span>
+                        <span class="text-dark small fw-semibold mt-auto"><i class="bi bi-arrow-right-short tile-flecha"></i></span>
                     </a>
                 </div>
                 <div class="col-md-6 col-lg-4">
-                    <a href="{{ route('alumno.calendario') }}" class="card card-hover border-0 shadow-sm rounded-4 p-4 bg-white h-100 text-decoration-none">
+                    <a href="{{ route('alumno.calendario') }}" class="card tile-card tile-verde shadow-sm rounded-4 p-4 bg-white h-100 text-decoration-none">
                         <div class="d-flex justify-content-between align-items-start mb-3">
                             <div class="bg-success bg-opacity-10 text-success rounded-4 p-3">
                                 <i class="bi bi-calendar3 fs-3"></i>
@@ -331,11 +341,11 @@
                         </div>
                         <h5 class="fw-bold text-dark">Calendario</h5>
                         <p class="text-muted small mb-2">Historial de asistencias, retardos y faltas del mes actual.</p>
-                        <span class="text-success small fw-semibold mt-auto"><i class="bi bi-arrow-right-short"></i></span>
+                        <span class="text-success small fw-semibold mt-auto"><i class="bi bi-arrow-right-short tile-flecha"></i></span>
                     </a>
                 </div>
                 <div class="col-md-6 col-lg-4">
-                    <a href="{{ route('alumno.justificantes') }}" class="card card-hover border-0 shadow-sm rounded-4 p-4 bg-white h-100 text-decoration-none">
+                    <a href="{{ route('alumno.justificantes') }}" class="card tile-card tile-ambar shadow-sm rounded-4 p-4 bg-white h-100 text-decoration-none">
                         <div class="d-flex justify-content-between align-items-start mb-3">
                             <div class="bg-warning bg-opacity-10 text-warning rounded-4 p-3">
                                 <i class="bi bi-upload fs-3"></i>
@@ -344,11 +354,11 @@
                         </div>
                         <h5 class="fw-bold text-dark">Justificantes</h5>
                         <p class="text-muted small mb-2">Sube tu comprobante para justificar faltas y retardos ante el docente.</p>
-                        <span class="text-warning small fw-semibold mt-auto"><i class="bi bi-arrow-right-short"></i></span>
+                        <span class="text-warning small fw-semibold mt-auto"><i class="bi bi-arrow-right-short tile-flecha"></i></span>
                     </a>
                 </div>
                 <div class="col-md-6 col-lg-4">
-                    <a href="{{ route('alumno.solicitar') }}" class="card card-hover border-0 shadow-sm rounded-4 p-4 bg-white h-100 text-decoration-none">
+                    <a href="{{ route('alumno.solicitar') }}" class="card tile-card tile-cian shadow-sm rounded-4 p-4 bg-white h-100 text-decoration-none">
                         <div class="d-flex justify-content-between align-items-start mb-3">
                             <div class="bg-info bg-opacity-10 text-info rounded-4 p-3">
                                 <i class="bi bi-search fs-3"></i>
@@ -357,19 +367,7 @@
                         </div>
                         <h5 class="fw-bold text-dark">Solicitar Asignatura</h5>
                         <p class="text-muted small mb-2">Busca la materia y envía tu solicitud de inscripción al docente.</p>
-                        <span class="text-info small fw-semibold mt-auto"><i class="bi bi-arrow-right-short"></i></span>
-                    </a>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    <a href="{{ route('alumno.perfil') }}" class="card card-hover border-0 shadow-sm rounded-4 p-4 bg-white h-100 text-decoration-none">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <div class="bg-secondary bg-opacity-10 text-secondary rounded-4 p-3">
-                                <i class="bi bi-person-gear fs-3"></i>
-                            </div>
-                        </div>
-                        <h5 class="fw-bold text-dark">Mi Perfil</h5>
-                        <p class="text-muted small mb-2">Actualiza tu información de contacto, matrícula y foto de perfil.</p>
-                        <span class="text-secondary small fw-semibold mt-auto"><i class="bi bi-arrow-right-short"></i></span>
+                        <span class="text-info small fw-semibold mt-auto"><i class="bi bi-arrow-right-short tile-flecha"></i></span>
                     </a>
                 </div>
             </div>

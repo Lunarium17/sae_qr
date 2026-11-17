@@ -10,17 +10,19 @@
         .info-icon { position: relative; display: inline-flex; align-items: center; color: #0d6efd; cursor: help; vertical-align: middle; font-size: .8em; margin-left: .15rem; padding: .1rem; }
         .info-icon .info-icon-text { position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); min-width: 240px; max-width: 320px; background: #212529; color: #fff; font-size: .75rem; font-weight: 400; line-height: 1.35; padding: .5rem .65rem; border-radius: .4rem; box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .2); opacity: 0; visibility: hidden; transition: opacity .15s; z-index: 10; text-align: left; }
         .info-icon:hover .info-icon-text, .info-icon:focus .info-icon-text, .info-icon:focus-within .info-icon-text { opacity: 1; visibility: visible; }
-        .card-hover { transition: transform .15s ease, box-shadow .15s ease; }
-        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 .5rem 1.25rem rgba(0,0,0,.12) !important; }
-        .card-hover:active { transform: scale(.98); }
-        a.card-hover:focus-visible { outline: 3px solid rgba(13,110,253,.35); outline-offset: 2px; }
     </style>
+    @include('partials.panel-css')
 </head>
 <body class="bg-light">
 
     @php
         $admin = \Illuminate\Support\Facades\Auth::user();
         $avHue = abs(crc32($admin->name ?? 'U')) % 360;
+
+        // Saludo dinamico y periodo institucional
+        $saludo = now()->hour < 12 ? 'Buenos días' : (now()->hour < 19 ? 'Buenas tardes' : 'Buenas noches');
+        $fechaHoy = ucfirst(now()->locale('es')->translatedFormat('l, j \d\e F \d\e Y'));
+        $periodosActivos = \App\Models\Grupo::whereNotNull('periodo_lectivo')->distinct()->pluck('periodo_lectivo')->values();
     @endphp
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
@@ -70,24 +72,26 @@
         @endif
 
         <!-- 1. Bienvenida y Acciones Rápidas -->
-        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white text-center mb-4">
-            <h3 class="fw-bold text-dark mb-2">
-                Bienvenido, {{ $admin->name }}
-            </h3>
-            <p class="text-muted small mb-3">
-                {{ $admin->email }}
-            </p>
-
-            <div class="d-flex flex-wrap justify-content-center gap-3">
-                <a href="{{ route('admin.codigos') }}" class="btn btn-primary rounded-3 px-4 py-2">
-                    <i class="bi bi-key-fill me-2"></i>Gestionar Códigos de Acceso Docente
-                </a>
-                <a href="{{ route('admin.grupos') }}" class="btn btn-success rounded-3 px-4 py-2">
-                    <i class="bi bi-plus-circle-fill me-2"></i>Crear Grupo Oficial Universitario
-                </a>
-                <a href="{{ route('admin.usuarios') }}" class="btn btn-dark rounded-3 px-4 py-2">
-                    <i class="bi bi-people-fill me-2"></i>Directorio de Usuarios y Contraseñas
-                </a>
+        <div class="card border-0 shadow-sm rounded-4 p-4 banner-institucional text-white mb-4">
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3">
+                <div>
+                    <h3 class="fw-bold mb-1">{{ $saludo }}, {{ $admin->name }}</h3>
+                    <p class="small mb-0 text-white-50">
+                        <i class="bi bi-calendar3 me-1"></i>{{ $fechaHoy }}
+                        @if ($periodosActivos->isNotEmpty())
+                            <span class="mx-1">·</span>
+                            <i class="bi bi-calendar-week me-1"></i>Periodo escolar {{ $periodosActivos->first() }}
+                        @endif
+                    </p>
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="{{ route('admin.codigos') }}" class="btn btn-light rounded-3 px-4 py-2 fw-semibold" style="color: #19376d;">
+                        <i class="bi bi-key-fill me-2"></i>Gestionar Códigos de Acceso
+                    </a>
+                    <a href="{{ route('admin.usuarios') }}" class="btn btn-banner-translucido rounded-3 px-4 py-2 fw-semibold">
+                        <i class="bi bi-people-fill me-2"></i>Directorio de Usuarios
+                    </a>
+                </div>
             </div>
         </div>
 
@@ -95,14 +99,14 @@
         <div class="row g-3 mb-4">
             <div class="col-sm-6 col-xl-3">
                 <a href="{{ route('admin.usuarios', ['rol' => 'alumno']) }}" class="d-block text-decoration-none text-reset h-100">
-                    <div class="card card-hover border-0 border-start border-4 border-primary shadow-sm rounded-4 h-100">
+                    <div class="card card-hover border-0 border-start border-4 border-primary shadow-sm rounded-4 h-100 kpi-azul">
                         <div class="card-body d-flex align-items-center p-4">
-                            <div class="bg-primary bg-opacity-10 text-primary rounded-4 p-3 me-3">
+                            <div class="rounded-4 p-3 me-3 text-white" style="background: #2563eb;">
                                 <i class="bi bi-mortarboard-fill fs-3"></i>
                             </div>
                             <div>
-                                <div class="text-muted small fw-semibold">Total Alumnos</div>
-                                <h3 class="fw-bold mb-0">{{ $totalAlumnos }}</h3>
+                                <div class="text-secondary small fw-semibold">Total Alumnos</div>
+                                <h3 class="fw-bold text-primary mb-0">{{ $totalAlumnos }}</h3>
                             </div>
                         </div>
                     </div>
@@ -111,14 +115,14 @@
 
             <div class="col-sm-6 col-xl-3">
                 <a href="{{ route('admin.usuarios', ['rol' => 'profesor']) }}" class="d-block text-decoration-none text-reset h-100">
-                    <div class="card card-hover border-0 border-start border-4 border-success shadow-sm rounded-4 h-100">
+                    <div class="card card-hover border-0 border-start border-4 border-success shadow-sm rounded-4 h-100 kpi-esmeralda">
                         <div class="card-body d-flex align-items-center p-4">
-                            <div class="bg-success bg-opacity-10 text-success rounded-4 p-3 me-3">
+                            <div class="rounded-4 p-3 me-3 text-white" style="background: #059669;">
                                 <i class="bi bi-person-workspace fs-3"></i>
                             </div>
                             <div>
-                                <div class="text-muted small fw-semibold">Total Profesores</div>
-                                <h3 class="fw-bold mb-0">{{ $totalProfesores }}</h3>
+                                <div class="text-secondary small fw-semibold">Total Profesores</div>
+                                <h3 class="fw-bold text-success mb-0">{{ $totalProfesores }}</h3>
                             </div>
                         </div>
                     </div>
@@ -127,14 +131,14 @@
 
             <div class="col-sm-6 col-xl-3">
                 <a href="{{ route('admin.codigos') }}" class="d-block text-decoration-none text-reset h-100">
-                    <div class="card card-hover border-0 border-start border-4 border-warning shadow-sm rounded-4 h-100">
+                    <div class="card card-hover border-0 border-start border-4 border-warning shadow-sm rounded-4 h-100 kpi-ambar">
                         <div class="card-body d-flex align-items-center p-4">
-                            <div class="bg-warning bg-opacity-10 text-warning rounded-4 p-3 me-3">
+                            <div class="rounded-4 p-3 me-3 text-white" style="background: #d97706;">
                                 <i class="bi bi-key-fill fs-3"></i>
                             </div>
                             <div>
-                                <div class="text-muted small fw-semibold">Códigos Docentes</div>
-                                <h3 class="fw-bold mb-0">{{ $codigosDisponiblesCount }} <span class="fs-6 fw-normal text-muted">disponibles</span></h3>
+                                <div class="text-secondary small fw-semibold">Códigos Docentes</div>
+                                <h3 class="fw-bold text-warning mb-0">{{ $codigosDisponiblesCount }} <span class="fs-6 fw-normal text-muted">disponibles</span></h3>
                             </div>
                         </div>
                     </div>
@@ -143,14 +147,14 @@
 
             <div class="col-sm-6 col-xl-3">
                 <a href="{{ route('admin.grupos') }}" class="d-block text-decoration-none text-reset h-100">
-                    <div class="card card-hover border-0 border-start border-4 border-info shadow-sm rounded-4 h-100">
+                    <div class="card card-hover border-0 border-start border-4 shadow-sm rounded-4 h-100 kpi-indigo" style="border-color: #6366f1;">
                         <div class="card-body d-flex align-items-center p-4">
-                            <div class="bg-info bg-opacity-10 text-info rounded-4 p-3 me-3">
+                            <div class="rounded-4 p-3 me-3 text-white" style="background: #6366f1;">
                                 <i class="bi bi-collection-fill fs-3"></i>
                             </div>
                             <div>
-                                <div class="text-muted small fw-semibold">Grupos y Materias</div>
-                                <h3 class="fw-bold mb-0">{{ $totalGrupos }} / {{ $totalMaterias }}</h3>
+                                <div class="text-secondary small fw-semibold">Grupos y Materias</div>
+                                <h3 class="fw-bold mb-0" style="color: #4f46e5;">{{ $totalGrupos }} / {{ $totalMaterias }}</h3>
                             </div>
                         </div>
                     </div>
@@ -209,7 +213,7 @@
         <h5 class="fw-bold text-dark mb-3 px-1">Secciones</h5>
         <div class="row g-3">
             <div class="col-md-6 col-lg-4">
-                <a href="{{ route('admin.codigos') }}" class="card card-hover border-0 shadow-sm rounded-4 p-4 bg-white h-100 text-decoration-none">
+                <a href="{{ route('admin.codigos') }}" class="card tile-card tile-ambar shadow-sm rounded-4 p-4 bg-white h-100 text-decoration-none">
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <div class="bg-warning bg-opacity-10 text-warning rounded-4 p-3">
                             <i class="bi bi-key-fill fs-3"></i>
@@ -218,12 +222,12 @@
                     </div>
                     <h5 class="fw-bold text-dark">Códigos de Acceso Docente</h5>
                     <p class="text-muted small mb-2">Genera y administra códigos de un solo uso para registrar profesores.</p>
-                    <span class="text-warning small fw-semibold mt-auto"><i class="bi bi-arrow-right-short"></i></span>
+                    <span class="text-warning small fw-semibold mt-auto"><i class="bi bi-arrow-right-short tile-flecha"></i></span>
                 </a>
             </div>
 
             <div class="col-md-6 col-lg-4">
-                <a href="{{ route('admin.grupos') }}" class="card card-hover border-0 shadow-sm rounded-4 p-4 bg-white h-100 text-decoration-none">
+                <a href="{{ route('admin.grupos') }}" class="card tile-card tile-cian shadow-sm rounded-4 p-4 bg-white h-100 text-decoration-none">
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <div class="bg-info bg-opacity-10 text-info rounded-4 p-3">
                             <i class="bi bi-collection-fill fs-3"></i>
@@ -232,12 +236,12 @@
                     </div>
                     <h5 class="fw-bold text-dark">Catálogo de Grupos Oficiales</h5>
                     <p class="text-muted small mb-2">Crea, edita o elimina los grupos oficiales por carrera, semestre y turno.</p>
-                    <span class="text-info small fw-semibold mt-auto"><i class="bi bi-arrow-right-short"></i></span>
+                    <span class="text-info small fw-semibold mt-auto"><i class="bi bi-arrow-right-short tile-flecha"></i></span>
                 </a>
             </div>
 
             <div class="col-md-6 col-lg-4">
-                <a href="{{ route('admin.usuarios') }}" class="card card-hover border-0 shadow-sm rounded-4 p-4 bg-white h-100 text-decoration-none">
+                <a href="{{ route('admin.usuarios') }}" class="card tile-card tile-gris shadow-sm rounded-4 p-4 bg-white h-100 text-decoration-none">
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <div class="bg-dark bg-opacity-10 text-dark rounded-4 p-3">
                             <i class="bi bi-people-fill fs-3"></i>
@@ -246,12 +250,12 @@
                     </div>
                     <h5 class="fw-bold text-dark">Directorio de Usuarios</h5>
                     <p class="text-muted small mb-2">Gestiona alumnos, profesores y administradores, y restablece contraseñas.</p>
-                    <span class="text-dark small fw-semibold mt-auto"><i class="bi bi-arrow-right-short"></i></span>
+                    <span class="text-dark small fw-semibold mt-auto"><i class="bi bi-arrow-right-short tile-flecha"></i></span>
                 </a>
             </div>
 
             <div class="col-md-6 col-lg-4">
-                <a href="{{ route('admin.archivo') }}" class="card card-hover border-0 shadow-sm rounded-4 p-4 bg-white h-100 text-decoration-none">
+                <a href="{{ route('admin.archivo') }}" class="card tile-card tile-indigo shadow-sm rounded-4 p-4 bg-white h-100 text-decoration-none">
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <div class="bg-secondary bg-opacity-10 text-secondary rounded-4 p-3">
                             <i class="bi bi-archive-fill fs-3"></i>
@@ -259,7 +263,7 @@
                     </div>
                     <h5 class="fw-bold text-dark">Archivo de Semestres</h5>
                     <p class="text-muted small mb-2">Cierra semestres terminados y consulta o descarga el historial completo de asistencias.</p>
-                    <span class="text-secondary small fw-semibold mt-auto"><i class="bi bi-arrow-right-short"></i></span>
+                    <span class="text-secondary small fw-semibold mt-auto"><i class="bi bi-arrow-right-short tile-flecha"></i></span>
                 </a>
             </div>
         </div>
