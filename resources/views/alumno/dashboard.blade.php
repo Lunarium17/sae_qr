@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     @include('partials.panel-css')
     <style>
-        body { background: #F8FAFC; }
+        body { background: #EEF2F6; }
 
         .navbar-editorial { background: #FFFFFF; border-bottom: 1px solid #E2E8F0; }
         #jsCampanaBtn { color: #334155; border-color: #CBD5E1; }
@@ -22,20 +22,44 @@
         .btn-carmesi { background: #E11D48; color: #FFFFFF; }
         .btn-carmesi:hover, .btn-carmesi:focus { background: #BE123C; color: #FFFFFF; }
 
-        .kpi-editorial { background: #FFFFFF; border: 1px solid #E2E8F0; border-top: 3px solid #E2E8F0; }
+        .bento {
+            background: #FFFFFF;
+            border: 1px solid rgba(226, 232, 240, .8);
+            border-radius: 1.25rem;
+            overflow: hidden;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, .05), 0 10px 28px -14px rgba(15, 23, 42, .14);
+            transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+        }
+        .bento:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 2px 4px rgba(15, 23, 42, .06), 0 18px 36px -14px rgba(15, 23, 42, .20);
+        }
+        .metrica-prota { background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 100%); border: none; color: #FFFFFF; }
+        .numero-hero { font-size: 2.75rem; font-weight: 800; line-height: 1; letter-spacing: -.02em; }
+        .numero-bento { font-size: 2.5rem; font-weight: 800; color: #0F172A; line-height: 1; letter-spacing: -.02em; }
+        .punto-estado { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
 
-        .tile-editorial {
+        .bento-qr { background: rgba(239, 246, 255, .7); border-color: #BFDBFE; }
+        .pildora-sigla { background: #F1F5F9; color: #334155; border: 1px solid #E2E8F0; font-weight: 700; }
+
+        .hoja-calendario {
             background: #FFFFFF;
             border: 1px solid #E2E8F0;
-            transition: border-color .18s ease, transform .18s ease, box-shadow .18s ease;
+            border-radius: 1rem;
+            overflow: hidden;
+            width: 76px;
+            box-shadow: 0 4px 12px -6px rgba(15, 23, 42, .18);
         }
-        .tile-editorial:hover {
-            border-color: #2563EB;
-            transform: translateY(-2px);
-            box-shadow: 0 .5rem 1rem rgba(15, 23, 42, .08);
+        .flecha-circular {
+            width: 44px; height: 44px;
+            background: #F1F5F9;
+            border: 1px solid #E2E8F0;
+            display: flex; align-items: center; justify-content: center;
+            transition: background .18s ease, border-color .18s ease;
         }
-        .tile-editorial .tile-flecha { display: inline-block; transition: transform .18s ease; color: #94A3B8; }
-        .tile-editorial:hover .tile-flecha { transform: translateX(6px); color: #2563EB; }
+        .flecha-circular i { color: #64748B; transition: transform .18s ease, color .18s ease; }
+        .bento:hover .flecha-circular { background: #2563EB; border-color: #2563EB; }
+        .bento:hover .flecha-circular i { color: #FFFFFF; transform: rotate(-45deg); }
     </style>
 </head>
 <body class="bg-light">
@@ -128,6 +152,23 @@
         $saludo = now()->hour < 12 ? 'Buenos días' : (now()->hour < 19 ? 'Buenas tardes' : 'Buenas noches');
         $fechaHoy = ucfirst(now()->locale('es')->translatedFormat('l, j \d\e F \d\e Y'));
         $periodosActivos = $matriculasAceptadas->pluck('grupo.periodo_lectivo')->filter()->unique()->values();
+
+        // Datos para el Bento Grid
+        $totalRegistrosAlumno = $asistenciasCount + $retardosCount + $permisosCount + $faltasCount;
+        $porcentajeAlumno = $totalRegistrosAlumno > 0 ? round((($asistenciasCount + $retardosCount + $permisosCount) / $totalRegistrosAlumno) * 100) : 0;
+        $circunferenciaAnillo = round(2 * pi() * 52);
+        $trazoAnillo = round($circunferenciaAnillo * $porcentajeAlumno / 100);
+
+        $siglasMaterias = $matriculasAceptadas->take(2)->map(function ($m) {
+            $letras = '';
+            foreach (array_slice(preg_split('/\s+/', trim($m->materia->nombre_materia ?? '')), 0, 2) as $palabra) {
+                $letras .= mb_substr($palabra, 0, 1);
+            }
+            return mb_strtoupper($letras);
+        })->values();
+
+        $mesHoy = mb_strtoupper(now()->locale('es')->translatedFormat('M'));
+        $diaHoy = now()->day;
     @endphp
 
     <nav class="navbar navbar-expand-lg navbar-light navbar-editorial shadow-sm">
@@ -273,135 +314,166 @@
             </div>
         @endif
 
-        <!-- 3. Resumen Global de Asistencia (mosaicos clicables) -->
+        <!-- 3. Métricas Bento -->
         <div class="row g-3 mb-4">
-            <div class="col-6 col-xl-3">
-                <a href="{{ route('alumno.calendario') }}" class="d-block text-decoration-none text-reset h-100">
-                    <div class="card card-hover kpi-editorial h-100" style="border-top-color: #059669;">
-                        <div class="card-body d-flex align-items-center p-4">
-                            <div class="bg-success bg-opacity-10 text-success rounded-3 p-3 me-3">
-                                <i class="bi bi-check-circle fs-3"></i>
+            <div class="col-12 col-md-6">
+                <a href="{{ route('alumno.calendario') }}" class="d-block text-decoration-none h-100">
+                    <div class="bento metrica-prota h-100 p-4 d-flex align-items-center justify-content-between gap-3">
+                        <div>
+                            <div class="small fw-semibold" style="color: rgba(255,255,255,.65);">Asistencias</div>
+                            <div class="numero-hero text-white mt-2">{{ $asistenciasCount }}</div>
+                            <div class="d-flex align-items-center gap-2 small mt-3" style="color: rgba(255,255,255,.65);">
+                                <span class="punto-estado" style="background: #34D399;"></span>{{ $porcentajeAlumno }}% de asistencia efectiva
                             </div>
-                            <div>
-                                <div class="text-secondary small fw-semibold">Asistencias</div>
-                                <h3 class="fw-bold mb-0" style="color: #0F172A;">{{ $asistenciasCount }}</h3>
-                            </div>
+                        </div>
+                        <svg viewBox="0 0 120 120" style="width: 118px; height: 118px; flex-shrink: 0;" role="img" aria-label="{{ $porcentajeAlumno }}% de asistencia efectiva">
+                            <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(255,255,255,.14)" stroke-width="10"></circle>
+                            <circle cx="60" cy="60" r="52" fill="none" stroke="#34D399" stroke-width="10" stroke-linecap="round" stroke-dasharray="{{ $trazoAnillo }} {{ $circunferenciaAnillo }}" transform="rotate(-90 60 60)"></circle>
+                            <text x="60" y="67" text-anchor="middle" fill="#FFFFFF" font-size="22" font-weight="700">{{ $porcentajeAlumno }}%</text>
+                        </svg>
+                    </div>
+                </a>
+            </div>
+            <div class="col-6 col-md-2">
+                <a href="{{ route('alumno.calendario') }}" class="d-block text-decoration-none h-100">
+                    <div class="bento h-100 p-3 d-flex flex-column justify-content-between" style="min-height: 168px;">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <span class="text-secondary small fw-semibold">Retardos</span>
+                            <i class="bi bi-clock fs-6" style="color: #CBD5E1;"></i>
+                        </div>
+                        <div class="numero-bento">{{ $retardosCount }}</div>
+                        <div class="d-flex align-items-center gap-2 text-secondary" style="font-size: .72rem;">
+                            <span class="punto-estado" style="background: #D97706;"></span>Cada 3 retardos = 1 falta
                         </div>
                     </div>
                 </a>
             </div>
-            <div class="col-6 col-xl-3">
-                <a href="{{ route('alumno.calendario') }}" class="d-block text-decoration-none text-reset h-100">
-                    <div class="card card-hover kpi-editorial h-100" style="border-top-color: #D97706;">
-                        <div class="card-body d-flex align-items-center p-4">
-                            <div class="bg-warning bg-opacity-10 text-warning rounded-3 p-3 me-3">
-                                <i class="bi bi-clock fs-3"></i>
-                            </div>
-                            <div>
-                                <div class="text-secondary small fw-semibold">Retardos</div>
-                                <h3 class="fw-bold mb-0" style="color: #0F172A;">{{ $retardosCount }}</h3>
-                            </div>
+            <div class="col-6 col-md-2">
+                <a href="{{ route('alumno.justificantes') }}" class="d-block text-decoration-none h-100">
+                    <div class="bento h-100 p-3 d-flex flex-column justify-content-between" style="min-height: 168px;">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <span class="text-secondary small fw-semibold">Faltas</span>
+                            <i class="bi bi-x-circle fs-6" style="color: #CBD5E1;"></i>
                         </div>
+                        <div class="numero-bento">{{ $faltasCount }}</div>
+                        @if ($incidenciasPorJustificar->isEmpty())
+                            <div class="d-flex align-items-center gap-2 text-secondary" style="font-size: .72rem;">
+                                <span class="punto-estado" style="background: #059669;"></span>Todo justificado
+                            </div>
+                        @else
+                            <div class="d-flex align-items-center gap-2 text-secondary" style="font-size: .72rem;">
+                                <span class="punto-estado" style="background: #E11D48;"></span>{{ $incidenciasPorJustificar->count() }} por justificar
+                            </div>
+                        @endif
                     </div>
                 </a>
             </div>
-            <div class="col-6 col-xl-3">
-                <a href="{{ route('alumno.justificantes') }}" class="d-block text-decoration-none text-reset h-100">
-                    <div class="card card-hover kpi-editorial h-100" style="border-top-color: #E11D48;">
-                        <div class="card-body d-flex align-items-center p-4">
-                            <div class="bg-danger bg-opacity-10 text-danger rounded-3 p-3 me-3">
-                                <i class="bi bi-x-circle fs-3"></i>
-                            </div>
-                            <div>
-                                <div class="text-secondary small fw-semibold">Faltas</div>
-                                <h3 class="fw-bold mb-0" style="color: #0F172A;">{{ $faltasCount }}</h3>
-                            </div>
+            <div class="col-6 col-md-2">
+                <a href="{{ route('alumno.calendario') }}" class="d-block text-decoration-none h-100">
+                    <div class="bento h-100 p-3 d-flex flex-column justify-content-between" style="min-height: 168px;">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <span class="text-secondary small fw-semibold">Permisos</span>
+                            <i class="bi bi-file-earmark-check fs-6" style="color: #CBD5E1;"></i>
                         </div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-6 col-xl-3">
-                <a href="{{ route('alumno.calendario') }}" class="d-block text-decoration-none text-reset h-100">
-                    <div class="card card-hover kpi-editorial h-100" style="border-top-color: #2563EB;">
-                        <div class="card-body d-flex align-items-center p-4">
-                            <div class="bg-primary bg-opacity-10 text-primary rounded-3 p-3 me-3">
-                                <i class="bi bi-file-earmark-check fs-3"></i>
-                            </div>
-                            <div>
-                                <div class="text-secondary small fw-semibold">Permisos y justificados</div>
-                                <h3 class="fw-bold mb-0" style="color: #0F172A;">{{ $permisosCount }}</h3>
-                            </div>
+                        <div class="numero-bento">{{ $permisosCount }}</div>
+                        <div class="d-flex align-items-center gap-2 text-secondary" style="font-size: .72rem;">
+                            <span class="punto-estado" style="background: #2563EB;"></span>Justificados
                         </div>
                     </div>
                 </a>
             </div>
         </div>
 
-        <!-- 4. Accesos por Sección -->
+        <!-- 4. Secciones Bento 2x2 -->
         <h5 class="fw-bold text-dark mb-3 px-1">Secciones</h5>
         <div class="row g-3">
             <div class="col-md-6">
-                <a href="{{ route('alumno.qr') }}" class="d-flex align-items-center gap-3 p-3 tile-editorial rounded-3 h-100 text-decoration-none">
-                    <div class="bg-primary bg-opacity-10 text-primary rounded-3 p-3 flex-shrink-0">
-                        <i class="bi bi-qr-code fs-4"></i>
+                <a href="{{ route('alumno.qr') }}" class="d-block text-decoration-none h-100">
+                    <div class="bento bento-qr h-100 p-4 position-relative" style="min-height: 200px;">
+                        @if ($sesionesActivasPendientes->count() > 0)
+                            <span class="badge bg-success position-absolute rounded-pill" style="top: 1rem; right: 1rem;">Clase activa</span>
+                        @endif
+                        <div style="max-width: 65%;">
+                            <h6 class="fw-bold text-dark mb-1">Mi Código QR</h6>
+                            <p class="text-secondary small mb-0">Preséntalo en tu clase en curso para registrar tu asistencia.</p>
+                        </div>
+                        <svg viewBox="0 0 100 100" class="position-absolute" style="width: 150px; height: 150px; right: -22px; bottom: -22px; transform: rotate(6deg);" aria-hidden="true">
+                            <rect width="100" height="100" rx="10" fill="#EFF6FF"></rect>
+                            <rect x="10" y="10" width="24" height="24" rx="4" fill="none" stroke="#2563EB" stroke-width="6"></rect>
+                            <rect x="17" y="17" width="10" height="10" fill="#2563EB"></rect>
+                            <rect x="66" y="10" width="24" height="24" rx="4" fill="none" stroke="#2563EB" stroke-width="6"></rect>
+                            <rect x="73" y="17" width="10" height="10" fill="#2563EB"></rect>
+                            <rect x="10" y="66" width="24" height="24" rx="4" fill="none" stroke="#2563EB" stroke-width="6"></rect>
+                            <rect x="17" y="73" width="10" height="10" fill="#2563EB"></rect>
+                            <rect x="44" y="10" width="8" height="8" fill="#2563EB"></rect>
+                            <rect x="56" y="18" width="8" height="8" fill="#2563EB"></rect>
+                            <rect x="44" y="30" width="8" height="8" fill="#2563EB"></rect>
+                            <rect x="46" y="46" width="12" height="12" fill="#2563EB"></rect>
+                            <rect x="62" y="46" width="8" height="8" fill="#2563EB"></rect>
+                            <rect x="74" y="54" width="8" height="8" fill="#2563EB"></rect>
+                            <rect x="46" y="62" width="8" height="8" fill="#2563EB"></rect>
+                            <rect x="58" y="70" width="12" height="8" fill="#2563EB"></rect>
+                            <rect x="74" y="70" width="8" height="8" fill="#2563EB"></rect>
+                            <rect x="46" y="82" width="8" height="8" fill="#2563EB"></rect>
+                            <rect x="62" y="86" width="8" height="8" fill="#2563EB"></rect>
+                        </svg>
                     </div>
-                    <div class="flex-grow-1">
-                        <h6 class="fw-bold text-dark mb-1">Mi Código QR</h6>
-                        <p class="text-muted small mb-0 text-truncate">Preséntalo en tu clase en curso para registrar tu asistencia.</p>
-                    </div>
-                    @if ($sesionesActivasPendientes->count() > 0)<span class="badge bg-success">Clase activa</span>@endif
-                    <i class="bi bi-arrow-right tile-flecha fs-5"></i>
                 </a>
             </div>
             <div class="col-md-6">
-                <a href="{{ route('alumno.materias') }}" class="d-flex align-items-center gap-3 p-3 tile-editorial rounded-3 h-100 text-decoration-none">
-                    <div class="bg-secondary bg-opacity-10 text-secondary rounded-3 p-3 flex-shrink-0">
-                        <i class="bi bi-journal-bookmark fs-4"></i>
+                <a href="{{ route('alumno.materias') }}" class="d-block text-decoration-none h-100">
+                    <div class="bento h-100 p-4 position-relative" style="min-height: 200px;">
+                        <div class="d-flex justify-content-between align-items-start gap-2">
+                            <div>
+                                <h6 class="fw-bold text-dark mb-1">Mis Materias</h6>
+                                <p class="text-secondary small mb-0">Consulta tu registro de asistencia y derecho a examen ordinario.</p>
+                            </div>
+                            <span class="badge bg-primary rounded-pill px-3 py-2 fs-6 flex-shrink-0">{{ $matriculasAceptadas->count() }}</span>
+                        </div>
+                        <div class="d-flex flex-wrap gap-2 mt-4">
+                            @forelse ($siglasMaterias as $sigla)
+                                <span class="badge pildora-sigla rounded-3 px-3 py-2">{{ $sigla }}</span>
+                            @empty
+                                <span class="text-secondary" style="font-size: .72rem;">Aún no tienes materias inscritas.</span>
+                            @endforelse
+                        </div>
                     </div>
-                    <div class="flex-grow-1">
-                        <h6 class="fw-bold text-dark mb-1">Mis Materias</h6>
-                        <p class="text-muted small mb-0 text-truncate">Consulta tu registro de asistencia y derecho a examen ordinario.</p>
-                    </div>
-                    <span class="badge bg-primary">{{ $matriculasAceptadas->count() }}</span>
-                    <i class="bi bi-arrow-right tile-flecha fs-5"></i>
                 </a>
             </div>
             <div class="col-md-6">
-                <a href="{{ route('alumno.calendario') }}" class="d-flex align-items-center gap-3 p-3 tile-editorial rounded-3 h-100 text-decoration-none">
-                    <div class="bg-success bg-opacity-10 text-success rounded-3 p-3 flex-shrink-0">
-                        <i class="bi bi-calendar3 fs-4"></i>
+                <a href="{{ route('alumno.calendario') }}" class="d-block text-decoration-none h-100">
+                    <div class="bento h-100 p-4 d-flex justify-content-between align-items-center gap-3" style="min-height: 200px;">
+                        <div>
+                            <h6 class="fw-bold text-dark mb-1">Calendario</h6>
+                            <p class="text-secondary small mb-0">Historial de asistencias, retardos y faltas del mes actual.</p>
+                        </div>
+                        <div class="hoja-calendario flex-shrink-0" style="height: 84px;">
+                            <div class="text-center fw-bold text-white" style="background: #2563EB; font-size: .78rem; padding: .32rem 0;">{{ $mesHoy }}</div>
+                            <div class="text-center" style="font-size: 2.1rem; font-weight: 800; color: #0F172A; line-height: 1.35;">{{ $diaHoy }}</div>
+                        </div>
                     </div>
-                    <div class="flex-grow-1">
-                        <h6 class="fw-bold text-dark mb-1">Calendario</h6>
-                        <p class="text-muted small mb-0 text-truncate">Historial de asistencias, retardos y faltas del mes actual.</p>
-                    </div>
-                    <i class="bi bi-arrow-right tile-flecha fs-5"></i>
                 </a>
             </div>
             <div class="col-md-6">
-                <a href="{{ route('alumno.justificantes') }}" class="d-flex align-items-center gap-3 p-3 tile-editorial rounded-3 h-100 text-decoration-none">
-                    <div class="bg-warning bg-opacity-10 text-warning rounded-3 p-3 flex-shrink-0">
-                        <i class="bi bi-upload fs-4"></i>
+                <a href="{{ route('alumno.justificantes') }}" class="d-block text-decoration-none h-100">
+                    <div class="bento h-100 p-4 d-flex justify-content-between align-items-center gap-3" style="min-height: 200px;">
+                        <div>
+                            <h6 class="fw-bold text-dark mb-1">Justificantes</h6>
+                            <p class="text-secondary small mb-0">Sube tu comprobante para justificar faltas y retardos ante el docente.</p>
+                            <div class="mt-3">
+                                @if ($incidenciasPorJustificar->isEmpty())
+                                    <span class="badge badge-suave-verde rounded-pill px-3 py-2 d-inline-flex align-items-center gap-2">
+                                        <span class="punto-estado" style="background: #059669;"></span>Todo al corriente
+                                    </span>
+                                @else
+                                    <span class="badge badge-suave-carmesi rounded-pill px-3 py-2">{{ $incidenciasPorJustificar->count() }} por justificar</span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="flecha-circular rounded-circle flex-shrink-0">
+                            <i class="bi bi-arrow-right fs-5"></i>
+                        </div>
                     </div>
-                    <div class="flex-grow-1">
-                        <h6 class="fw-bold text-dark mb-1">Justificantes</h6>
-                        <p class="text-muted small mb-0 text-truncate">Sube tu comprobante para justificar faltas y retardos ante el docente.</p>
-                    </div>
-                    @if ($incidenciasPorJustificar->count() > 0)<span class="badge bg-danger">{{ $incidenciasPorJustificar->count() }}</span>@endif
-                    <i class="bi bi-arrow-right tile-flecha fs-5"></i>
-                </a>
-            </div>
-            <div class="col-md-6">
-                <a href="{{ route('alumno.solicitar') }}" class="d-flex align-items-center gap-3 p-3 tile-editorial rounded-3 h-100 text-decoration-none">
-                    <div class="bg-info bg-opacity-10 text-info rounded-3 p-3 flex-shrink-0">
-                        <i class="bi bi-search fs-4"></i>
-                    </div>
-                    <div class="flex-grow-1">
-                        <h6 class="fw-bold text-dark mb-1">Solicitar Asignatura</h6>
-                        <p class="text-muted small mb-0 text-truncate">Busca la materia y envía tu solicitud de inscripción al docente.</p>
-                    </div>
-                    @if ($pendientesCount > 0)<span class="badge bg-warning text-dark">{{ $pendientesCount }}</span>@endif
-                    <i class="bi bi-arrow-right tile-flecha fs-5"></i>
                 </a>
             </div>
         </div>
