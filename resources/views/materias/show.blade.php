@@ -40,6 +40,40 @@
 
         /* Separacion reforzada de las tarjetas inferiores */
         .panel-definido { box-shadow: 0 4px 12px -6px rgba(15,23,42,.12); }
+
+        /* Bloque de incidencias limpio: contenedor neutro con puntos indicadores */
+        .incidencias-box {
+            display: inline-flex; flex-wrap: wrap; justify-content: center; gap: .5rem;
+            background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: .875rem;
+            padding: .45rem .75rem;
+        }
+        .inc-item {
+            display: inline-flex; align-items: center; gap: .3rem;
+            color: #94A3B8; font-size: .78rem; font-weight: 600; line-height: 1.4;
+            white-space: nowrap;
+        }
+        .inc-item .dot { width: 7px; height: 7px; border-radius: 50%; background: #CBD5E1; opacity: .4; }
+        .inc-item.inc-on { color: #334155; }
+        .inc-item.inc-on .dot { opacity: 1; }
+        .inc-item .val { font-weight: 700; }
+        .inc-a .dot { background: #059669; }
+        .inc-r .dot { background: #D97706; }
+        .inc-p .dot { background: #2563EB; }
+        .inc-f .dot { background: #DC2626; }
+        .inc-a.inc-on .val { color: #047857; }
+        .inc-r.inc-on .val { color: #B45309; }
+        .inc-p.inc-on .val { color: #1D4ED8; }
+        .inc-f.inc-on .val { color: #B91C1C; }
+
+        /* Pildoras semanticas limpias (verde, ambar, rojo, azul, neutra) */
+        .verde-limpio { background: #ECFDF5; color: #047857; border: 1px solid #A7F3D0; }
+        .ambar-limpio { background: #FFFBEB; color: #B45309; border: 1px solid #FDE68A; }
+        .rojo-limpio  { background: #FEF2F2; color: #B91C1C; border: 1px solid #FECACA; }
+        .azul-suave   { background: #EFF6FF; color: #1D4ED8; border: 1px solid #BFDBFE; }
+        .neutra-slate { background: #F1F5F9; color: #334155; border: 1px solid #E2E8F0; }
+
+        /* Aire en las filas del padron */
+        .tabla-padron tbody td { padding-top: 1.05rem; padding-bottom: 1.05rem; }
     </style>
 </head>
 <body>
@@ -206,7 +240,7 @@
                     </div>
 
                     <div class="table-responsive">
-                        <table class="table table-moderna table-hover align-middle mb-0">
+                        <table class="table table-moderna table-hover tabla-padron align-middle mb-0">
                             <thead class="table-light">
                                 <tr>
                                     <th>Alumno</th>
@@ -233,14 +267,21 @@
                                             <div class="texto-slate small">{{ $matricula->alumno->email ?? '-' }}</div>
                                         </td>
                                         <td class="text-center">
-                                            <div class="mb-1">
-                                                <span class="badge badge-estado badge-asistencia me-1" title="Asistencias">A: {{ $asistCount }}</span>
-                                                <span class="badge badge-estado badge-retardo me-1" title="Retardos acumulados">R: {{ $retCount }}</span>
-                                                <span class="badge badge-estado badge-permiso me-1" title="Permisos / Justificados">P: {{ $permCount }}</span>
-                                                <span class="badge badge-estado badge-falta" title="Faltas directas">F: {{ $faltCount }}</span>
+                                            <div class="incidencias-box">
+                                                <span class="inc-item inc-a {{ $asistCount > 0 ? 'inc-on' : '' }}" title="Asistencias"><span class="dot"></span>A: <strong class="val">{{ $asistCount }}</strong></span>
+                                                <span class="inc-item inc-r {{ $retCount > 0 ? 'inc-on' : '' }}" title="Retardos acumulados"><span class="dot"></span>R: <strong class="val">{{ $retCount }}</strong></span>
+                                                <span class="inc-item inc-p {{ $permCount > 0 ? 'inc-on' : '' }}" title="Permisos / Justificados"><span class="dot"></span>P: <strong class="val">{{ $permCount }}</strong></span>
+                                                <span class="inc-item inc-f {{ $faltCount > 0 ? 'inc-on' : '' }}" title="Faltas directas"><span class="dot"></span>F: <strong class="val">{{ $faltCount }}</strong></span>
                                             </div>
-                                            <div class="small texto-slate">
-                                                Total computado: <strong>{{ $faltasTotales }} / 3 faltas</strong>
+                                            <div class="small texto-slate mt-2">
+                                                Total computado:
+                                                @if ($faltasTotales >= 3)
+                                                    <strong class="fw-bold" style="color: #B91C1C;">{{ $faltasTotales }} / 3 faltas</strong>
+                                                @elseif ($faltasTotales > 0)
+                                                    <strong class="fw-bold" style="color: #B45309;">{{ $faltasTotales }} / 3 faltas</strong>
+                                                @else
+                                                    <strong>{{ $faltasTotales }} / 3 faltas</strong>
+                                                @endif
                                                 @if ($faltasPorRet > 0)
                                                     <span class="fw-semibold" style="color: #B45309;">({{ $faltCount }} dir. + {{ $faltasPorRet }} por retardos)</span>
                                                 @endif
@@ -248,26 +289,26 @@
                                         </td>
                                         <td class="text-center">
                                             @if ($faltasTotales >= 3)
-                                                <span class="badge badge-estado badge-falta">
+                                                <span class="badge badge-estado rojo-limpio">
                                                     Sin Derecho a Examen (SD)
                                                 </span>
                                             @elseif ($faltasTotales === 2)
-                                                <span class="badge badge-estado badge-retardo">
+                                                <span class="badge badge-estado ambar-limpio">
                                                     En Riesgo (2/3)
                                                 </span>
                                             @else
-                                                <span class="badge badge-estado badge-asistencia">
+                                                <span class="badge badge-estado verde-limpio">
                                                     Con Derecho a Ordinario
                                                 </span>
                                             @endif
                                         </td>
                                         <td class="text-center">
                                             @if ($matricula->estado === 'aceptado')
-                                                <span class="badge badge-estado badge-asistencia">Aceptado</span>
+                                                <span class="badge badge-estado neutra-slate">Aceptado</span>
                                             @elseif ($matricula->estado === 'pendiente')
-                                                <span class="badge badge-estado badge-retardo">Pendiente</span>
+                                                <span class="badge badge-estado ambar-limpio">Pendiente</span>
                                             @else
-                                                <span class="badge badge-estado badge-falta">Rechazado</span>
+                                                <span class="badge badge-estado rojo-limpio">Rechazado</span>
                                             @endif
                                         </td>
                                         <td class="text-end">
