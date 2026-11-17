@@ -163,5 +163,58 @@ class PerfilAlumnoController extends Controller
 
         return redirect()->route('profesor.perfil')->with('success', 'Tus datos de perfil docente se han actualizado correctamente.');
     }
+
+    // Mostrar formulario con los datos personales del administrador
+    public function editAdmin()
+    {
+        $admin = User::findOrFail(Auth::id());
+        return view('admin.perfil', compact('admin'));
+    }
+
+    // Actualizar los datos personales y/o contraseña del administrador
+    public function updateAdmin(Request $request)
+    {
+        $admin = User::findOrFail(Auth::id());
+
+        $request->validate([
+            'name'        => 'required|string|max:100',
+            'email'       => [
+                'required',
+                'email',
+                'max:150',
+                Rule::unique('users', 'email')->ignore($admin->id),
+            ],
+            'password'    => 'nullable|string|min:6|confirmed',
+            'foto_perfil' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ], [
+            'name.required'     => 'Tu nombre completo es obligatorio.',
+            'email.required'    => 'El correo electrónico es obligatorio.',
+            'email.email'       => 'Ingresa un correo electrónico válido.',
+            'email.unique'      => 'Este correo electrónico ya está registrado por otro usuario.',
+            'password.min'      => 'La nueva contraseña debe tener al menos 6 caracteres.',
+            'password.confirmed' => 'La confirmación de la nueva contraseña no coincide.',
+            'foto_perfil.image' => 'El archivo seleccionado debe ser una imagen.',
+            'foto_perfil.mimes' => 'La foto debe ser JPG, PNG o WEBP.',
+            'foto_perfil.max'   => 'La foto no debe superar los 2 MB.',
+        ]);
+
+        $datos = [
+            'name'  => $request->name,
+            'email' => $request->email,
+        ];
+
+        if ($request->filled('password')) {
+            $datos['password'] = Hash::make($request->password);
+        }
+
+        $foto = $this->guardarFotoPerfil($request, $admin, $datos);
+        if (!is_null($foto)) {
+            $datos['foto_perfil'] = $foto;
+        }
+
+        $admin->update($datos);
+
+        return redirect()->route('admin.perfil')->with('success', 'Tus datos de perfil de administrador se han actualizado correctamente.');
+    }
 }
 

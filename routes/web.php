@@ -39,6 +39,8 @@ Route::middleware(['auth'])->group(function () {
 // Panel protegido exclusivamente para ADMINISTRADORES
 Route::middleware(['auth', \App\Http\Middleware\CheckRol::class . ':admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+Route::get('/admin/perfil', [PerfilAlumnoController::class, 'editAdmin'])->name('admin.perfil');
+Route::put('/admin/perfil', [PerfilAlumnoController::class, 'updateAdmin'])->name('admin.perfil.update');
 
     // Gestión de Códigos de Invitación Docente (de un solo uso)
     Route::get('/admin/codigos-docentes', [AdminController::class, 'codigosDocentes'])->name('admin.codigos');

@@ -26,6 +26,9 @@
                 <a href="{{ route('admin.usuarios') }}" class="btn btn-light btn-sm text-dark fw-semibold rounded-3">
                     Usuarios
                 </a>
+                <a href="{{ route('admin.perfil') }}" class="btn btn-light btn-sm text-dark fw-semibold rounded-3">
+                    Mi Perfil
+                </a>
                 <form action="{{ route('logout') }}" method="POST" class="d-inline">
                     @csrf
                     <button type="submit" class="btn btn-danger btn-sm rounded-3">Cerrar Sesión</button>

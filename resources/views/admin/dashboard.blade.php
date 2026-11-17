@@ -36,6 +36,9 @@
                 @else
                     <span class="d-inline-flex align-items-center justify-content-center rounded-circle fw-bold text-white" style="width: 34px; height: 34px; background: hsl({{ $avHue }}, 65%, 45%); font-size: .85rem;">{{ mb_strtoupper(mb_substr($admin->name ?? 'U', 0, 1)) }}</span>
                 @endif
+                <a href="{{ route('admin.perfil') }}" class="btn btn-light btn-sm text-dark fw-semibold rounded-3">
+                    Mi Perfil
+                </a>
                 <form action="{{ route('logout') }}" method="POST" class="d-inline">
                     @csrf
                     <button type="submit" class="btn btn-danger btn-sm rounded-3">Cerrar Sesión</button>
