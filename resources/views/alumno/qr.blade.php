@@ -8,54 +8,108 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     @include('partials.panel-css')
     <style>
-        .tarjeta-qr { max-width: 560px; margin-inline: auto; transition: box-shadow .2s ease, border-color .2s ease; }
-
-        .cintillo-clase { display: inline-flex; align-items: center; gap: .5rem; border-radius: 50rem; padding: .42rem .95rem; font-size: .78rem; font-weight: 600; max-width: 100%; }
-        .cintillo-curso { background: #ECFDF5; color: #047857; border: 1px solid #A7F3D0; }
-        .cintillo-listo { background: #F1F5F9; color: #334155; border: 1px solid #E2E8F0; }
-        .punto-pulso { width: 8px; height: 8px; border-radius: 50%; background: #059669; flex-shrink: 0; animation: pulso 1.6s infinite; }
-        @keyframes pulso {
-            0%   { box-shadow: 0 0 0 0 rgba(5,150,105,.45); }
-            70%  { box-shadow: 0 0 0 7px rgba(5,150,105,0); }
-            100% { box-shadow: 0 0 0 0 rgba(5,150,105,0); }
-        }
-
-        .avatar-identidad {
-            width: 52px; height: 52px; border-radius: 50%;
-            background: #EFF6FF; color: #2563EB;
-            font-weight: 800; font-size: 1rem;
-            display: inline-flex; align-items: center; justify-content: center;
-            border: 2px solid #BFDBFE; flex-shrink: 0;
-        }
-
-        .marco-qr {
+        /* Credencial Escolar Digital: franja azul institucional + zona blanca del QR */
+        .credencial {
+            max-width: 380px;
+            margin-inline: auto;
             background: #FFFFFF;
             border: 1px solid rgba(203, 213, 225, .9);
-            border-radius: 1.25rem;
+            border-radius: 1.5rem;
+            overflow: hidden;
             box-shadow: var(--panel-shadow);
         }
+        .credencial-header {
+            background: linear-gradient(135deg, #0B2447 0%, #19376D 60%, #2F5BD7 100%);
+            padding: 1.05rem 1.25rem 1.15rem;
+            text-align: center;
+        }
+        .cintillo-clase {
+            display: inline-flex; align-items: center; gap: .45rem;
+            border-radius: 50rem; padding: .3rem .85rem;
+            font-size: .72rem; font-weight: 600; max-width: 100%;
+            background: rgba(255,255,255,.15); color: #FFFFFF;
+            border: 1px solid rgba(255,255,255,.30);
+        }
+        .punto-pulso { width: 7px; height: 7px; border-radius: 50%; background: #34D399; flex-shrink: 0; animation: pulso 1.6s infinite; }
+        @keyframes pulso {
+            0%   { box-shadow: 0 0 0 0 rgba(52,211,153,.55); }
+            70%  { box-shadow: 0 0 0 6px rgba(52,211,153,0); }
+            100% { box-shadow: 0 0 0 0 rgba(52,211,153,0); }
+        }
+        .avatar-credencial {
+            width: 54px; height: 54px; border-radius: 50%;
+            background: #FFFFFF; color: #19376D;
+            font-weight: 800; font-size: 1.05rem;
+            display: inline-flex; align-items: center; justify-content: center;
+            border: 3px solid rgba(255,255,255,.40); flex-shrink: 0;
+        }
+        .nombre-credencial { color: #FFFFFF; font-weight: 700; font-size: 1.08rem; line-height: 1.25; }
+        .rol-credencial { color: rgba(255,255,255,.75); font-size: .78rem; }
+        .credencial-body { padding: 1.25rem 1.25rem 1.35rem; text-align: center; }
 
-        .contenedor-expira { height: 8px; border-radius: 50rem; background: #E2E8F0; overflow: hidden; max-width: 246px; }
+        .marco-qr {
+            width: min(250px, calc(100vw - 56px));
+            height: auto;
+            aspect-ratio: 1;
+            padding: 20px;
+            margin-inline: auto;
+            display: flex; align-items: center; justify-content: center;
+            background: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            border-radius: 1.25rem;
+            box-shadow: 0 4px 10px -4px rgba(15,23,42,.12);
+        }
+        .zona-expira { width: min(250px, calc(100vw - 56px)); margin: .9rem auto 0; }
+        .pildora-expira {
+            display: inline-flex; align-items: center;
+            border-radius: 50rem; padding: .38rem .9rem;
+            font-size: .78rem; font-weight: 600;
+            background: #EFF6FF; color: #1D4ED8; border: 1px solid #BFDBFE;
+        }
+        .contenedor-expira { height: 7px; border-radius: 50rem; background: #E2E8F0; overflow: hidden; margin-top: .55rem; }
         #barra-expira { height: 100%; width: 100%; border-radius: 50rem; background: #2563EB; transition: width .9s linear, background .3s ease; }
         #qr-timer.expira-amarillo { background: #FFFBEB !important; color: #B45309 !important; border-color: #FCD34D !important; }
 
-        #tarjeta-qr.qr-confirmado { border-color: #A7F3D0; box-shadow: 0 0 0 4px rgba(5,150,105,.10), var(--panel-shadow); }
-
-        #tarjeta-qr.modo-lectura .marco-qr {
-            width: min(320px, 88vw);
-            height: auto;
-            aspect-ratio: 1;
-            padding: 1rem;
-            border-color: #CBD5E1;
-            box-shadow: var(--panel-shadow-lg);
+        #qr-confirmacion-escaneo {
+            display: inline-flex; align-items: center; gap: .5rem;
+            max-width: 100%; margin-inline: auto;
+            border-radius: 50rem; padding: .45rem .95rem;
+            background: #ECFDF5; border: 1px solid #A7F3D0;
+            text-align: left;
         }
-        #tarjeta-qr.modo-lectura #qrcode canvas,
-        #tarjeta-qr.modo-lectura #qrcode img { transform: scale(1.32); transform-origin: center; }
+        #qr-confirmacion-escaneo i { color: #059669; font-size: 1rem; flex-shrink: 0; }
+        .confirmacion-titulo { color: #047857; font-weight: 700; font-size: .78rem; line-height: 1.3; }
+        .confirmacion-detalle { color: #065F46; font-size: .72rem; line-height: 1.3; }
+
+        .aviso-sesion {
+            border-radius: .75rem; padding: .55rem .75rem;
+            background: #FFFBEB; border: 1px solid #FDE68A;
+            color: #92400E; font-size: .74rem; line-height: 1.45;
+        }
+
+        .btn-primario-credencial { background: #2563EB; color: #FFFFFF; border: 1px solid #2563EB; }
+        .btn-primario-credencial:hover, .btn-primario-credencial:focus { background: #1D4ED8; color: #FFFFFF; border-color: #1D4ED8; }
         .btn-modo-lectura[aria-pressed="true"] { background: #2563EB !important; color: #FFFFFF !important; border-color: #2563EB !important; }
 
-        .acordeon-pruebas summary { cursor: pointer; color: #64748B; font-size: .78rem; font-weight: 600; list-style: none; display: inline-flex; align-items: center; gap: .4rem; }
-        .acordeon-pruebas summary::-webkit-details-marker { display: none; }
-        .acordeon-pruebas summary:hover { color: #334155; }
+        .instruccion { color: #64748B; font-size: .78rem; line-height: 1.5; max-width: 270px; margin: .95rem auto 0; }
+
+        #tarjeta-qr.qr-confirmado { box-shadow: 0 0 0 3px rgba(5,150,105,.18), var(--panel-shadow); }
+
+        /* Modo Lectura: QR mas grande (260px utiles) con fondo blanco puro */
+        #tarjeta-qr.modo-lectura .marco-qr {
+            width: min(300px, calc(100vw - 56px));
+            border-color: #CBD5E1;
+            box-shadow: 0 8px 20px -6px rgba(15,23,42,.18);
+        }
+        #tarjeta-qr.modo-lectura #qrcode canvas,
+        #tarjeta-qr.modo-lectura #qrcode img { transform: scale(1.2381); transform-origin: center; }
+
+        /* Modo Pruebas: fuera de la tarjeta, muy discreto */
+        .modo-pruebas { max-width: 380px; margin-top: .8rem; }
+        .modo-pruebas summary { cursor: pointer; color: #94A3B8; font-size: .72rem; font-weight: 600; list-style: none; display: inline-flex; align-items: center; gap: .35rem; }
+        .modo-pruebas summary::-webkit-details-marker { display: none; }
+        .modo-pruebas summary:hover { color: #64748B; }
+        .modo-pruebas small { color: #64748B; }
     </style>
 </head>
 <body>
@@ -72,6 +126,16 @@
                 ->whereIn('materia_id', $materiaIdsQr)
                 ->where('estado', 'activa')
                 ->first();
+        }
+
+        // Linea de rol bajo el nombre: matricula real, grupo, o rol de la plataforma (nunca "Sin matricula")
+        $matriculaGrupoQr = \App\Models\Matricula::with('grupo')->where('user_id', $alumno->id)->where('estado', 'aceptado')->whereNotNull('grupo_id')->first();
+        if (!empty($alumno->matricula_codigo)) {
+            $etiquetaRolQr = 'Matrícula: ' . $alumno->matricula_codigo;
+        } elseif ($matriculaGrupoQr && $matriculaGrupoQr->grupo) {
+            $etiquetaRolQr = 'Alumno · Grupo ' . $matriculaGrupoQr->grupo->nombre_grupo;
+        } else {
+            $etiquetaRolQr = 'Alumno · SAE QR';
         }
     @endphp
 
@@ -97,81 +161,78 @@
     </nav>
 
     <div class="container my-5">
-        <div class="row justify-content-center">
-            <div class="col-lg-6">
-                <div id="tarjeta-qr" class="card rounded-4 p-4 bg-white text-center tarjeta-qr">
-                    <!-- Cintillo de contexto: clase en curso o listo -->
-                    <span class="cintillo-clase mx-auto mb-3 {{ $sesionQrActiva ? 'cintillo-curso' : 'cintillo-listo' }}">
-                        @if ($sesionQrActiva)
-                            <span class="punto-pulso"></span>
-                            <span>En curso · {{ $sesionQrActiva->materia->nombre_materia }}{{ $sesionQrActiva->materia->grupo ? ' · Grupo ' . $sesionQrActiva->materia->grupo->nombre_grupo : '' }}</span>
-                        @else
-                            <i class="bi bi-qr-code"></i>
-                            <span>Listo para registro de asistencia</span>
-                        @endif
-                    </span>
-
-                    <!-- Identidad del alumno: el docente confirma visualmente al escanear -->
-                    <div class="d-flex align-items-center justify-content-center gap-3 text-start mb-3">
-                        <span class="avatar-identidad">{{ $inicialesAlumno }}</span>
-                        <div>
-                            <div class="fw-bold" style="color: #0F172A; font-size: 1.05rem;">{{ $alumno->name }}</div>
-                            <div class="small texto-slate">
-                                Matrícula: <span class="fw-semibold" style="color: #0F172A;">{{ $alumno->matricula_codigo ?? 'Sin matrícula' }}</span>
-                            </div>
-                        </div>
+        <div id="tarjeta-qr" class="credencial">
+            <!-- Franja superior azul: identidad separada del QR -->
+            <div class="credencial-header">
+                <span class="cintillo-clase">
+                    @if ($sesionQrActiva)
+                        <span class="punto-pulso"></span>
+                        <span>En curso · {{ $sesionQrActiva->materia->nombre_materia }}{{ $sesionQrActiva->materia->grupo ? ' · Grupo ' . $sesionQrActiva->materia->grupo->nombre_grupo : '' }}</span>
+                    @else
+                        <i class="bi bi-qr-code"></i>
+                        <span>Listo para registro de asistencia</span>
+                    @endif
+                </span>
+                <div class="d-flex align-items-center justify-content-center gap-3 mt-2">
+                    <span class="avatar-credencial">{{ $inicialesAlumno }}</span>
+                    <div class="text-start">
+                        <div class="nombre-credencial">{{ $alumno->name }}</div>
+                        <div class="rol-credencial">{{ $etiquetaRolQr }}</div>
                     </div>
-
-                    <!-- Confirmación en Tiempo Real cuando el QR del Alumno es escaneado -->
-                    <div id="qr-confirmacion-escaneo" data-estado-url="{{ route('qr.estado') }}" class="alert alert-success border-success border-2 rounded-4 py-2 px-3 mb-3 text-start" role="alert">
-                        <div class="d-flex align-items-center gap-2">
-                            <i class="bi bi-check-circle-fill fs-5 text-success"></i>
-                            <div class="small">
-                                <div class="fw-bold text-success">Asistencia registrada</div>
-                                <div id="qr-confirmacion-detalle" class="text-dark"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="marco-qr d-inline-flex align-items-center justify-content-center mx-auto mb-3" style="width: min(246px, 78vw); height: min(246px, 78vw);">
-                        <div id="qrcode" data-qr-url="{{ route('qr.generar') }}"></div>
-                    </div>
-
-                    <div id="qr-error-sesion" class="alert alert-warning small py-2 px-3 d-none mb-2">
-                        Tu sesión de Alumno cambió porque iniciaste sesión como Profesor en otra pestaña del mismo navegador. Abre el perfil de Profesor o Alumno en una <strong>ventana de incógnito</strong> o en otro dispositivo.
-                    </div>
-
-                    <!-- Indicador de expiración: píldora + barra (azul -> ámbar en los últimos 10s) -->
-                    <div class="mb-2">
-                        <span id="qr-timer" class="badge bg-primary bg-opacity-10 text-primary border border-primary px-3 py-2 rounded-pill">
-                            Actualizando en 60s
-                        </span>
-                        <div class="contenedor-expira mx-auto mt-2">
-                            <div id="barra-expira"></div>
-                        </div>
-                    </div>
-
-                    <div class="d-flex flex-wrap justify-content-center gap-2 mb-1">
-                        <button onclick="generarNuevoQR()" class="btn btn-sm btn-outline-primary rounded-3 px-3 fw-semibold">
-                            <i class="bi bi-arrow-clockwise me-1"></i>Renovar QR ahora
-                        </button>
-                        <button id="btn-modo-lectura" onclick="alternarModoLectura()" aria-pressed="false" class="btn btn-modo-lectura btn-sm btn-outline-secondary rounded-3 px-3 fw-semibold">
-                            <i class="bi bi-brightness-high me-1"></i><span>Modo Lectura</span>
-                        </button>
-                    </div>
-
-                    <p class="texto-slate small mt-2 mb-0">Presenta esta pantalla frente a la cámara de tu profesor durante la clase activa. El código se renueva solo cada 60 segundos.</p>
-
-                    <!-- Código de respaldo oculto por defecto: solo para pruebas en la misma PC -->
-                    <details class="acordeon-pruebas mt-3 pt-3 border-top text-start">
-                        <summary><i class="bi bi-wrench-adjustable"></i> Modo Pruebas · Código de respaldo</summary>
-                        <div class="mt-2">
-                            <small class="texto-slate d-block mb-1">Solo para pruebas en la misma PC, sin cámara. No compartas este código: cualquiera con él puede registrar tu asistencia.</small>
-                            <code id="qr-token-respaldo" class="user-select-all bg-light px-2 py-1 rounded border small text-dark">—</code>
-                        </div>
-                    </details>
                 </div>
             </div>
+
+            <div class="credencial-body">
+                <!-- Aparece unicamente cuando el estado real del token es confirmado/escaneado -->
+                <div id="qr-confirmacion-escaneo" data-estado-url="{{ route('qr.estado') }}" class="d-none mb-3" role="alert">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <div>
+                        <div class="confirmacion-titulo">Asistencia registrada</div>
+                        <div id="qr-confirmacion-detalle" class="confirmacion-detalle"></div>
+                    </div>
+                </div>
+
+                <div id="qr-error-sesion" class="aviso-sesion d-none mb-3">
+                    Tu sesión de Alumno cambió porque iniciaste sesión como Profesor en otra pestaña del mismo navegador. Abre el perfil de Profesor o Alumno en una <strong>ventana de incógnito</strong> o en otro dispositivo.
+                </div>
+
+                <!-- Zona central del QR -->
+                <div class="marco-qr">
+                    <div id="qrcode" data-qr-url="{{ route('qr.generar') }}"></div>
+                </div>
+
+                <!-- Temporizador alineado con el marco del QR -->
+                <div class="zona-expira">
+                    <span id="qr-timer" class="pildora-expira">
+                        Actualizando en 60s
+                    </span>
+                    <div class="contenedor-expira">
+                        <div id="barra-expira"></div>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-wrap justify-content-center gap-2 mt-3">
+                    <button onclick="generarNuevoQR()" class="btn btn-primario-credencial btn-sm rounded-3 px-3 fw-semibold">
+                        <i class="bi bi-arrow-clockwise me-1"></i>Renovar QR ahora
+                    </button>
+                    <button id="btn-modo-lectura" onclick="alternarModoLectura()" aria-pressed="false" class="btn btn-modo-lectura btn-sm btn-outline-secondary rounded-3 px-3 fw-semibold">
+                        <i class="bi bi-brightness-high me-1"></i><span>Modo Lectura</span>
+                    </button>
+                </div>
+
+                <p class="instruccion mb-0">Presenta esta pantalla frente a la cámara de tu profesor durante la clase activa. El código se renueva solo cada 60 segundos.</p>
+            </div>
+        </div>
+
+        <!-- Código de respaldo fuera de la tarjeta, discreto y oculto por defecto -->
+        <div class="modo-pruebas">
+            <details>
+                <summary><i class="bi bi-wrench-adjustable"></i> Modo Pruebas · Código de respaldo</summary>
+                <div class="mt-2 text-start">
+                    <small class="d-block mb-1">Solo para pruebas en la misma PC, sin cámara. No compartas este código: cualquiera con él puede registrar tu asistencia.</small>
+                    <code id="qr-token-respaldo" class="user-select-all bg-light px-2 py-1 rounded border small text-dark">—</code>
+                </div>
+            </details>
         </div>
     </div>
 
