@@ -19,6 +19,10 @@
         $avHue = abs(crc32($profesor->name ?? 'U')) % 360;
         $profesorId = \Illuminate\Support\Facades\Auth::id();
 
+        // Filtros de vista: general (todo) | materia (una asignatura) | carrera (comparativa)
+        $vista = request('vista', 'general');
+        $carreraFiltro = $vista === 'carrera' ? request('carrera') : null;
+
         $misMaterias = \App\Models\Materia::with('grupo')
             ->where(function ($q) use ($profesorId) {
                 $q->where('profesor_id', $profesorId)
@@ -28,23 +32,39 @@
         $misMateriaIds = $misMaterias->pluck('id');
         $materiasCount = $misMaterias->count();
 
+        // Materia seleccionada cuando la vista es por materia
+        $materiaSel = null;
+        if ($vista === 'materia') {
+            $mid = (int) request('materia_id');
+            $materiaSel = $misMaterias->firstWhere('id', $mid) ?? $misMaterias->first();
+        }
+
         $grupos = \App\Models\Grupo::with(['materias' => function ($q) use ($profesorId) {
             $q->where('profesor_id', $profesorId)->orWhereNull('profesor_id');
         }])->get();
         $gruposCount = $grupos->count();
 
-        $asistenciasCount = \App\Models\RegistroAsistencia::where('estado_incidencia', 'asistencia')
-            ->whereHas('sesion', fn($q) => $q->where('profesor_id', $profesorId))->count();
-        $retardosCount    = \App\Models\RegistroAsistencia::where('estado_incidencia', 'retardo')
-            ->whereHas('sesion', fn($q) => $q->where('profesor_id', $profesorId))->count();
-        $permisosCount    = \App\Models\RegistroAsistencia::where('estado_incidencia', 'permiso')
-            ->whereHas('sesion', fn($q) => $q->where('profesor_id', $profesorId))->count();
-        $faltasCount      = \App\Models\RegistroAsistencia::where('estado_incidencia', 'falta')
-            ->whereHas('sesion', fn($q) => $q->where('profesor_id', $profesorId))->count();
+        // Carreras en las que imparte este docente (derivadas de sus grupos)
+        $carrerasDocente = $grupos->pluck('carrera')->filter()->unique()->values();
+
+        // Alcance de las incidencias según el filtro activo
+        $countIncidencias = function ($estado) use ($profesorId, $materiaSel) {
+            return \App\Models\RegistroAsistencia::where('estado_incidencia', $estado)
+                ->whereHas('sesion', function ($q) use ($profesorId, $materiaSel) {
+                    $q->where('profesor_id', $profesorId);
+                    if ($materiaSel) {
+                        $q->where('materia_id', $materiaSel->id);
+                    }
+                })->count();
+        };
+        $asistenciasCount = $countIncidencias('asistencia');
+        $retardosCount    = $countIncidencias('retardo');
+        $permisosCount    = $countIncidencias('permiso');
+        $faltasCount      = $countIncidencias('falta');
 
         $totalRegistros = $asistenciasCount + $retardosCount + $permisosCount + $faltasCount;
 
-        // Datos para la gráfica comparativa de asistencia por Grupo (en las asignaturas que imparte este docente)
+        // Barras según la vista: por Grupo (general) | por Materia | por Carrera
         $nombresGruposChart = [];
         $porcentajesGruposChart = [];
         foreach ($grupos as $g) {
@@ -59,6 +79,53 @@
             $porcentajesGruposChart[] = $totG > 0 ? round(($efecG / $totG) * 100) : 0;
         }
 
+        $nombresMateriasChart = [];
+        $porcentajesMateriasChart = [];
+        foreach ($misMaterias as $m) {
+            $regsM = \App\Models\RegistroAsistencia::whereHas('sesion', function ($q) use ($m, $profesorId) {
+                $q->where('profesor_id', $profesorId)->where('materia_id', $m->id);
+            })->get();
+            $totM = $regsM->count();
+            $efecM = $regsM->whereIn('estado_incidencia', ['asistencia', 'retardo', 'permiso'])->count();
+            $nombresMateriasChart[] = ($m->codigo_materia ? $m->codigo_materia . ' · ' : '') . $m->nombre_materia;
+            $porcentajesMateriasChart[] = $totM > 0 ? round(($efecM / $totM) * 100) : 0;
+        }
+
+        $nombresCarrerasChart = [];
+        $porcentajesCarrerasChart = [];
+        $coloresCarrerasChart = [];
+        foreach ($carrerasDocente as $carrera) {
+            $mIdsCarrera = $grupos->filter(fn($g) => ($g->carrera ?? '') === $carrera)
+                ->flatMap(fn($g) => $g->materias->pluck('id'))
+                ->unique();
+            if ($mIdsCarrera->isEmpty()) continue;
+            $regsC = \App\Models\RegistroAsistencia::whereHas('sesion', function ($q) use ($mIdsCarrera, $profesorId) {
+                $q->where('profesor_id', $profesorId)->whereIn('materia_id', $mIdsCarrera);
+            })->get();
+            $totC = $regsC->count();
+            $efecC = $regsC->whereIn('estado_incidencia', ['asistencia', 'retardo', 'permiso'])->count();
+            $nombresCarrerasChart[] = $carrera;
+            $porcentajesCarrerasChart[] = $totC > 0 ? round(($efecC / $totC) * 100) : 0;
+            $coloresCarrerasChart[] = \App\Support\CarreraColor::color($carrera);
+        }
+
+        if ($vista === 'materia') {
+            $barLabels = $nombresMateriasChart;
+            $barValores = $porcentajesMateriasChart;
+            $barColores = null;
+            $barTitulo = '% de Asistencia por Materia';
+        } elseif ($vista === 'carrera') {
+            $barLabels = $nombresCarrerasChart;
+            $barValores = $porcentajesCarrerasChart;
+            $barColores = $coloresCarrerasChart;
+            $barTitulo = '% de Asistencia por Carrera';
+        } else {
+            $barLabels = $nombresGruposChart;
+            $barValores = $porcentajesGruposChart;
+            $barColores = null;
+            $barTitulo = '% de Asistencia por Grupo';
+        }
+
         // Detección de Alumnos en Riesgo de perder Derecho a Examen Ordinario (aplicando regla universitaria: 3 retardos = 1 falta)
         $matriculasAceptadas = $misMateriaIds->isNotEmpty()
             ? \App\Models\Matricula::with(['alumno', 'grupo', 'materia'])
@@ -67,8 +134,17 @@
                 ->get()
             : collect();
 
+        // Aplicar el filtro activo a la tabla de riesgo
+        $matriculasFiltradas = $matriculasAceptadas;
+        if ($vista === 'materia' && $materiaSel) {
+            $matriculasFiltradas = $matriculasFiltradas->filter(fn($m) => (int) $m->materia_id === (int) $materiaSel->id);
+        }
+        if ($carreraFiltro) {
+            $matriculasFiltradas = $matriculasFiltradas->filter(fn($m) => ($m->grupo->carrera ?? '') === $carreraFiltro);
+        }
+
         $alumnosEnRiesgo = [];
-        foreach ($matriculasAceptadas as $mat) {
+        foreach ($matriculasFiltradas as $mat) {
             if (!$mat->materia || !$mat->alumno) continue;
             $regsAlumnoMat = \App\Models\RegistroAsistencia::where('user_id', $mat->user_id)
                 ->whereHas('sesion', function ($q) use ($mat, $profesorId) {
@@ -119,15 +195,52 @@
     </nav>
 
     <div class="container my-5">
+
+        <!-- Filtros de vista: General / Por Materia / Por Carrera -->
+        <div class="d-flex flex-wrap align-items-center gap-2 mb-4">
+            <a class="btn btn-sm rounded-pill px-3 py-2 {{ $vista === 'general' ? 'btn-dark' : 'btn-outline-dark' }}" href="{{ url()->current() }}?vista=general">
+                <i class="bi bi-grid-1x2 me-1"></i>General
+            </a>
+            <a class="btn btn-sm rounded-pill px-3 py-2 {{ $vista === 'materia' ? 'btn-dark' : 'btn-outline-dark' }}" href="{{ url()->current() }}?vista=materia">
+                <i class="bi bi-book me-1"></i>Por Materia
+            </a>
+            <a class="btn btn-sm rounded-pill px-3 py-2 {{ $vista === 'carrera' ? 'btn-dark' : 'btn-outline-dark' }}" href="{{ url()->current() }}?vista=carrera">
+                <i class="bi bi-mortarboard me-1"></i>Por Carrera
+            </a>
+        </div>
+
+        <!-- Selector de materia cuando la vista es por materia -->
+        @if ($vista === 'materia')
+            <div class="card border-0 shadow-sm rounded-4 p-3 bg-white mb-4">
+                <div class="row g-2 align-items-center">
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold mb-0 small">Materia a analizar</label>
+                    </div>
+                    <div class="col-md-8">
+                        <select class="form-select rounded-3" onchange="window.location='{{ url()->current() }}?vista=materia&materia_id=' + this.value;">
+                            @foreach ($misMaterias as $m)
+                                <option value="{{ $m->id }}" {{ $materiaSel && (int) $materiaSel->id === (int) $m->id ? 'selected' : '' }}>
+                                    [{{ $m->codigo_materia }}] {{ $m->nombre_materia }}{{ $m->grupo ? ' · ' . $m->grupo->nombre_grupo : '' }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+            </div>
+        @endif
+
         <!-- 1. Gráficas Interactivas (Chart.js) -->
         <div class="row g-4 mb-4">
-            <!-- Gráfica de Dona: Desglose Global de Incidencias -->
+            <!-- Gráfica de Dona: Desglose de Incidencias según el filtro -->
             <div class="col-lg-5">
                 <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="fw-bold text-dark mb-0">Distribución de Incidencias</h5>
                         <span class="badge bg-dark rounded-pill">{{ $totalRegistros }} pases</span>
                     </div>
+                    @if ($materiaSel)
+                        <div class="small text-primary fw-semibold mb-2"><i class="bi bi-funnel me-1"></i>{{ $materiaSel->nombre_materia }}</div>
+                    @endif
                     @if ($totalRegistros > 0)
                         <div class="mx-auto" style="max-width: 260px;">
                             <canvas id="chartIncidenciasGlobal"></canvas>
@@ -155,20 +268,20 @@
                 </div>
             </div>
 
-            <!-- Gráfica de Barras: Comparativa de Asistencia por Grupo -->
+            <!-- Gráfica de Barras: Comparativa según la vista -->
             <div class="col-lg-7">
                 <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
                     <div class="mb-3">
-                        <h5 class="fw-bold text-dark mb-0">% de Asistencia por Grupo</h5>
+                        <h5 class="fw-bold text-dark mb-0">{{ $barTitulo }}</h5>
                     </div>
-                    @if ($gruposCount > 0)
+                    @if (count($barLabels) > 0)
                         <div style="height: 280px;">
                             <canvas id="chartGruposComparativa"></canvas>
                         </div>
                     @else
                         <div class="text-center text-muted my-auto py-5">
                             <i class="bi bi-folder-x display-4 d-block mb-2 opacity-50"></i>
-                            Crea tu primer grupo académico para visualizar la comparativa.
+                            Sin datos suficientes para esta comparativa.
                         </div>
                     @endif
                 </div>
@@ -181,18 +294,35 @@
                 <div>
                     <h5 class="fw-bold text-dark mb-1">Control de Derecho a Examen Ordinario</h5>
                     <div class="text-muted small">3 retardos = 1 falta · máx. 3 faltas.</div>
+                    @if ($materiaSel)
+                        <div class="small text-primary fw-semibold"><i class="bi bi-funnel me-1"></i>Filtro: {{ $materiaSel->nombre_materia }}</div>
+                    @elseif ($carreraFiltro)
+                        <div class="small fw-semibold" style="color: {{ \App\Support\CarreraColor::color($carreraFiltro) }}"><i class="bi bi-funnel me-1"></i>Filtro: {{ $carreraFiltro }}</div>
+                    @endif
                 </div>
                 <span class="badge {{ count($alumnosEnRiesgo) > 0 ? 'bg-danger' : 'bg-success' }} rounded-pill px-3 py-2">
                     {{ count($alumnosEnRiesgo) }} Casos Detectados
                 </span>
             </div>
 
+            <!-- Chips de filtro por carrera (vista Por Carrera) -->
+            @if ($vista === 'carrera')
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                    <a class="badge rounded-pill px-3 py-2 text-decoration-none {{ !$carreraFiltro ? 'bg-dark text-white' : 'bg-light text-dark border' }}" href="{{ url()->current() }}?vista=carrera">Todas las carreras</a>
+                    @foreach ($carrerasDocente as $c)
+                        <a class="badge rounded-pill px-3 py-2 text-decoration-none" style="{{ $carreraFiltro === $c ? \App\Support\CarreraColor::badge($c) : \App\Support\CarreraColor::suave($c) }}" href="{{ url()->current() }}?vista=carrera&carrera={{ urlencode($c) }}">
+                            {{ $c }}
+                        </a>
+                    @endforeach
+                </div>
+            @endif
+
             <div class="table-responsive">
                 <table class="table table-striped table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
                             <th>Alumno</th>
-                            <th>Grupo / Semestre</th>
+                            <th>Grupo / Carrera</th>
                             <th>Materia</th>
                             <th class="text-center">Faltas Computadas</th>
                             <th class="text-center">Derecho a Examen Ordinario</th>
@@ -208,11 +338,13 @@
                                 </td>
                                 <td>
                                     @if ($caso['grupo'])
-                                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary">
+                                        <span class="badge rounded-pill" style="{{ \App\Support\CarreraColor::suave($caso['grupo']->carrera ?? '') }}">
                                             {{ $caso['grupo']->nombre_grupo }} ({{ $caso['grupo']->grado }})
                                         </span>
                                         @if ($caso['grupo']->carrera)
-                                            <div class="small text-muted mt-1">{{ $caso['grupo']->carrera }}</div>
+                                            <span class="badge rounded-pill px-2 py-1 mt-1" style="{{ \App\Support\CarreraColor::badge($caso['grupo']->carrera) }}">
+                                                <i class="bi bi-mortarboard me-1"></i>{{ $caso['grupo']->carrera }}
+                                            </span>
                                         @endif
                                     @else
                                         <span class="text-muted">-</span>
@@ -243,7 +375,7 @@
                         @empty
                             <tr>
                                 <td colspan="6" class="text-center py-4 text-muted">
-                                    Ningún alumno supera las 2 faltas sin justificar en este momento.
+                                    Ningún alumno supera las 2 faltas sin justificar en este filtro.
                                 </td>
                             </tr>
                         @endforelse
@@ -258,8 +390,9 @@
          data-retardos="{{ $retardosCount }}"
          data-permisos="{{ $permisosCount }}"
          data-faltas="{{ $faltasCount }}"
-         data-grupos-labels="{{ json_encode($nombresGruposChart) }}"
-         data-grupos-valores="{{ json_encode($porcentajesGruposChart) }}"
+         data-grupos-labels="{{ json_encode($barLabels) }}"
+         data-grupos-valores="{{ json_encode($barValores) }}"
+         data-colores-custom="{{ json_encode($barColores) }}"
          class="d-none"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -297,7 +430,8 @@
             if (canvasBarras && datosEl) {
                 const labels = JSON.parse(datosEl.dataset.gruposLabels || '[]');
                 const valores = JSON.parse(datosEl.dataset.gruposValores || '[]');
-                const colores = valores.map(v => v >= 85 ? '#198754' : (v >= 70 ? '#ffc107' : '#dc3545'));
+                const coloresCustom = JSON.parse(datosEl.dataset.coloresCustom || 'null');
+                const colores = coloresCustom || valores.map(v => v >= 85 ? '#198754' : (v >= 70 ? '#ffc107' : '#dc3545'));
 
                 new Chart(canvasBarras, {
                     type: 'bar',
@@ -318,6 +452,9 @@
                                 beginAtZero: true,
                                 max: 100,
                                 ticks: { callback: value => value + '%' }
+                            },
+                            x: {
+                                ticks: { maxRotation: 45, minRotation: 0 }
                             }
                         },
                         plugins: {
