@@ -36,11 +36,11 @@
         }
         .metrica-prota { background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 100%); border: none; color: #FFFFFF; }
         .numero-hero { font-size: 2.75rem; font-weight: 800; line-height: 1; letter-spacing: -.02em; }
-        .numero-bento { font-size: 2.5rem; font-weight: 800; color: #0F172A; line-height: 1; letter-spacing: -.02em; }
+        .numero-bento { font-size: 3rem; font-weight: 800; color: #0F172A; line-height: 1; letter-spacing: -.02em; }
         .punto-estado { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
 
         .bento-qr { background: rgba(239, 246, 255, .7); border-color: #BFDBFE; }
-        .pildora-sigla { background: #F1F5F9; color: #334155; border: 1px solid #E2E8F0; font-weight: 700; }
+        .pildora-materia { background: #F8FAFC; border: 1px solid #E2E8F0; font-size: .9rem; }
 
         .hoja-calendario {
             background: #FFFFFF;
@@ -159,12 +159,18 @@
         $circunferenciaAnillo = round(2 * pi() * 52);
         $trazoAnillo = round($circunferenciaAnillo * $porcentajeAlumno / 100);
 
+        $inicialesAlumno = mb_strtoupper(implode('', array_map(fn ($palabra) => mb_substr($palabra, 0, 1), array_slice(preg_split('/\s+/', trim($alumno->name ?? 'U')), 0, 2))));
+
         $siglasMaterias = $matriculasAceptadas->take(2)->map(function ($m) {
+            $palabras = array_values(array_filter(preg_split('/\s+/', trim($m->materia->nombre_materia ?? '')), fn ($p) => $p !== ''));
             $letras = '';
-            foreach (array_slice(preg_split('/\s+/', trim($m->materia->nombre_materia ?? '')), 0, 2) as $palabra) {
+            foreach (array_slice($palabras, 0, 2) as $palabra) {
                 $letras .= mb_substr($palabra, 0, 1);
             }
-            return mb_strtoupper($letras);
+            return [
+                'sigla'  => mb_strtoupper($letras),
+                'nombre' => implode(' ', array_slice($palabras, 0, 3)),
+            ];
         })->values();
 
         $mesHoy = mb_strtoupper(now()->locale('es')->translatedFormat('M'));
@@ -178,7 +184,7 @@
                 @if ($alumno->foto_perfil)
                     <img src="{{ asset('storage/' . $alumno->foto_perfil) }}" alt="Foto de perfil" class="rounded-circle" style="width: 34px; height: 34px; object-fit: cover; border: 2px solid #E2E8F0;">
                 @else
-                    <span class="d-inline-flex align-items-center justify-content-center rounded-circle fw-bold text-white" style="width: 34px; height: 34px; background: hsl({{ $avHue }}, 65%, 45%); font-size: .85rem;">{{ mb_strtoupper(mb_substr($alumno->name ?? 'U', 0, 1)) }}</span>
+                    <span class="d-inline-flex align-items-center justify-content-center rounded-circle fw-bold" style="width: 34px; height: 34px; background: #EFF6FF; color: #2563EB; font-size: .75rem;">{{ $inicialesAlumno }}</span>
                 @endif
                 <a href="{{ route('alumno.perfil') }}" class="btn btn-outline-secondary btn-sm fw-semibold rounded-3">
                     Mi Perfil
@@ -339,7 +345,7 @@
                     <div class="bento h-100 p-3 d-flex flex-column justify-content-between" style="min-height: 168px;">
                         <div class="d-flex justify-content-between align-items-start">
                             <span class="text-secondary small fw-semibold">Retardos</span>
-                            <i class="bi bi-clock fs-6" style="color: #CBD5E1;"></i>
+                            <i class="bi bi-clock fs-6" style="color: #94A3B8;"></i>
                         </div>
                         <div class="numero-bento">{{ $retardosCount }}</div>
                         <div class="d-flex align-items-center gap-2 text-secondary" style="font-size: .72rem;">
@@ -353,7 +359,7 @@
                     <div class="bento h-100 p-3 d-flex flex-column justify-content-between" style="min-height: 168px;">
                         <div class="d-flex justify-content-between align-items-start">
                             <span class="text-secondary small fw-semibold">Faltas</span>
-                            <i class="bi bi-x-circle fs-6" style="color: #CBD5E1;"></i>
+                            <i class="bi bi-x-circle fs-6" style="color: #94A3B8;"></i>
                         </div>
                         <div class="numero-bento">{{ $faltasCount }}</div>
                         @if ($incidenciasPorJustificar->isEmpty())
@@ -373,7 +379,7 @@
                     <div class="bento h-100 p-3 d-flex flex-column justify-content-between" style="min-height: 168px;">
                         <div class="d-flex justify-content-between align-items-start">
                             <span class="text-secondary small fw-semibold">Permisos</span>
-                            <i class="bi bi-file-earmark-check fs-6" style="color: #CBD5E1;"></i>
+                            <i class="bi bi-file-earmark-check fs-6" style="color: #94A3B8;"></i>
                         </div>
                         <div class="numero-bento">{{ $permisosCount }}</div>
                         <div class="d-flex align-items-center gap-2 text-secondary" style="font-size: .72rem;">
@@ -431,8 +437,12 @@
                             <span class="badge bg-primary rounded-pill px-3 py-2 fs-6 flex-shrink-0">{{ $matriculasAceptadas->count() }}</span>
                         </div>
                         <div class="d-flex flex-wrap gap-2 mt-4">
-                            @forelse ($siglasMaterias as $sigla)
-                                <span class="badge pildora-sigla rounded-3 px-3 py-2">{{ $sigla }}</span>
+                            @forelse ($siglasMaterias as $i => $materiaBento)
+                                <span class="d-inline-flex align-items-center gap-2 pildora-materia rounded-3 px-3 py-2">
+                                    <span class="punto-estado" style="background: {{ $i === 0 ? '#2563EB' : '#059669' }};"></span>
+                                    <span class="fw-bold text-dark">{{ $materiaBento['sigla'] }}</span>
+                                    <span class="text-secondary">· {{ $materiaBento['nombre'] }}</span>
+                                </span>
                             @empty
                                 <span class="text-secondary" style="font-size: .72rem;">Aún no tienes materias inscritas.</span>
                             @endforelse
