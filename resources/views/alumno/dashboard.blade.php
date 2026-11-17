@@ -7,6 +7,36 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     @include('partials.panel-css')
+    <style>
+        body { background: #F8FAFC; }
+
+        .navbar-editorial { background: #FFFFFF; border-bottom: 1px solid #E2E8F0; }
+        #jsCampanaBtn { color: #334155; border-color: #CBD5E1; }
+        #jsCampanaBtn:hover, #jsCampanaBtn:focus { background: #F1F5F9; color: #0F172A; }
+
+        .barra-avisos { background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 1rem; }
+        .badge-suave-verde { background: #ECFDF5; color: #047857; border: 1px solid #A7F3D0; }
+        .badge-suave-carmesi { background: #FFF1F2; color: #BE123C; border: 1px solid #FECDD3; }
+        .chip-ambar { background: #FEF3C7; color: #92400E; }
+        .chip-carmesi { background: #FFE4E6; color: #9F1239; }
+        .btn-carmesi { background: #E11D48; color: #FFFFFF; }
+        .btn-carmesi:hover, .btn-carmesi:focus { background: #BE123C; color: #FFFFFF; }
+
+        .kpi-editorial { background: #FFFFFF; border: 1px solid #E2E8F0; border-top: 3px solid #E2E8F0; }
+
+        .tile-editorial {
+            background: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            transition: border-color .18s ease, transform .18s ease, box-shadow .18s ease;
+        }
+        .tile-editorial:hover {
+            border-color: #2563EB;
+            transform: translateY(-2px);
+            box-shadow: 0 .5rem 1rem rgba(15, 23, 42, .08);
+        }
+        .tile-editorial .tile-flecha { display: inline-block; transition: transform .18s ease; color: #94A3B8; }
+        .tile-editorial:hover .tile-flecha { transform: translateX(6px); color: #2563EB; }
+    </style>
 </head>
 <body class="bg-light">
 
@@ -100,16 +130,16 @@
         $periodosActivos = $matriculasAceptadas->pluck('grupo.periodo_lectivo')->filter()->unique()->values();
     @endphp
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+    <nav class="navbar navbar-expand-lg navbar-light navbar-editorial shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="#">SAE QR | Inicio</a>
+            <a class="navbar-brand fw-bold text-dark" href="#">SAE QR | Inicio</a>
             <div class="d-flex align-items-center gap-2">
                 @if ($alumno->foto_perfil)
-                    <img src="{{ asset('storage/' . $alumno->foto_perfil) }}" alt="Foto de perfil" class="rounded-circle" style="width: 34px; height: 34px; object-fit: cover; border: 2px solid rgba(255,255,255,.5);">
+                    <img src="{{ asset('storage/' . $alumno->foto_perfil) }}" alt="Foto de perfil" class="rounded-circle" style="width: 34px; height: 34px; object-fit: cover; border: 2px solid #E2E8F0;">
                 @else
                     <span class="d-inline-flex align-items-center justify-content-center rounded-circle fw-bold text-white" style="width: 34px; height: 34px; background: hsl({{ $avHue }}, 65%, 45%); font-size: .85rem;">{{ mb_strtoupper(mb_substr($alumno->name ?? 'U', 0, 1)) }}</span>
                 @endif
-                <a href="{{ route('alumno.perfil') }}" class="btn btn-light btn-sm text-primary fw-semibold rounded-3">
+                <a href="{{ route('alumno.perfil') }}" class="btn btn-outline-secondary btn-sm fw-semibold rounded-3">
                     Mi Perfil
                 </a>
                 @include('partials.campana')
@@ -154,102 +184,107 @@
             </div>
         </div>
 
-        <!-- 2. Sección de Avisos e Incidencias del Alumno -->
-        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="fw-bold text-dark mb-0">
-                    Centro de Avisos y Recordatorios
-                </h5>
-                @php
-                    $totalAvisos = $sesionesActivasPendientes->count() + count($alertasMateriasFaltas) + $incidenciasPorJustificar->count();
-                @endphp
-                <span class="badge {{ $totalAvisos > 0 ? 'bg-danger' : 'bg-success' }} rounded-pill px-3 py-1">
-                    {{ $totalAvisos > 0 ? $totalAvisos . ' avisos importantes' : 'Todo al día' }}
-                </span>
+        <!-- 2. Barra de Avisos y Recordatorios -->
+        @php
+            $totalAvisos = $sesionesActivasPendientes->count() + count($alertasMateriasFaltas) + $incidenciasPorJustificar->count();
+        @endphp
+        <div class="barra-avisos d-flex flex-wrap justify-content-between align-items-center gap-2 px-4 py-3 mb-4">
+            <div class="d-flex align-items-center gap-2 text-secondary small">
+                <i class="bi bi-bell {{ $totalAvisos > 0 ? 'text-danger' : '' }} fs-6"></i>
+                @if ($totalAvisos === 0)
+                    <span>No tienes faltas pendientes por justificar ni alertas de asistencia en este momento.</span>
+                @else
+                    <span>Tienes <strong class="text-dark">{{ $totalAvisos }}</strong> {{ $totalAvisos === 1 ? 'aviso importante' : 'avisos importantes' }} que revisar en esta pantalla.</span>
+                @endif
             </div>
-
-            <!-- Aviso A: Sesiones de clase activas en este momento -->
-            @foreach ($sesionesActivasPendientes as $sesionAct)
-                <div class="alert alert-success border-start border-success border-4 d-flex flex-wrap justify-content-between align-items-center rounded-3 mb-2 py-2">
-                    <div>
-                        <strong>Clase activa en curso.</strong>
-                        La materia <strong>{{ $sesionAct->materia->nombre_materia }}</strong>
-                        {{ $sesionAct->materia->grupo ? 'del grupo ' . $sesionAct->materia->grupo->nombre_grupo : '' }}
-                        está abierta desde las {{ $sesionAct->hora_inicio }}. <a href="{{ route('alumno.qr') }}" class="fw-semibold">Presenta tu código QR aquí</a>.
-                    </div>
-                    <span class="badge bg-success">Escaneo pendiente</span>
-                </div>
-            @endforeach
-
-            <!-- Aviso B: Alertas de Derecho a Examen Ordinario y límite de 3 faltas (3 retardos = 1 falta) -->
-            @foreach ($alertasMateriasFaltas as $alertaFalta)
-                <div class="alert {{ $alertaFalta['critico'] ? 'alert-danger border-danger' : 'alert-warning border-warning' }} border-start border-4 d-flex flex-wrap justify-content-between align-items-center rounded-3 mb-2 py-2">
-                    <div>
-                        @if ($alertaFalta['critico'])
-                            <strong>Sin derecho a examen ordinario: {{ $alertaFalta['faltas'] }} de 3 faltas.</strong>
-                        @else
-                            <strong>Aviso preventivo: 2 de 3 faltas.</strong>
-                        @endif
-                        En <strong>{{ $alertaFalta['materia'] }}</strong>{{ $alertaFalta['grupo'] !== '-' ? ' · Grupo ' . $alertaFalta['grupo'] : '' }}
-                        acumulas {{ $alertaFalta['faltas_directas'] }} {{ $alertaFalta['faltas_directas'] === 1 ? 'falta' : 'faltas' }} directa{{ $alertaFalta['faltas_directas'] === 1 ? '' : 's' }}
-                        + {{ $alertaFalta['faltas_retardos'] }} por {{ $alertaFalta['retardos'] }} {{ $alertaFalta['retardos'] === 1 ? 'retardo' : 'retardos' }}.
-                        @if (!$alertaFalta['critico'])
-                            Estás a una falta de perder el derecho a examen ordinario.
-                        @endif
-                    </div>
-                    <a href="{{ route('alumno.justificantes') }}" class="btn btn-sm {{ $alertaFalta['critico'] ? 'btn-danger' : 'btn-dark' }} rounded-3">
-                        <i class="bi bi-upload me-1"></i>Ir a Justificantes
-                    </a>
-                </div>
-            @endforeach
-
-            <!-- Aviso C: Faltas o retardos específicos pendientes de justificar -->
-            @if ($incidenciasPorJustificar->isNotEmpty())
-                <div class="mt-2">
-                    <h6 class="fw-bold text-secondary small text-uppercase mb-2">
-                        <i class="bi bi-clipboard-check me-1"></i>Inasistencias y retardos que puedes justificar
-                    </h6>
-                    <div class="list-group list-group-flush border rounded-3">
-                        @foreach ($incidenciasPorJustificar->take(5) as $inc)
-                            <div class="list-group-item d-flex flex-wrap justify-content-between align-items-center gap-2 py-2">
-                                <div>
-                                    <span class="badge {{ $inc->estado_incidencia === 'falta' ? 'bg-danger' : 'bg-warning text-dark' }} text-uppercase me-2">
-                                        {{ $inc->estado_incidencia }}
-                                    </span>
-                                    <strong class="text-dark">{{ $inc->sesion->materia->nombre_materia ?? 'Materia' }}</strong>
-                                    <span class="text-muted small ms-2">
-                                        <i class="bi bi-calendar-event me-1"></i>Fecha: {{ $inc->sesion->fecha ?? '-' }}
-                                    </span>
-                                    @if ($inc->justificante && $inc->justificante->estado_aprobacion === 'rechazado')
-                                        <span class="badge bg-secondary ms-1">Justificante anterior rechazado</span>
-                                    @endif
-                                </div>
-                                <a href="{{ route('alumno.justificantes', ['registro_id' => $inc->id]) }}" class="btn btn-sm btn-outline-primary rounded-3">
-                                    <i class="bi bi-send-check me-1"></i>Justificar ahora
-                                </a>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-            @elseif ($totalAvisos === 0)
-                <div class="text-center text-muted py-2">
-                    No tienes faltas pendientes por justificar ni alertas de asistencia en este momento.
-                </div>
+            @if ($totalAvisos === 0)
+                <span class="badge badge-suave-verde rounded-pill px-3 py-2">Todo al día</span>
+            @else
+                <span class="badge badge-suave-carmesi rounded-pill px-3 py-2">{{ $totalAvisos }} {{ $totalAvisos === 1 ? 'aviso' : 'avisos' }}</span>
             @endif
         </div>
+
+        @if ($totalAvisos > 0)
+            <div class="mb-4">
+                <!-- Aviso A: Sesiones de clase activas en este momento -->
+                @foreach ($sesionesActivasPendientes as $sesionAct)
+                    <div class="alert alert-success border-start border-4 d-flex flex-wrap justify-content-between align-items-center rounded-3 mb-2 py-2" style="border-start-color: #059669;">
+                        <div>
+                            <strong>Clase activa en curso.</strong>
+                            La materia <strong>{{ $sesionAct->materia->nombre_materia }}</strong>
+                            {{ $sesionAct->materia->grupo ? 'del grupo ' . $sesionAct->materia->grupo->nombre_grupo : '' }}
+                            está abierta desde las {{ $sesionAct->hora_inicio }}. <a href="{{ route('alumno.qr') }}" class="fw-semibold">Presenta tu código QR aquí</a>.
+                        </div>
+                        <span class="badge bg-success">Escaneo pendiente</span>
+                    </div>
+                @endforeach
+
+                <!-- Aviso B: Alertas de Derecho a Examen Ordinario y límite de 3 faltas (3 retardos = 1 falta) -->
+                @foreach ($alertasMateriasFaltas as $alertaFalta)
+                    <div class="alert {{ $alertaFalta['critico'] ? 'alert-danger' : 'alert-warning' }} border-start border-4 d-flex flex-wrap justify-content-between align-items-center rounded-3 mb-2 py-2" style="border-start-color: {{ $alertaFalta['critico'] ? '#E11D48' : '#D97706' }};">
+                        <div>
+                            @if ($alertaFalta['critico'])
+                                <strong>Sin derecho a examen ordinario: {{ $alertaFalta['faltas'] }} de 3 faltas.</strong>
+                            @else
+                                <strong>Aviso preventivo: 2 de 3 faltas.</strong>
+                            @endif
+                            En <strong>{{ $alertaFalta['materia'] }}</strong>{{ $alertaFalta['grupo'] !== '-' ? ' · Grupo ' . $alertaFalta['grupo'] : '' }}
+                            acumulas {{ $alertaFalta['faltas_directas'] }} {{ $alertaFalta['faltas_directas'] === 1 ? 'falta' : 'faltas' }} directa{{ $alertaFalta['faltas_directas'] === 1 ? '' : 's' }}
+                            + {{ $alertaFalta['faltas_retardos'] }} por {{ $alertaFalta['retardos'] }} {{ $alertaFalta['retardos'] === 1 ? 'retardo' : 'retardos' }}.
+                            @if (!$alertaFalta['critico'])
+                                Estás a una falta de perder el derecho a examen ordinario.
+                            @endif
+                        </div>
+                        <a href="{{ route('alumno.justificantes') }}" class="btn btn-sm {{ $alertaFalta['critico'] ? 'btn-carmesi' : 'btn-dark' }} rounded-3">
+                            <i class="bi bi-upload me-1"></i>Ir a Justificantes
+                        </a>
+                    </div>
+                @endforeach
+
+                <!-- Aviso C: Faltas o retardos específicos pendientes de justificar -->
+                @if ($incidenciasPorJustificar->isNotEmpty())
+                    <div class="mt-2">
+                        <h6 class="fw-bold text-secondary small text-uppercase mb-2">
+                            <i class="bi bi-clipboard-check me-1"></i>Inasistencias y retardos que puedes justificar
+                        </h6>
+                        <div class="list-group list-group-flush border rounded-3">
+                            @foreach ($incidenciasPorJustificar->take(5) as $inc)
+                                <div class="list-group-item d-flex flex-wrap justify-content-between align-items-center gap-2 py-2">
+                                    <div>
+                                        <span class="badge text-uppercase me-2 {{ $inc->estado_incidencia === 'falta' ? 'chip-carmesi' : 'chip-ambar' }}">
+                                            {{ $inc->estado_incidencia }}
+                                        </span>
+                                        <strong class="text-dark">{{ $inc->sesion->materia->nombre_materia ?? 'Materia' }}</strong>
+                                        <span class="text-muted small ms-2">
+                                            <i class="bi bi-calendar-event me-1"></i>Fecha: {{ $inc->sesion->fecha ?? '-' }}
+                                        </span>
+                                        @if ($inc->justificante && $inc->justificante->estado_aprobacion === 'rechazado')
+                                            <span class="badge bg-secondary ms-1">Justificante anterior rechazado</span>
+                                        @endif
+                                    </div>
+                                    <a href="{{ route('alumno.justificantes', ['registro_id' => $inc->id]) }}" class="btn btn-sm btn-outline-primary rounded-3">
+                                        <i class="bi bi-send-check me-1"></i>Justificar ahora
+                                    </a>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+            </div>
+        @endif
 
         <!-- 3. Resumen Global de Asistencia (mosaicos clicables) -->
         <div class="row g-3 mb-4">
             <div class="col-6 col-xl-3">
                 <a href="{{ route('alumno.calendario') }}" class="d-block text-decoration-none text-reset h-100">
-                    <div class="card card-hover border-0 border-start border-4 border-success shadow-sm rounded-4 h-100 kpi-esmeralda">
+                    <div class="card card-hover kpi-editorial h-100" style="border-top-color: #059669;">
                         <div class="card-body d-flex align-items-center p-4">
-                            <div class="rounded-4 p-3 me-3 text-white" style="background: #059669;">
-                                <i class="bi bi-check-circle-fill fs-3"></i>
+                            <div class="bg-success bg-opacity-10 text-success rounded-3 p-3 me-3">
+                                <i class="bi bi-check-circle fs-3"></i>
                             </div>
                             <div>
                                 <div class="text-secondary small fw-semibold">Asistencias</div>
-                                <h3 class="fw-bold text-success mb-0">{{ $asistenciasCount }}</h3>
+                                <h3 class="fw-bold mb-0" style="color: #0F172A;">{{ $asistenciasCount }}</h3>
                             </div>
                         </div>
                     </div>
@@ -257,14 +292,14 @@
             </div>
             <div class="col-6 col-xl-3">
                 <a href="{{ route('alumno.calendario') }}" class="d-block text-decoration-none text-reset h-100">
-                    <div class="card card-hover border-0 border-start border-4 border-warning shadow-sm rounded-4 h-100 kpi-ambar">
+                    <div class="card card-hover kpi-editorial h-100" style="border-top-color: #D97706;">
                         <div class="card-body d-flex align-items-center p-4">
-                            <div class="rounded-4 p-3 me-3 text-white" style="background: #d97706;">
-                                <i class="bi bi-clock-fill fs-3"></i>
+                            <div class="bg-warning bg-opacity-10 text-warning rounded-3 p-3 me-3">
+                                <i class="bi bi-clock fs-3"></i>
                             </div>
                             <div>
                                 <div class="text-secondary small fw-semibold">Retardos</div>
-                                <h3 class="fw-bold text-warning mb-0">{{ $retardosCount }}</h3>
+                                <h3 class="fw-bold mb-0" style="color: #0F172A;">{{ $retardosCount }}</h3>
                             </div>
                         </div>
                     </div>
@@ -272,14 +307,14 @@
             </div>
             <div class="col-6 col-xl-3">
                 <a href="{{ route('alumno.justificantes') }}" class="d-block text-decoration-none text-reset h-100">
-                    <div class="card card-hover border-0 border-start border-4 border-danger shadow-sm rounded-4 h-100 kpi-rojo">
+                    <div class="card card-hover kpi-editorial h-100" style="border-top-color: #E11D48;">
                         <div class="card-body d-flex align-items-center p-4">
-                            <div class="rounded-4 p-3 me-3 text-white" style="background: #dc2626;">
-                                <i class="bi bi-x-circle-fill fs-3"></i>
+                            <div class="bg-danger bg-opacity-10 text-danger rounded-3 p-3 me-3">
+                                <i class="bi bi-x-circle fs-3"></i>
                             </div>
                             <div>
-                                <div class="text-secondary small fw-semibold">Faltas sin justificar</div>
-                                <h3 class="fw-bold text-danger mb-0">{{ $faltasCount }}</h3>
+                                <div class="text-secondary small fw-semibold">Faltas</div>
+                                <h3 class="fw-bold mb-0" style="color: #0F172A;">{{ $faltasCount }}</h3>
                             </div>
                         </div>
                     </div>
@@ -287,14 +322,14 @@
             </div>
             <div class="col-6 col-xl-3">
                 <a href="{{ route('alumno.calendario') }}" class="d-block text-decoration-none text-reset h-100">
-                    <div class="card card-hover border-0 border-start border-4 border-primary shadow-sm rounded-4 h-100 kpi-azul">
+                    <div class="card card-hover kpi-editorial h-100" style="border-top-color: #2563EB;">
                         <div class="card-body d-flex align-items-center p-4">
-                            <div class="rounded-4 p-3 me-3 text-white" style="background: #2563eb;">
+                            <div class="bg-primary bg-opacity-10 text-primary rounded-3 p-3 me-3">
                                 <i class="bi bi-file-earmark-check fs-3"></i>
                             </div>
                             <div>
                                 <div class="text-secondary small fw-semibold">Permisos y justificados</div>
-                                <h3 class="fw-bold text-primary mb-0">{{ $permisosCount }}</h3>
+                                <h3 class="fw-bold mb-0" style="color: #0F172A;">{{ $permisosCount }}</h3>
                             </div>
                         </div>
                     </div>
@@ -303,73 +338,71 @@
         </div>
 
         <!-- 4. Accesos por Sección -->
-        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
-            <h5 class="fw-bold text-dark mb-3">Secciones</h5>
-            <div class="row g-3">
-                <div class="col-md-6 col-lg-4">
-                    <a href="{{ route('alumno.qr') }}" class="card tile-card tile-primaria shadow-sm rounded-4 p-4 bg-white h-100 text-decoration-none">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <div class="bg-primary bg-opacity-10 text-primary rounded-4 p-3">
-                                <i class="bi bi-qr-code fs-3"></i>
-                            </div>
-                            @if ($sesionesActivasPendientes->count() > 0)<span class="badge bg-success">Clase activa</span>@endif
-                        </div>
-                        <h5 class="fw-bold text-dark">Mi Código QR</h5>
-                        <p class="text-muted small mb-2">Preséntalo en tu clase en curso para registrar tu asistencia.</p>
-                        <span class="text-primary small fw-semibold mt-auto"><i class="bi bi-arrow-right-short tile-flecha"></i></span>
-                    </a>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    <a href="{{ route('alumno.materias') }}" class="card tile-card tile-gris shadow-sm rounded-4 p-4 bg-white h-100 text-decoration-none">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <div class="bg-dark bg-opacity-10 text-dark rounded-4 p-3">
-                                <i class="bi bi-journal-bookmark fs-3"></i>
-                            </div>
-                            <span class="badge bg-primary">{{ $matriculasAceptadas->count() }}</span>
-                        </div>
-                        <h5 class="fw-bold text-dark">Mis Materias</h5>
-                        <p class="text-muted small mb-2">Consulta tu registro de asistencia y derecho a examen ordinario.</p>
-                        <span class="text-dark small fw-semibold mt-auto"><i class="bi bi-arrow-right-short tile-flecha"></i></span>
-                    </a>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    <a href="{{ route('alumno.calendario') }}" class="card tile-card tile-verde shadow-sm rounded-4 p-4 bg-white h-100 text-decoration-none">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <div class="bg-success bg-opacity-10 text-success rounded-4 p-3">
-                                <i class="bi bi-calendar3 fs-3"></i>
-                            </div>
-                        </div>
-                        <h5 class="fw-bold text-dark">Calendario</h5>
-                        <p class="text-muted small mb-2">Historial de asistencias, retardos y faltas del mes actual.</p>
-                        <span class="text-success small fw-semibold mt-auto"><i class="bi bi-arrow-right-short tile-flecha"></i></span>
-                    </a>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    <a href="{{ route('alumno.justificantes') }}" class="card tile-card tile-ambar shadow-sm rounded-4 p-4 bg-white h-100 text-decoration-none">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <div class="bg-warning bg-opacity-10 text-warning rounded-4 p-3">
-                                <i class="bi bi-upload fs-3"></i>
-                            </div>
-                            @if ($incidenciasPorJustificar->count() > 0)<span class="badge bg-danger">{{ $incidenciasPorJustificar->count() }}</span>@endif
-                        </div>
-                        <h5 class="fw-bold text-dark">Justificantes</h5>
-                        <p class="text-muted small mb-2">Sube tu comprobante para justificar faltas y retardos ante el docente.</p>
-                        <span class="text-warning small fw-semibold mt-auto"><i class="bi bi-arrow-right-short tile-flecha"></i></span>
-                    </a>
-                </div>
-                <div class="col-md-6 col-lg-4">
-                    <a href="{{ route('alumno.solicitar') }}" class="card tile-card tile-cian shadow-sm rounded-4 p-4 bg-white h-100 text-decoration-none">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <div class="bg-info bg-opacity-10 text-info rounded-4 p-3">
-                                <i class="bi bi-search fs-3"></i>
-                            </div>
-                            @if ($pendientesCount > 0)<span class="badge bg-warning text-dark">{{ $pendientesCount }}</span>@endif
-                        </div>
-                        <h5 class="fw-bold text-dark">Solicitar Asignatura</h5>
-                        <p class="text-muted small mb-2">Busca la materia y envía tu solicitud de inscripción al docente.</p>
-                        <span class="text-info small fw-semibold mt-auto"><i class="bi bi-arrow-right-short tile-flecha"></i></span>
-                    </a>
-                </div>
+        <h5 class="fw-bold text-dark mb-3 px-1">Secciones</h5>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <a href="{{ route('alumno.qr') }}" class="d-flex align-items-center gap-3 p-3 tile-editorial rounded-3 h-100 text-decoration-none">
+                    <div class="bg-primary bg-opacity-10 text-primary rounded-3 p-3 flex-shrink-0">
+                        <i class="bi bi-qr-code fs-4"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h6 class="fw-bold text-dark mb-1">Mi Código QR</h6>
+                        <p class="text-muted small mb-0 text-truncate">Preséntalo en tu clase en curso para registrar tu asistencia.</p>
+                    </div>
+                    @if ($sesionesActivasPendientes->count() > 0)<span class="badge bg-success">Clase activa</span>@endif
+                    <i class="bi bi-arrow-right tile-flecha fs-5"></i>
+                </a>
+            </div>
+            <div class="col-md-6">
+                <a href="{{ route('alumno.materias') }}" class="d-flex align-items-center gap-3 p-3 tile-editorial rounded-3 h-100 text-decoration-none">
+                    <div class="bg-secondary bg-opacity-10 text-secondary rounded-3 p-3 flex-shrink-0">
+                        <i class="bi bi-journal-bookmark fs-4"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h6 class="fw-bold text-dark mb-1">Mis Materias</h6>
+                        <p class="text-muted small mb-0 text-truncate">Consulta tu registro de asistencia y derecho a examen ordinario.</p>
+                    </div>
+                    <span class="badge bg-primary">{{ $matriculasAceptadas->count() }}</span>
+                    <i class="bi bi-arrow-right tile-flecha fs-5"></i>
+                </a>
+            </div>
+            <div class="col-md-6">
+                <a href="{{ route('alumno.calendario') }}" class="d-flex align-items-center gap-3 p-3 tile-editorial rounded-3 h-100 text-decoration-none">
+                    <div class="bg-success bg-opacity-10 text-success rounded-3 p-3 flex-shrink-0">
+                        <i class="bi bi-calendar3 fs-4"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h6 class="fw-bold text-dark mb-1">Calendario</h6>
+                        <p class="text-muted small mb-0 text-truncate">Historial de asistencias, retardos y faltas del mes actual.</p>
+                    </div>
+                    <i class="bi bi-arrow-right tile-flecha fs-5"></i>
+                </a>
+            </div>
+            <div class="col-md-6">
+                <a href="{{ route('alumno.justificantes') }}" class="d-flex align-items-center gap-3 p-3 tile-editorial rounded-3 h-100 text-decoration-none">
+                    <div class="bg-warning bg-opacity-10 text-warning rounded-3 p-3 flex-shrink-0">
+                        <i class="bi bi-upload fs-4"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h6 class="fw-bold text-dark mb-1">Justificantes</h6>
+                        <p class="text-muted small mb-0 text-truncate">Sube tu comprobante para justificar faltas y retardos ante el docente.</p>
+                    </div>
+                    @if ($incidenciasPorJustificar->count() > 0)<span class="badge bg-danger">{{ $incidenciasPorJustificar->count() }}</span>@endif
+                    <i class="bi bi-arrow-right tile-flecha fs-5"></i>
+                </a>
+            </div>
+            <div class="col-md-6">
+                <a href="{{ route('alumno.solicitar') }}" class="d-flex align-items-center gap-3 p-3 tile-editorial rounded-3 h-100 text-decoration-none">
+                    <div class="bg-info bg-opacity-10 text-info rounded-3 p-3 flex-shrink-0">
+                        <i class="bi bi-search fs-4"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h6 class="fw-bold text-dark mb-1">Solicitar Asignatura</h6>
+                        <p class="text-muted small mb-0 text-truncate">Busca la materia y envía tu solicitud de inscripción al docente.</p>
+                    </div>
+                    @if ($pendientesCount > 0)<span class="badge bg-warning text-dark">{{ $pendientesCount }}</span>@endif
+                    <i class="bi bi-arrow-right tile-flecha fs-5"></i>
+                </a>
             </div>
         </div>
     </div>
