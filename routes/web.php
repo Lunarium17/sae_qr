@@ -66,6 +66,12 @@ Route::middleware(['auth', \App\Http\Middleware\CheckRol::class . ':profesor'])-
     })->name('profesor.estadisticas');
 
     // Rutas para gestión académica (Sprint 4)
+    // Importación masiva de alumnos por CSV (antes del resource para no chocar con {materia})
+    Route::get('/profesor/materias/importar', [MatriculaController::class, 'importarForm'])->name('profesor.materias.importar');
+    Route::post('/profesor/materias/importar', [MatriculaController::class, 'importarPreview'])->name('profesor.materias.importar.preview');
+    Route::post('/profesor/materias/importar/confirmar', [MatriculaController::class, 'importarStore'])->name('profesor.materias.importar.store');
+    Route::get('/profesor/materias/plantilla', [MatriculaController::class, 'plantillaCsv'])->name('profesor.materias.plantilla');
+
     Route::resource('/profesor/materias', MateriaController::class);
     Route::resource('/profesor/grupos', GrupoController::class);
     Route::get('/profesor/alumnos/buscar', [MatriculaController::class, 'buscarAlumnos'])->name('profesor.alumnos.buscar');

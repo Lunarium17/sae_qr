@@ -8,6 +8,7 @@ use App\Models\Materia;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class MatriculaController extends Controller
 {
@@ -276,5 +277,260 @@ class MatriculaController extends Controller
         $matricula->delete();
 
         return back()->with('success', $nombreAlumno . ' fue dado de baja de la asignatura correctamente.');
+    }
+
+    // ==========================================
+    // IMPORTACION DE ALUMNOS POR CSV (docente)
+    // ==========================================
+
+    // Paso 1: formulario con Carrera -> Grupo -> Materia y plantilla descargable
+    public function importarForm()
+    {
+        return view('materias.importar', ['arbol' => $this->arbolDocente()]);
+    }
+
+    // Estructura Carrera -> Grupo -> Materias (solo materias del docente) para los menus encadenados
+    private function arbolDocente()
+    {
+        $profesorId = Auth::id();
+
+        $grupos = Grupo::with(['materias' => function ($q) use ($profesorId) {
+            $q->where(function ($sub) use ($profesorId) {
+                $sub->where('profesor_id', $profesorId)
+                    ->orWhereNull('profesor_id');
+            })->orderBy('nombre_materia');
+        }])->orderBy('carrera')->orderBy('grado')->get();
+
+        $arbol = [];
+        foreach ($grupos as $g) {
+            $carrera = $g->carrera ?: 'Carrera general';
+            if ($g->materias->isEmpty()) {
+                continue;
+            }
+            $arbol[$carrera][$g->id] = [
+                'label'    => $g->nombre_grupo . ' · ' . $g->grado . ' · ' . $g->turno,
+                'periodo'  => $g->periodo_lectivo,
+                'materias' => $g->materias->map(fn ($m) => [
+                    'id'    => $m->id,
+                    'texto' => ($m->codigo_materia ? '[' . $m->codigo_materia . '] ' : '') . $m->nombre_materia,
+                ])->values(),
+            ];
+        }
+
+        return $arbol;
+    }
+
+    // Plantilla CSV descargable con el formato exacto
+    public function plantillaCsv()
+    {
+        $lineas = [
+            ['nombre', 'email', 'matricula'],
+            ['Ana Ejemplo Import', 'ana.ejemplo@correo.com', 'IMP-0001'],
+            ['Beto Ejemplo Import', 'beto.ejemplo@correo.com', 'IMP-0002'],
+        ];
+
+        $csv = '';
+        foreach ($lineas as $linea) {
+            $csv .= implode(',', $linea) . "\n";
+        }
+
+        return response($csv, 200, [
+            'Content-Type'        => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="plantilla_alumnos_saeqr.csv"',
+        ]);
+    }
+
+    // Paso 2: subir el CSV, validarlo y mostrar la previsualizacion antes de confirmar
+    public function importarPreview(Request $request)
+    {
+        $request->validate([
+            'materia_id' => 'required|exists:materias,id',
+            'archivo_csv' => 'required|file|max:2048|mimetypes:text/plain,text/csv,application/csv,text/comma-separated-values',
+        ]);
+
+        $profesorId = Auth::id();
+        $materia = Materia::with('grupo')->findOrFail($request->materia_id);
+
+        if (!is_null($materia->profesor_id) && (int) $materia->profesor_id !== (int) $profesorId) {
+            return back()->with('error', 'Solo puedes importar alumnos a las asignaturas que tú impartes.');
+        }
+
+        $contenido = (string) file_get_contents($request->file('archivo_csv')->getRealPath());
+        $contenido = str_replace("\xEF\xBB\xBF", '', $contenido); // Quitar BOM de Excel
+        $lineas = preg_split('/\r\n|\r|\n/', trim($contenido)) ?: [];
+
+        if (count($lineas) < 2) {
+            return back()->with('error', 'El archivo no contiene filas de alumnos. Descarga la plantilla para el formato correcto.');
+        }
+
+        $encabezado = array_map(fn ($c) => strtolower(trim($c)), str_getcsv(array_shift($lineas)));
+        $idxNombre    = array_search('nombre', $encabezado, true);
+        $idxEmail     = array_search('email', $encabezado, true);
+        $idxMatricula = array_search('matricula', $encabezado, true);
+
+        if ($idxNombre === false || $idxEmail === false || $idxMatricula === false) {
+            return back()->with('error', 'El CSV debe tener exactamente las columnas: nombre, email, matricula (usa la plantilla descargable).');
+        }
+
+        $filas = [];
+        $errores = [];
+        $vistos = [];
+
+        foreach ($lineas as $linea) {
+            if (trim($linea) === '') {
+                continue;
+            }
+
+            $datos = str_getcsv($linea);
+            $nombre    = trim($datos[$idxNombre] ?? '');
+            $email     = strtolower(trim($datos[$idxEmail] ?? ''));
+            $matricula = strtoupper(trim($datos[$idxMatricula] ?? ''));
+            $numFila   = count($filas) + count($errores) + 1;
+
+            if (count($filas) >= 200) {
+                $errores[] = ['fila' => $numFila, 'nombre' => $nombre, 'email' => $email, 'matricula' => $matricula, 'motivo' => 'Límite de 200 alumnos por importación (filas adicionales ignoradas).'];
+                break;
+            }
+
+            if ($nombre === '' || $email === '' || $matricula === '') {
+                $errores[] = ['fila' => $numFila, 'nombre' => $nombre, 'email' => $email, 'matricula' => $matricula, 'motivo' => 'Falta nombre, email o matrícula.'];
+                continue;
+            }
+
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $errores[] = ['fila' => $numFila, 'nombre' => $nombre, 'email' => $email, 'matricula' => $matricula, 'motivo' => 'Email inválido.'];
+                continue;
+            }
+
+            if (isset($vistos[$email])) {
+                $errores[] = ['fila' => $numFila, 'nombre' => $nombre, 'email' => $email, 'matricula' => $matricula, 'motivo' => 'Email repetido dentro del archivo.'];
+                continue;
+            }
+
+            if (isset($vistos[$matricula])) {
+                $errores[] = ['fila' => $numFila, 'nombre' => $nombre, 'email' => $email, 'matricula' => $matricula, 'motivo' => 'Matrícula repetida dentro del archivo.'];
+                continue;
+            }
+
+            $vistos[$email] = true;
+            $vistos[$matricula] = true;
+
+            $cuentaExiste = User::where('email', $email)->exists();
+            $yaInscrito = false;
+            if ($cuentaExiste) {
+                $usuarioExistente = User::where('email', $email)->first();
+                $yaInscrito = Matricula::where('user_id', $usuarioExistente->id)
+                    ->where('materia_id', $materia->id)
+                    ->where('grupo_id', $materia->grupo_id)
+                    ->where('estado', 'aceptado')
+                    ->exists();
+            }
+
+            $filas[] = [
+                'nombre'    => $nombre,
+                'email'     => $email,
+                'matricula' => $matricula,
+                'estado'    => $yaInscrito ? 'ya' : ($cuentaExiste ? 'cuenta' : 'nuevo'),
+            ];
+        }
+
+        if (empty($filas) && empty($errores)) {
+            return back()->with('error', 'El archivo no contiene filas válidas.');
+        }
+
+        session(['importar_preview' => [
+            'materia_id' => $materia->id,
+            'filas'      => $filas,
+        ]]);
+
+        return $this->vistaImportar($materia, $filas, $errores);
+    }
+
+    // Paso 3: confirmar la importacion (crea cuentas y matriculas aceptadas)
+    public function importarStore(Request $request)
+    {
+        $preview = session('importar_preview');
+
+        if (!$preview || !isset($preview['materia_id'])) {
+            return redirect()->route('profesor.materias.importar')
+                ->with('error', 'No hay una previsualización activa. Vuelve a cargar el CSV para importar.');
+        }
+
+        $profesorId = Auth::id();
+        $materia = Materia::with('grupo')->findOrFail($preview['materia_id']);
+
+        if (!is_null($materia->profesor_id) && (int) $materia->profesor_id !== (int) $profesorId) {
+            return back()->with('error', 'Solo puedes importar alumnos a las asignaturas que tú impartes.');
+        }
+
+        $cuentasCreadas = 0;
+        $inscritasExistentes = 0;
+        $omitidos = 0;
+        $detalleErrores = [];
+
+        foreach ($preview['filas'] as $fila) {
+            $usuario = User::where('email', $fila['email'])->first();
+
+            if (!$usuario) {
+                $matriculaOcupada = User::where('matricula_codigo', $fila['matricula'])->exists();
+                if ($matriculaOcupada) {
+                    $omitidos++;
+                    $detalleErrores[] = $fila['nombre'] . ' (' . $fila['email'] . '): la matrícula ' . $fila['matricula'] . ' ya pertenece a otra cuenta.';
+                    continue;
+                }
+
+                $usuario = User::create([
+                    'name'             => $fila['nombre'],
+                    'email'            => $fila['email'],
+                    'rol'              => 'alumno',
+                    'matricula_codigo' => $fila['matricula'],
+                    'password'         => Hash::make($fila['matricula']),
+                ]);
+                $cuentasCreadas++;
+            }
+
+            if ($usuario->rol !== 'alumno') {
+                $omitidos++;
+                $detalleErrores[] = $fila['email'] . ' pertenece a una cuenta de ' . $usuario->rol . ', no se inscribió.';
+                continue;
+            }
+
+            $matricula = Matricula::firstOrCreate(
+                [
+                    'user_id'    => $usuario->id,
+                    'grupo_id'   => $materia->grupo_id,
+                    'materia_id' => $materia->id,
+                ],
+                ['estado' => 'aceptado']
+            );
+
+            if ($matricula->estado !== 'aceptado') {
+                $matricula->update(['estado' => 'aceptado']);
+            }
+
+            if ($matricula->wasRecentlyCreated) {
+                $inscritasExistentes++;
+            }
+        }
+
+        session()->forget('importar_preview');
+
+        $mensaje = "Importación completada en {$materia->nombre_materia}: {$cuentasCreadas} cuentas nuevas (contraseña inicial = su matrícula), {$inscritasExistentes} cuentas existentes inscritas, {$omitidos} omitidos.";
+        if (!empty($detalleErrores)) {
+            $mensaje .= ' Detalles: ' . implode(' | ', array_slice($detalleErrores, 0, 3));
+        }
+
+        return redirect()->route('profesor.materias.importar')->with('success', $mensaje);
+    }
+
+    // Vista compartida del flujo de importacion (formulario + previsualizacion)
+    private function vistaImportar(Materia $materia, array $filas, array $errores)
+    {
+        return view('materias.importar', [
+            'arbol'   => $this->arbolDocente(),
+            'materia' => $materia,
+            'filas'   => $filas,
+            'errores' => $errores,
+        ]);
     }
 }
