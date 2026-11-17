@@ -6,27 +6,23 @@
     <title>Gestión de Usuarios - SAE QR</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <style>
-        .info-icon { position: relative; display: inline-flex; align-items: center; color: #0d6efd; cursor: help; vertical-align: middle; font-size: .8em; margin-left: .15rem; padding: .1rem; }
-        .info-icon .info-icon-text { position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); min-width: 240px; max-width: 320px; background: #212529; color: #fff; font-size: .75rem; font-weight: 400; line-height: 1.35; padding: .5rem .65rem; border-radius: .4rem; box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .2); opacity: 0; visibility: hidden; transition: opacity .15s; z-index: 10; text-align: left; }
-        .info-icon:hover .info-icon-text, .info-icon:focus .info-icon-text, .info-icon:focus-within .info-icon-text { opacity: 1; visibility: visible; }
-    </style>
+        @include('partials.panel-css')
 </head>
-<body class="bg-light">
+<body>
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <nav class="navbar navbar-expand-lg navbar-light navbar-editorial shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ route('admin.dashboard') }}">
-                SAE QR | Panel de Administrador
+            <a class="navbar-brand fw-bold text-dark" href="{{ route('admin.dashboard') }}">
+                SAE QR | Directorio de Usuarios
             </a>
             <div class="d-flex align-items-center gap-2">
-                <a href="{{ route('admin.dashboard') }}" class="btn btn-light btn-sm text-dark fw-semibold rounded-3">
+                <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary btn-sm fw-semibold rounded-3">
                     Dashboard
                 </a>
-                <a href="{{ route('admin.codigos') }}" class="btn btn-light btn-sm text-dark fw-semibold rounded-3">
+                <a href="{{ route('admin.codigos') }}" class="btn btn-outline-secondary btn-sm fw-semibold rounded-3">
                     Códigos Docentes
                 </a>
-                <a href="{{ route('admin.perfil') }}" class="btn btn-light btn-sm text-dark fw-semibold rounded-3">
+                <a href="{{ route('admin.perfil') }}" class="btn btn-outline-secondary btn-sm fw-semibold rounded-3">
                     Mi Perfil
                 </a>
                 <form action="{{ route('logout') }}" method="POST" class="d-inline">
@@ -78,7 +74,7 @@
         @endif
 
         <!-- Barra de búsqueda y filtro por rol -->
-        <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card rounded-4 mb-4">
             <div class="card-body p-4">
                 <form action="{{ route('admin.usuarios') }}" method="GET" class="row g-3 align-items-end">
                     <div class="col-md-4">
@@ -107,14 +103,14 @@
         </div>
 
         <!-- Tabla de Usuarios -->
-        <div class="card border-0 shadow-sm rounded-4">
+        <div class="card rounded-4">
             <div class="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
                 <h5 class="fw-bold mb-0">Usuarios Registrados</h5>
                 <span class="badge bg-secondary rounded-pill">{{ $usuarios->total() }} usuario(s)</span>
             </div>
             <div class="card-body p-4">
                 <div class="table-responsive">
-                    <table class="table table-striped table-hover align-middle mb-0">
+                    <table class="table table-moderna table-hover align-middle mb-0">
                         <thead class="table-light">
                             <tr>
                                 <th>Nombre</th>
@@ -137,9 +133,9 @@
                                     <td>{{ $usr->email }}</td>
                                     <td>
                                         @if ($usr->rol === 'admin')
-                                            <span class="badge bg-info text-dark px-3 py-2 rounded-pill">Administrador</span>
+                                            <span class="badge badge-estado badge-permiso px-3 py-2 rounded-pill">Administrador</span>
                                         @elseif ($usr->rol === 'profesor')
-                                            <span class="badge bg-success px-3 py-2 rounded-pill">Profesor</span>
+                                            <span class="badge badge-estado badge-asistencia px-3 py-2 rounded-pill">Profesor</span>
                                         @else
                                             <span class="badge bg-primary px-3 py-2 rounded-pill">Alumno</span>
                                         @endif
@@ -148,10 +144,10 @@
                                         @if ($usr->matricula_codigo)
                                             <span class="font-monospace fw-semibold">{{ $usr->matricula_codigo }}</span>
                                         @else
-                                            <span class="text-muted small">No asignada</span>
+                                            <span class="texto-slate small">No asignada</span>
                                         @endif
                                     </td>
-                                    <td class="small text-muted">
+                                    <td class="small texto-slate">
                                         {{ $usr->created_at ? $usr->created_at->format('d/m/Y') : '—' }}
                                     </td>
                                     <td class="text-end">
@@ -184,7 +180,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="text-center text-muted py-4">
+                                    <td colspan="6" class="text-center texto-slate py-4">
                                         No se encontraron usuarios con los criterios seleccionados.
                                     </td>
                                 </tr>

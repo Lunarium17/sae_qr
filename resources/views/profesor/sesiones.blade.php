@@ -7,22 +7,22 @@
     <title>Sesiones de Clase y Escáner QR - SAE QR</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <style>
-        .info-icon { position: relative; display: inline-flex; align-items: center; color: #0d6efd; cursor: help; vertical-align: middle; font-size: .8em; margin-left: .15rem; padding: .1rem; }
-        .info-icon .info-icon-text { position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); min-width: 240px; max-width: 320px; background: #212529; color: #fff; font-size: .75rem; font-weight: 400; line-height: 1.35; padding: .5rem .65rem; border-radius: .4rem; box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .2); opacity: 0; visibility: hidden; transition: opacity .15s; z-index: 10; text-align: left; }
-        .info-icon:hover .info-icon-text, .info-icon:focus .info-icon-text, .info-icon:focus-within .info-icon-text { opacity: 1; visibility: visible; }
-    </style>
+    @include('partials.panel-css')
 </head>
-<body class="bg-light">
+<body>
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <nav class="navbar navbar-expand-lg navbar-light navbar-editorial shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ route('profesor.dashboard') }}">SAE QR | Control de Sesiones y Escáner</a>
-            <div class="d-flex align-items-center gap-3">
-                <a href="{{ url('/profesor/dashboard') }}" class="btn btn-light btn-sm text-dark fw-semibold rounded-3">
+            <a class="navbar-brand fw-bold text-dark" href="{{ route('profesor.dashboard') }}">SAE QR | Sesiones y Escáner</a>
+            <div class="d-flex align-items-center gap-2">
+                <a href="{{ url('/profesor/dashboard') }}" class="btn btn-outline-secondary btn-sm fw-semibold rounded-3">
                     <i class="bi bi-arrow-left me-1"></i>Volver al Panel
                 </a>
                 @include('partials.campana')
+                <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                    @csrf
+                    <button type="submit" class="btn btn-danger btn-sm rounded-3">Cerrar Sesión</button>
+                </form>
             </div>
         </div>
     </nav>
@@ -44,7 +44,7 @@
 
         @if(!$sesionActiva)
             <!-- Formulario para Abrir Nueva Sesión de Clase -->
-            <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+            <div class="card rounded-4 p-4 bg-white mb-4">
                 <h4 class="fw-bold text-dark mb-3">
                     Abrir Nueva Sesión de Clase
                     <span class="info-icon" tabindex="0" role="button" aria-label="Elige materia, grupo y tolerancia para habilitar la lectura de QR.">
@@ -81,8 +81,8 @@
             <!-- Panel de Sesión Activa y Cámara Escáner QR -->
             <div class="row g-4 mb-5">
                 <div class="col-md-5">
-                    <div class="card border-0 shadow-sm rounded-4 p-4 bg-white text-center h-100">
-                        <span class="badge bg-success mb-2 align-self-center px-3 py-2 rounded-pill">
+                    <div class="card rounded-4 p-4 bg-white text-center h-100">
+                        <span class="badge badge-suave-verde mb-2 align-self-center px-3 py-2 rounded-pill">
                             <i class="bi bi-broadcast me-1"></i>SESIÓN ACTIVA EN CURSO
                         </span>
                         <h4 class="fw-bold text-dark mb-1">{{ $sesionActiva->materia->nombre_materia }}</h4>
@@ -93,7 +93,7 @@
                                 </span>
                             </div>
                         @endif
-                        <p class="text-muted small mb-2">Inicio: {{ $sesionActiva->hora_inicio }} | Tolerancia: {{ $sesionActiva->tolerancia_minutos }} min</p>
+                        <p class="texto-slate small mb-2">Inicio: {{ $sesionActiva->hora_inicio }} | Tolerancia: {{ $sesionActiva->tolerancia_minutos }} min</p>
 
                         <!-- Visor de Cámara -->
                         <div id="reader" class="border rounded-4 overflow-hidden mx-auto my-2 bg-dark" style="width: 100%; max-width: 360px; min-height: 240px;"></div>
@@ -114,7 +114,7 @@
 
                         <!-- Opción de respaldo para validar código QR manualmente (ideal para pruebas en la misma PC) -->
                         <div class="mt-4 pt-3 border-top text-start">
-                            <label for="inputCodigoRespaldo" class="form-label small fw-semibold text-muted mb-1">
+                            <label for="inputCodigoRespaldo" class="form-label small fw-semibold texto-slate mb-1">
                                 <i class="bi bi-keyboard me-1"></i>¿Probando en una sola PC o sin cámara? Pega aquí el código de respaldo del alumno:
                             </label>
                             <div class="input-group input-group-sm">
@@ -129,7 +129,7 @@
 
                 <!-- Lista de Asistencia en Tiempo Real -->
                 <div class="col-md-7">
-                    <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+                    <div class="card rounded-4 p-4 bg-white h-100">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h5 class="fw-bold text-dark mb-0">Alumnos Registrados en esta Sesión</h5>
                             <button onclick="location.reload()" class="btn btn-sm btn-outline-secondary rounded-pill">
@@ -138,7 +138,7 @@
                         </div>
 
                         <div class="table-responsive">
-                            <table class="table table-striped table-hover align-middle">
+                            <table class="table table-moderna table-hover align-middle">
                                 <thead class="table-light">
                                     <tr>
                                         <th>Alumno</th>
@@ -151,16 +151,16 @@
                                     @forelse($sesionActiva->asistencias as $asis)
                                         <tr>
                                             <td class="fw-semibold">{{ $asis->alumno->name }}</td>
-                                            <td class="text-muted small">{{ $asis->timestamp_escaneo ?? 'Sin escaneo' }}</td>
+                                            <td class="texto-slate small">{{ $asis->timestamp_escaneo ?? 'Sin escaneo' }}</td>
                                             <td>
                                                 @if($asis->estado_incidencia === 'asistencia')
-                                                    <span class="badge bg-success">Asistencia</span>
+                                                    <span class="badge badge-estado badge-asistencia">Asistencia</span>
                                                 @elseif($asis->estado_incidencia === 'retardo')
-                                                    <span class="badge bg-warning text-dark">Retardo</span>
+                                                    <span class="badge badge-estado badge-retardo">Retardo</span>
                                                 @elseif($asis->estado_incidencia === 'permiso')
-                                                    <span class="badge bg-primary">Permiso</span>
+                                                    <span class="badge badge-estado badge-permiso">Permiso</span>
                                                 @else
-                                                    <span class="badge bg-danger">Falta</span>
+                                                    <span class="badge badge-estado badge-falta">Falta</span>
                                                 @endif
                                             </td>
                                             <td class="text-center">
@@ -178,7 +178,7 @@
                                         </tr>
                                     @empty
                                         <tr id="fila-vacia-asistencias">
-                                            <td colspan="4" class="text-center text-muted py-4">Aún no se ha escaneado ningún código QR en esta sesión.</td>
+                                            <td colspan="4" class="text-center texto-slate py-4">Aún no se ha escaneado ningún código QR en esta sesión.</td>
                                         </tr>
                                     @endforelse
                                 </tbody>
@@ -241,22 +241,22 @@
                     tdNombre.textContent = data.alumno || 'Alumno';
 
                     const tdHora = document.createElement('td');
-                    tdHora.className = 'text-muted small';
+                    tdHora.className = 'texto-slate small';
                     tdHora.textContent = data.hora || '';
 
                     const tdEstado = document.createElement('td');
                     const badge = document.createElement('span');
                     if (data.estado === 'retardo') {
-                        badge.className = 'badge bg-warning text-dark';
+                        badge.className = 'badge badge-estado badge-retardo';
                         badge.textContent = 'Retardo';
                     } else {
-                        badge.className = 'badge bg-success';
+                        badge.className = 'badge badge-estado badge-asistencia';
                         badge.textContent = 'Asistencia';
                     }
                     tdEstado.appendChild(badge);
 
                     const tdManual = document.createElement('td');
-                    tdManual.className = 'text-center small text-muted';
+                    tdManual.className = 'text-center small texto-slate';
                     tdManual.textContent = 'Recién registrado';
 
                     tr.appendChild(tdNombre);
@@ -378,7 +378,7 @@
         @endif
 
         <!-- Historial de Sesiones Anteriores Impartidas por el Docente -->
-        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mt-4">
+        <div class="card rounded-4 p-4 bg-white mt-4">
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
                 <div>
                     <h5 class="fw-bold text-dark mb-0">
@@ -393,7 +393,7 @@
             </div>
 
             <div class="table-responsive">
-                <table class="table table-striped table-hover align-middle mb-0">
+                <table class="table table-moderna table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
                             <th>Fecha / Horario</th>
@@ -416,14 +416,14 @@
                             <tr>
                                 <td>
                                     <div class="fw-semibold text-dark"><i class="bi bi-calendar3 me-1 text-secondary"></i>{{ $sesHist->fecha }}</div>
-                                    <div class="text-muted small">{{ $sesHist->hora_inicio }} — {{ $sesHist->hora_fin ?? 'En curso' }} (Tol: {{ $sesHist->tolerancia_minutos }}m)</div>
+                                    <div class="texto-slate small">{{ $sesHist->hora_inicio }} — {{ $sesHist->hora_fin ?? 'En curso' }} (Tol: {{ $sesHist->tolerancia_minutos }}m)</div>
                                 </td>
                                 <td>
                                     @if($sesHist->materia)
                                         <span class="badge bg-secondary me-1">{{ $sesHist->materia->codigo_materia }}</span>
                                         <span class="fw-semibold text-dark">{{ $sesHist->materia->nombre_materia }}</span>
                                     @else
-                                        <span class="text-muted">Asignatura eliminada</span>
+                                        <span class="texto-slate">Asignatura eliminada</span>
                                     @endif
                                 </td>
                                 <td>
@@ -438,18 +438,18 @@
                                             </div>
                                         @endif
                                     @else
-                                        <span class="text-muted">-</span>
+                                        <span class="texto-slate">-</span>
                                     @endif
                                 </td>
                                 <td class="text-center">
-                                    <span class="badge bg-success me-1" title="Asistencias">A: {{ $asistH }}</span>
-                                    <span class="badge bg-warning text-dark me-1" title="Retardos">R: {{ $retH }}</span>
-                                    <span class="badge bg-info text-dark me-1" title="Permisos">P: {{ $permH }}</span>
-                                    <span class="badge bg-danger" title="Faltas">F: {{ $faltH }}</span>
+                                    <span class="badge badge-estado badge-asistencia me-1" title="Asistencias">A: {{ $asistH }}</span>
+                                    <span class="badge badge-estado badge-retardo me-1" title="Retardos">R: {{ $retH }}</span>
+                                    <span class="badge badge-estado badge-permiso me-1" title="Permisos">P: {{ $permH }}</span>
+                                    <span class="badge badge-estado badge-falta" title="Faltas">F: {{ $faltH }}</span>
                                 </td>
                                 <td class="text-center">
                                     @if($sesHist->estado === 'activa')
-                                        <span class="badge bg-success"><i class="bi bi-broadcast me-1"></i>Activa</span>
+                                        <span class="badge badge-suave-verde"><i class="bi bi-broadcast me-1"></i>Activa</span>
                                     @else
                                         <span class="badge bg-secondary">Finalizada</span>
                                     @endif
@@ -476,7 +476,7 @@
                                                 </div>
                                                 <div class="modal-body p-4">
                                                     <div class="table-responsive">
-                                                        <table class="table table-sm table-hover align-middle mb-0">
+                                                        <table class="table table-sm table-moderna table-hover align-middle mb-0">
                                                             <thead class="table-light">
                                                                 <tr>
                                                                     <th>Alumno</th>
@@ -490,18 +490,18 @@
                                                                     <tr>
                                                                         <td>
                                                                             <div class="fw-semibold">{{ $regHist->alumno->name ?? 'Alumno' }}</div>
-                                                                            <div class="text-muted small">{{ $regHist->alumno->matricula_codigo ?? $regHist->alumno->email ?? '' }}</div>
+                                                                            <div class="texto-slate small">{{ $regHist->alumno->matricula_codigo ?? $regHist->alumno->email ?? '' }}</div>
                                                                         </td>
-                                                                        <td class="text-muted small">{{ $regHist->timestamp_escaneo ?? 'Sin escaneo QR' }}</td>
+                                                                        <td class="texto-slate small">{{ $regHist->timestamp_escaneo ?? 'Sin escaneo QR' }}</td>
                                                                         <td>
                                                                             @if($regHist->estado_incidencia === 'asistencia')
-                                                                                <span class="badge bg-success">Asistencia</span>
+                                                                                <span class="badge badge-estado badge-asistencia">Asistencia</span>
                                                                             @elseif($regHist->estado_incidencia === 'retardo')
-                                                                                <span class="badge bg-warning text-dark">Retardo</span>
+                                                                                <span class="badge badge-estado badge-retardo">Retardo</span>
                                                                             @elseif($regHist->estado_incidencia === 'permiso')
-                                                                                <span class="badge bg-info text-dark">Permiso</span>
+                                                                                <span class="badge badge-estado badge-permiso">Permiso</span>
                                                                             @else
-                                                                                <span class="badge bg-danger">Falta</span>
+                                                                                <span class="badge badge-estado badge-falta">Falta</span>
                                                                             @endif
                                                                         </td>
                                                                         <td class="text-end">
@@ -519,7 +519,7 @@
                                                                     </tr>
                                                                 @empty
                                                                     <tr>
-                                                                        <td colspan="4" class="text-center text-muted py-3">
+                                                                        <td colspan="4" class="text-center texto-slate py-3">
                                                                             No hay registros de asistencia en esta sesión.
                                                                         </td>
                                                                     </tr>
@@ -538,7 +538,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center text-muted py-4">
+                                <td colspan="6" class="text-center texto-slate py-4">
                                     Aún no has impartido sesiones de clase registradas en el historial.
                                 </td>
                             </tr>

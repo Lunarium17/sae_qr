@@ -6,15 +6,16 @@
     <title>Editar Materia | SAE QR</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    @include('partials.panel-css')
 </head>
-<body class="bg-light">
+<body>
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <nav class="navbar navbar-expand-lg navbar-light navbar-editorial shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ route('grupos.index') }}">
+            <a class="navbar-brand fw-bold text-dark" href="{{ route('grupos.index') }}">
                 SAE QR | Editar Materia
             </a>
-                <a href="{{ $materia->grupo_id ? route('grupos.show', $materia->grupo_id) : route('grupos.index') }}" class="btn btn-light btn-sm text-dark fw-semibold">
+                <a href="{{ $materia->grupo_id ? route('grupos.show', $materia->grupo_id) : route('grupos.index') }}" class="btn btn-outline-secondary btn-sm fw-semibold">
                     <i class="bi bi-arrow-left me-1"></i>Volver al Grupo
                 </a>
                 @include('partials.campana')
@@ -35,7 +36,7 @@
                     </div>
                 @endif
 
-                <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden">
+                <div class="card rounded-4 bg-white overflow-hidden">
                     <div class="card-header bg-warning text-dark p-4 border-0">
                         <h5 class="mb-0 fw-bold">Editar Materia: {{ $materia->nombre_materia }}</h5>
                     </div>

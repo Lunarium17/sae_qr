@@ -6,10 +6,10 @@
     <title>Mi Perfil | SAE QR</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    @include('partials.info-icon-css')
+    @include('partials.panel-css')
 </head>
-<body class="bg-light">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light navbar-editorial shadow-sm">
         <div class="container">
             <a class="btn btn-light btn-sm text-primary fw-semibold rounded-3" href="{{ route('alumno.dashboard') }}">
                 <i class="bi bi-arrow-left me-1"></i>Volver a mi Panel
@@ -40,7 +40,7 @@
                     </div>
                 @endif
 
-                <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden">
+                <div class="card rounded-4 bg-white overflow-hidden">
                     <div class="card-header bg-primary text-white p-4 border-0">
                         <div class="d-flex align-items-center gap-3">
                             @if ($alumno->foto_perfil)
@@ -62,7 +62,7 @@
                             @csrf
                             @method('PUT')
 
-                            <h6 class="fw-bold text-uppercase text-muted small mb-3">
+                            <h6 class="fw-bold text-uppercase texto-slate small mb-3">
                                 Foto de Perfil
                             </h6>
 
@@ -93,7 +93,7 @@
 
                             <hr class="my-4">
 
-                            <h6 class="fw-bold text-uppercase text-muted small mb-3">
+                            <h6 class="fw-bold text-uppercase texto-slate small mb-3">
                                 Información General
                             </h6>
 
@@ -116,7 +116,7 @@
 
                             <hr class="my-4">
 
-                            <h6 class="fw-bold text-uppercase text-muted small mb-3">
+                            <h6 class="fw-bold text-uppercase texto-slate small mb-3">
                                 Seguridad y Contraseña
                             </h6>
 

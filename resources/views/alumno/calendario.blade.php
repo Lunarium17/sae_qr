@@ -6,15 +6,22 @@
     <title>Calendario de Asistencias | SAE QR</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    @include('partials.panel-css')
 </head>
-<body class="bg-light">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light navbar-editorial shadow-sm">
         <div class="container">
-            <a class="btn btn-light btn-sm text-primary fw-semibold rounded-3" href="{{ route('alumno.dashboard') }}">
-                <i class="bi bi-arrow-left me-1"></i>Volver al Panel
-            </a>
-               @include('partials.campana')
-               <span class="navbar-text text-white fw-bold">Calendario e Historial Mensual</span>
+            <a class="navbar-brand fw-bold text-dark" href="{{ route('alumno.dashboard') }}">SAE QR | Calendario</a>
+            <div class="d-flex align-items-center gap-2">
+                <a href="{{ route('alumno.dashboard') }}" class="btn btn-outline-secondary btn-sm fw-semibold rounded-3">
+                    <i class="bi bi-arrow-left me-1"></i>Volver al Panel
+                </a>
+                @include('partials.campana')
+                <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                    @csrf
+                    <button type="submit" class="btn btn-danger btn-sm rounded-3">Cerrar Sesión</button>
+                </form>
+            </div>
         </div>
     </nav>
 
@@ -41,7 +48,7 @@
         @endif
 
         <!-- Filtros por Mes y Materia -->
-        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+        <div class="card rounded-4 p-4 bg-white mb-4">
             <form method="GET" action="{{ route('alumno.calendario') }}" class="row g-3 align-items-end">
                 <div class="col-md-4">
                     <label class="form-label fw-semibold">Mes a consultar</label>
@@ -67,45 +74,45 @@
         </div>
 
         <!-- Resumen con códigos de color -->
-        <div class="row g-3 mb-4 text-center">
+        <div class="row g-4 mb-4 text-center">
             <div class="col-6 col-md-3">
-                <div class="card border-0 shadow-sm rounded-4 p-3 bg-success bg-opacity-10 border-start border-success border-4">
-                    <h3 class="fw-bold text-success mb-0">{{ $asistencias }}</h3>
-                    <small class="text-muted fw-semibold">Asistencias</small>
+                <div class="bento metrica-esmeralda rounded-4 p-3">
+                    <div class="numero-bento">{{ $asistencias }}</div>
+                    <div class="texto-slate small fw-semibold mt-2">Asistencias</div>
                 </div>
             </div>
             <div class="col-6 col-md-3">
-                <div class="card border-0 shadow-sm rounded-4 p-3 bg-warning bg-opacity-10 border-start border-warning border-4">
-                    <h3 class="fw-bold text-warning mb-0">{{ $retardos }}</h3>
-                    <small class="text-muted fw-semibold">Retardos</small>
+                <div class="bento metrica-ambar rounded-4 p-3">
+                    <div class="numero-bento">{{ $retardos }}</div>
+                    <div class="texto-slate small fw-semibold mt-2">Retardos</div>
                 </div>
             </div>
             <div class="col-6 col-md-3">
-                <div class="card border-0 shadow-sm rounded-4 p-3 bg-info bg-opacity-10 border-start border-info border-4">
-                    <h3 class="fw-bold text-info mb-0">{{ $permisos }}</h3>
-                    <small class="text-muted fw-semibold">Permisos</small>
+                <div class="bento metrica-cielo rounded-4 p-3">
+                    <div class="numero-bento">{{ $permisos }}</div>
+                    <div class="texto-slate small fw-semibold mt-2">Permisos</div>
                 </div>
             </div>
             <div class="col-6 col-md-3">
-                <div class="card border-0 shadow-sm rounded-4 p-3 bg-danger bg-opacity-10 border-start border-danger border-4">
-                    <h3 class="fw-bold text-danger mb-0">{{ $faltasTotales }}</h3>
-                    <small class="text-muted fw-semibold">Faltas Computadas</small>
+                <div class="bento metrica-coral rounded-4 p-3">
+                    <div class="numero-bento">{{ $faltasTotales }}</div>
+                    <div class="texto-slate small fw-semibold mt-2">Faltas Computadas</div>
                 </div>
             </div>
         </div>
 
         <!-- Tarjetas de sesiones del mes (Calendario Visual) -->
-        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
-            <h5 class="fw-bold text-dark mb-4">Registro Diario del Mes</h5>
+        <div class="card rounded-4 p-4 bg-white">
+            <h5 class="titulo-panel mb-4">Registro Diario del Mes</h5>
 
             <div class="row g-3">
                 @forelse($registros as $reg)
                     @php
                         $colorBadge = match($reg->estado_incidencia) {
-                            'asistencia' => 'success',
-                            'retardo'    => 'warning text-dark',
-                            'permiso'    => 'info text-dark',
-                            default      => 'danger',
+                            'asistencia' => 'badge-asistencia',
+                            'retardo'    => 'badge-retardo',
+                            'permiso'    => 'badge-permiso',
+                            default      => 'badge-falta',
                         };
                         $bordeCard = match($reg->estado_incidencia) {
                             'asistencia' => 'border-success',
@@ -119,10 +126,10 @@
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                     <span class="fw-bold text-dark"><i class="bi bi-calendar-event me-1"></i>{{ $reg->sesion->fecha }}</span>
-                                    <span class="badge bg-{{ $colorBadge }} text-uppercase">{{ $reg->estado_incidencia }}</span>
+                                    <span class="badge badge-estado {{ $colorBadge }} text-uppercase">{{ $reg->estado_incidencia }}</span>
                                 </div>
                                 <h6 class="fw-bold mb-1">{{ $reg->sesion->materia->nombre_materia }}</h6>
-                                <p class="text-muted small mb-0">Hora pase: {{ $reg->timestamp_escaneo ?? $reg->hora_pase ?? '--:--' }}</p>
+                                <p class="texto-slate small mb-0">Hora pase: {{ $reg->timestamp_escaneo ?? $reg->hora_pase ?? '--:--' }}</p>
                                 @if($reg->observaciones)
                                     <p class="small text-secondary mt-2 mb-0 fst-italic">"{{ $reg->observaciones }}"</p>
                                 @endif
@@ -130,7 +137,7 @@
                         </div>
                     </div>
                 @empty
-                    <div class="col-12 text-center text-muted py-4">
+                    <div class="col-12 text-center texto-slate py-4">
                         No se encontraron registros de asistencia en este mes.
                     </div>
                 @endforelse

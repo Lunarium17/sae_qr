@@ -6,24 +6,25 @@
     <title>Mi Código QR Temporal - SAE QR</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    @include('partials.panel-css')
 </head>
-<body class="bg-light">
+<body>
 
     @php
         $alumno = \Illuminate\Support\Facades\Auth::user();
-        $avHue = abs(crc32($alumno->name ?? 'U')) % 360;
+        $inicialesAlumno = mb_strtoupper(implode('', array_map(fn ($palabra) => mb_substr($palabra, 0, 1), array_slice(preg_split('/\s+/', trim($alumno->name ?? 'U')), 0, 2))));
     @endphp
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+    <nav class="navbar navbar-expand-lg navbar-light navbar-editorial shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="#">SAE QR | Mi Código QR</a>
+            <a class="navbar-brand fw-bold text-dark" href="{{ route('alumno.dashboard') }}">SAE QR | Mi Código QR</a>
             <div class="d-flex align-items-center gap-2">
                 @if ($alumno->foto_perfil)
-                    <img src="{{ asset('storage/' . $alumno->foto_perfil) }}" alt="Foto de perfil" class="rounded-circle" style="width: 34px; height: 34px; object-fit: cover; border: 2px solid rgba(255,255,255,.5);">
+                    <img src="{{ asset('storage/' . $alumno->foto_perfil) }}" alt="Foto de perfil" class="rounded-circle" style="width: 34px; height: 34px; object-fit: cover; border: 2px solid #E2E8F0;">
                 @else
-                    <span class="d-inline-flex align-items-center justify-content-center rounded-circle fw-bold text-white" style="width: 34px; height: 34px; background: hsl({{ $avHue }}, 65%, 45%); font-size: .85rem;">{{ mb_strtoupper(mb_substr($alumno->name ?? 'U', 0, 1)) }}</span>
+                    <span class="d-inline-flex align-items-center justify-content-center rounded-circle fw-bold" style="width: 34px; height: 34px; background: #EFF6FF; color: #2563EB; font-size: .75rem;">{{ $inicialesAlumno }}</span>
                 @endif
-                <a href="{{ route('alumno.dashboard') }}" class="btn btn-light btn-sm text-primary fw-semibold rounded-3">
+                <a href="{{ route('alumno.dashboard') }}" class="btn btn-outline-secondary btn-sm fw-semibold rounded-3">
                     <i class="bi bi-arrow-left me-1"></i>Volver al Inicio
                 </a>
                 @include('partials.campana')
@@ -38,7 +39,7 @@
     <div class="container my-5">
         <div class="row justify-content-center">
             <div class="col-lg-6">
-                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white text-center">
+                <div class="card rounded-4 p-4 bg-white text-center">
                     <h5 class="text-dark mb-3 fw-bold">Mi Código QR Temporal</h5>
 
                     <!-- Confirmación en Tiempo Real cuando el QR del Alumno es escaneado -->
@@ -70,11 +71,11 @@
                     </button>
 
                     <div class="mt-3 pt-2 border-top">
-                        <small class="text-muted d-block mb-1">Código de respaldo (para pruebas en la misma PC):</small>
+                        <small class="texto-slate d-block mb-1">Código de respaldo (para pruebas en la misma PC):</small>
                         <code id="qr-token-respaldo" class="user-select-all bg-light px-2 py-1 rounded border small text-dark">—</code>
                     </div>
 
-                    <p class="text-muted small mt-2 mb-0">Presenta esta pantalla frente a la cámara de tu profesor durante la clase activa. El código se renueva solo cada 60 segundos.</p>
+                    <p class="texto-slate small mt-2 mb-0">Presenta esta pantalla frente a la cámara de tu profesor durante la clase activa. El código se renueva solo cada 60 segundos.</p>
                 </div>
             </div>
         </div>

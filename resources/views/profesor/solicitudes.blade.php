@@ -6,20 +6,16 @@
     <title>Solicitudes e Inscripciones de Alumnos - SAE QR</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <style>
-        .info-icon { position: relative; display: inline-flex; align-items: center; color: #0d6efd; cursor: help; vertical-align: middle; font-size: .8em; margin-left: .15rem; padding: .1rem; }
-        .info-icon .info-icon-text { position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); min-width: 240px; max-width: 320px; background: #212529; color: #fff; font-size: .75rem; font-weight: 400; line-height: 1.35; padding: .5rem .65rem; border-radius: .4rem; box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .2); opacity: 0; visibility: hidden; transition: opacity .15s; z-index: 10; text-align: left; }
-        .info-icon:hover .info-icon-text, .info-icon:focus .info-icon-text, .info-icon:focus-within .info-icon-text { opacity: 1; visibility: visible; }
-    </style>
+        @include('partials.panel-css')
 </head>
-<body class="bg-light">
+<body>
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <nav class="navbar navbar-expand-lg navbar-light navbar-editorial shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ route('profesor.dashboard') }}">
+            <a class="navbar-brand fw-bold text-dark" href="{{ route('profesor.dashboard') }}">
                 SAE QR | Solicitudes e Inscripciones
             </a>
-            <a href="{{ url('/profesor/dashboard') }}" class="btn btn-light btn-sm text-dark fw-semibold">
+            <a href="{{ url('/profesor/dashboard') }}" class="btn btn-outline-secondary btn-sm fw-semibold">
                 <i class="bi bi-arrow-left me-1"></i>Volver al Panel
             </a>
             @include('partials.campana')
@@ -59,7 +55,7 @@
         </div>
 
         <!-- Barra de Búsqueda y Filtros -->
-        <div class="card border-0 shadow-sm rounded-4 mb-4 bg-white">
+        <div class="card rounded-4 mb-4 bg-white">
             <div class="card-body p-4">
                 <form action="{{ route('profesor.solicitudes') }}" method="GET" class="row g-3 align-items-end">
                     <div class="col-md-4">
@@ -104,13 +100,13 @@
             </div>
         </div>
 
-        <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
+        <div class="card rounded-4 overflow-hidden bg-white">
             <div class="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
                 <h5 class="fw-bold mb-0">Listado de Solicitudes e Inscripciones</h5>
                 <span class="badge bg-secondary rounded-pill">{{ $solicitudes->total() }} registros</span>
             </div>
             <div class="table-responsive">
-                    <table class="table table-striped table-hover align-middle mb-0">
+                    <table class="table table-moderna table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
                             <th class="ps-4">Alumno / Matrícula</th>
@@ -124,7 +120,7 @@
                     <tbody>
                         @if($solicitudes->isEmpty())
                             <tr>
-                                <td colspan="6" class="text-center py-5 text-muted">
+                                <td colspan="6" class="text-center py-5 texto-slate">
                                     <i class="bi bi-inbox display-4 d-block mb-2 opacity-50"></i>
                                     No se encontraron solicitudes o inscripciones con los filtros seleccionados.
                                 </td>
@@ -134,9 +130,9 @@
                                 <tr>
                                     <td class="ps-4">
                                         <div class="fw-bold text-dark">{{ $sol->alumno->name ?? 'Alumno' }}</div>
-                                        <small class="text-muted font-monospace">{{ $sol->alumno->matricula_codigo ?? 'Sin matrícula' }}</small>
+                                        <small class="texto-slate font-monospace">{{ $sol->alumno->matricula_codigo ?? 'Sin matrícula' }}</small>
                                     </td>
-                                    <td class="text-muted">{{ $sol->alumno->email ?? '—' }}</td>
+                                    <td class="texto-slate">{{ $sol->alumno->email ?? '—' }}</td>
                                     <td>
                                         <a href="{{ route('grupos.show', $sol->grupo_id) }}" class="badge text-decoration-none" style="{{ \App\Support\CarreraColor::suave($sol->grupo->carrera ?? '') }}">
                                             <span class="d-inline-block rounded-circle me-1" style="width: 7px; height: 7px; background: {{ \App\Support\CarreraColor::color($sol->grupo->carrera ?? '') }};"></span>
@@ -150,11 +146,11 @@
                                     </td>
                                     <td class="text-center">
                                         @if($sol->estado === 'pendiente')
-                                            <span class="badge bg-warning text-dark">Pendiente</span>
+                                            <span class="badge badge-estado badge-retardo">Pendiente</span>
                                         @elseif($sol->estado === 'aceptado')
-                                            <span class="badge bg-success">Aceptado</span>
+                                            <span class="badge badge-estado badge-asistencia">Aceptado</span>
                                         @else
-                                            <span class="badge bg-danger">Rechazado</span>
+                                            <span class="badge badge-estado badge-falta">Rechazado</span>
                                         @endif
                                     </td>
                                     <td class="text-center pe-4">
@@ -247,7 +243,7 @@
                                 <div id="alumnoSeleccionadoSol" class="alert alert-primary d-none align-items-center justify-content-between py-2 px-3 mt-2 mb-0 rounded-3">
                                     <div class="small">
                                         <div class="fw-bold" id="nombreAlumnoSelSol"></div>
-                                        <div class="text-muted" id="detalleAlumnoSelSol"></div>
+                                        <div class="texto-slate" id="detalleAlumnoSelSol"></div>
                                     </div>
                                     <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2" id="btnLimpiarAlumnoSol" title="Cambiar alumno">
                                         <i class="bi bi-x-lg"></i>
@@ -358,7 +354,7 @@
                                 nameStrong.textContent = al.name;
 
                                 const subSpan = document.createElement('div');
-                                subSpan.className = 'text-muted';
+                                subSpan.className = 'texto-slate';
                                 subSpan.textContent = 'Matrícula: ' + al.matricula_codigo + ' | ' + al.email;
 
                                 infoDiv.appendChild(nameStrong);

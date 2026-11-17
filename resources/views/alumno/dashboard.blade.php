@@ -8,49 +8,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     @include('partials.panel-css')
     <style>
-        body { background: #EEF2F6; }
-
-        .navbar-editorial { background: #FFFFFF; border-bottom: 1px solid #E2E8F0; }
-        #jsCampanaBtn { color: #334155; border-color: #CBD5E1; }
-        #jsCampanaBtn:hover, #jsCampanaBtn:focus { background: #F1F5F9; color: #0F172A; }
-
-        .badge-suave-verde { background: #ECFDF5; color: #047857; border: 1px solid #A7F3D0; }
-        .badge-suave-carmesi { background: #FFF1F2; color: #BE123C; border: 1px solid #FECDD3; }
-        .texto-slate { color: #334155; }
-
-        .bento {
-            background: #FFFFFF;
-            border: 1px solid rgba(203, 213, 225, .9);
-            border-radius: 1.25rem;
-            overflow: hidden;
-            box-shadow: 0 4px 6px -2px rgba(15, 23, 42, .07), 0 12px 24px -10px rgba(15, 23, 42, .12);
-            transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
-        }
-        .bento:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 10px -4px rgba(15, 23, 42, .10), 0 20px 32px -12px rgba(15, 23, 42, .18);
-        }
-        .metrica-prota { background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 100%); border: none; color: #FFFFFF; }
-        .metrica-ambar { background: linear-gradient(180deg, #FFFBEB 0%, #FFFFFF 55%); border-top: 3px solid #D97706; }
-        .metrica-coral { background: linear-gradient(180deg, #FFF1F2 0%, #FFFFFF 55%); border-top: 3px solid #E11D48; }
-        .metrica-cielo { background: linear-gradient(180deg, #EFF6FF 0%, #FFFFFF 55%); border-top: 3px solid #2563EB; }
-        .numero-hero { font-size: 2.75rem; font-weight: 800; line-height: 1; letter-spacing: -.02em; }
-        .numero-bento { font-size: 3rem; font-weight: 800; color: #0F172A; line-height: 1; letter-spacing: -.02em; }
-        .punto-estado { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
-
-        .bento-azul { background: #EFF6FF; border-color: #BFDBFE; }
-        .bento-indigo { background: #EEF2FF; border-color: #C7D2FE; }
-        .bento-esmeralda { background: #ECFDF5; border-color: #A7F3D0; }
-        .bento-marcada { background: #FFFFFF; border-color: #94A3B8; }
-
-        .pildora-materia { font-size: .92rem; }
-        .pildora-azul { background: #EFF6FF; border: 1px solid #BFDBFE; }
-        .pildora-esmeralda { background: #ECFDF5; border: 1px solid #A7F3D0; }
-        .pildora-ambar { background: #FEF3C7; border: 1px solid #FCD34D; }
-        .pildora-coral { background: #FFF1F2; border: 1px solid #FECDD3; }
-
-        .hr-divisor { border-top: 1px solid #CBD5E1; opacity: 1; margin: 0; }
-
         .hoja-calendario {
             background: #FFFFFF;
             border: 1px solid #E2E8F0;
@@ -71,7 +28,7 @@
         .bento:hover .flecha-circular i { color: #FFFFFF; transform: rotate(-45deg); }
     </style>
 </head>
-<body style="background: #E2E8F0;">
+<body>
 
     @php
         $alumno = \Illuminate\Support\Facades\Auth::user();

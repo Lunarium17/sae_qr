@@ -6,27 +6,28 @@
     <title>Catálogo de Grupos Oficiales - SAE QR</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    @include('partials.panel-css')
 </head>
-<body class="bg-light">
+<body>
 
     @php
         $admin = \Illuminate\Support\Facades\Auth::user();
         $avHue = abs(crc32($admin->name ?? 'U')) % 360;
     @endphp
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <nav class="navbar navbar-expand-lg navbar-light navbar-editorial shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="#">SAE QR | Catálogo de Grupos</a>
+            <a class="navbar-brand fw-bold text-dark" href="#">SAE QR | Catálogo de Grupos</a>
             <div class="d-flex align-items-center gap-2">
                 @if ($admin->foto_perfil)
                     <img src="{{ asset('storage/' . $admin->foto_perfil) }}" alt="Foto de perfil" class="rounded-circle" style="width: 34px; height: 34px; object-fit: cover; border: 2px solid rgba(255,255,255,.5);">
                 @else
                     <span class="d-inline-flex align-items-center justify-content-center rounded-circle fw-bold text-white" style="width: 34px; height: 34px; background: hsl({{ $avHue }}, 65%, 45%); font-size: .85rem;">{{ mb_strtoupper(mb_substr($admin->name ?? 'U', 0, 1)) }}</span>
                 @endif
-                <a href="{{ route('admin.dashboard') }}" class="btn btn-light btn-sm text-dark fw-semibold rounded-3">
+                <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary btn-sm fw-semibold rounded-3">
                     <i class="bi bi-arrow-left me-1"></i>Volver al Inicio
                 </a>
-                <a href="{{ route('admin.perfil') }}" class="btn btn-light btn-sm text-dark fw-semibold rounded-3">
+                <a href="{{ route('admin.perfil') }}" class="btn btn-outline-secondary btn-sm fw-semibold rounded-3">
                     Mi Perfil
                 </a>
                 <form action="{{ route('logout') }}" method="POST" class="d-inline">
@@ -72,7 +73,7 @@
         </div>
 
         <!-- Catálogo de Grupos Oficiales Universitarios -->
-        <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card rounded-4 mb-4">
             <div class="card-body px-4 py-4">
                 <div class="table-responsive">
                     <table class="table table-hover table-striped align-middle mb-0">
@@ -97,7 +98,7 @@
                                     <td>
                                         <div class="fw-semibold text-dark">{{ $grupo->grado }}</div>
                                         <span class="badge bg-light text-dark border">{{ $grupo->turno }}</span>
-                                        <div class="text-muted" style="font-size: 0.72rem;">{{ preg_replace('/([A-Za-zÁÉÍÓÚáéíóú])(\d{4})/u', '$1 $2', $grupo->periodo_lectivo) }}</div>
+                                        <div class="texto-slate" style="font-size: 0.72rem;">{{ preg_replace('/([A-Za-zÁÉÍÓÚáéíóú])(\d{4})/u', '$1 $2', $grupo->periodo_lectivo) }}</div>
                                     </td>
                                     <td>
                                         @forelse ($grupo->materias as $mat)
@@ -105,7 +106,7 @@
                                                 {{ $mat->nombre_materia }} ({{ $mat->codigo_materia }})
                                             </span>
                                         @empty
-                                            <span class="text-muted fst-italic">Sin materias registradas</span>
+                                            <span class="texto-slate fst-italic">Sin materias registradas</span>
                                         @endforelse
                                     </td>
                                     <td class="text-end">
@@ -183,7 +184,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="4" class="text-center text-muted py-4">
+                                    <td colspan="4" class="text-center texto-slate py-4">
                                         No hay grupos oficiales registrados todavía. Haz clic en <strong>"Nuevo Grupo Oficial"</strong> para crear el primero.
                                     </td>
                                 </tr>

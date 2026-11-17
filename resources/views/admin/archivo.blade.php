@@ -6,27 +6,28 @@
     <title>Archivo de Semestres - SAE QR</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    @include('partials.panel-css')
 </head>
-<body class="bg-light">
+<body>
 
     @php
         $admin = \Illuminate\Support\Facades\Auth::user();
         $avHue = abs(crc32($admin->name ?? 'U')) % 360;
     @endphp
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <nav class="navbar navbar-expand-lg navbar-light navbar-editorial shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="#">SAE QR | Archivo de Semestres</a>
+            <a class="navbar-brand fw-bold text-dark" href="#">SAE QR | Archivo de Semestres</a>
             <div class="d-flex align-items-center gap-2">
                 @if ($admin->foto_perfil)
                     <img src="{{ asset('storage/' . $admin->foto_perfil) }}" alt="Foto de perfil" class="rounded-circle" style="width: 34px; height: 34px; object-fit: cover; border: 2px solid rgba(255,255,255,.5);">
                 @else
                     <span class="d-inline-flex align-items-center justify-content-center rounded-circle fw-bold text-white" style="width: 34px; height: 34px; background: hsl({{ $avHue }}, 65%, 45%); font-size: .85rem;">{{ mb_strtoupper(mb_substr($admin->name ?? 'U', 0, 1)) }}</span>
                 @endif
-                <a href="{{ route('admin.dashboard') }}" class="btn btn-light btn-sm text-dark fw-semibold rounded-3">
+                <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary btn-sm fw-semibold rounded-3">
                     <i class="bi bi-arrow-left me-1"></i>Volver al Inicio
                 </a>
-                <a href="{{ route('admin.perfil') }}" class="btn btn-light btn-sm text-dark fw-semibold rounded-3">
+                <a href="{{ route('admin.perfil') }}" class="btn btn-outline-secondary btn-sm fw-semibold rounded-3">
                     Mi Perfil
                 </a>
                 <form action="{{ route('logout') }}" method="POST" class="d-inline">
@@ -54,10 +55,10 @@
         @endif
 
         <!-- Semestres Vigentes: candidatos a cierre -->
-        <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card rounded-4 mb-4">
             <div class="card-body p-4">
                 <h5 class="fw-bold text-dark mb-1"><i class="bi bi-hourglass-split me-2 text-primary"></i>Semestres en Curso</h5>
-                <p class="text-muted small mb-3">Al cerrar un semestre, sus sesiones se archivan: los docentes inician el siguiente periodo desde cero y este historial queda guardado aquí para el administrador.</p>
+                <p class="texto-slate small mb-3">Al cerrar un semestre, sus sesiones se archivan: los docentes inician el siguiente periodo desde cero y este historial queda guardado aquí para el administrador.</p>
 
                 <div class="table-responsive">
                     <table class="table table-hover table-striped align-middle mb-0">
@@ -82,14 +83,14 @@
                                     <td class="text-center fw-semibold">{{ $sem->sesiones }}</td>
                                     <td class="text-center">{{ $sem->registros }}</td>
                                     <td class="text-center">
-                                        <span class="badge bg-success me-1">A: {{ $sem->asistencias }}</span>
-                                        <span class="badge bg-warning text-dark me-1">R: {{ $sem->retardos }}</span>
-                                        <span class="badge bg-info text-dark me-1">P: {{ $sem->permisos }}</span>
-                                        <span class="badge bg-danger">F: {{ $sem->faltas }}</span>
+                                        <span class="badge badge-estado badge-asistencia me-1">A: {{ $sem->asistencias }}</span>
+                                        <span class="badge badge-estado badge-retardo me-1">R: {{ $sem->retardos }}</span>
+                                        <span class="badge badge-estado badge-permiso me-1">P: {{ $sem->permisos }}</span>
+                                        <span class="badge badge-estado badge-falta">F: {{ $sem->faltas }}</span>
                                     </td>
                                     <td class="text-center">
                                         @if ($sem->activas > 0)
-                                            <span class="badge bg-success">{{ $sem->activas }} activa(s)</span>
+                                            <span class="badge badge-estado badge-asistencia">{{ $sem->activas }} activa(s)</span>
                                         @else
                                             <span class="badge bg-secondary">0</span>
                                         @endif
@@ -106,7 +107,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="text-center text-muted py-4">
+                                    <td colspan="6" class="text-center texto-slate py-4">
                                         No hay sesiones vigentes todavía. Cuando los docentes impartan clases, aparecerán aquí por periodo.
                                     </td>
                                 </tr>
@@ -118,10 +119,10 @@
         </div>
 
         <!-- Semestres Archivados: historial conservado -->
-        <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card rounded-4 mb-4">
             <div class="card-body p-4">
                 <h5 class="fw-bold text-dark mb-1"><i class="bi bi-archive me-2 text-secondary"></i>Archivo de Semestres Cerrados</h5>
-                <p class="text-muted small mb-3">Historial completo conservado por el sistema. Descarga el detalle por semestre en formato Excel (CSV).</p>
+                <p class="texto-slate small mb-3">Historial completo conservado por el sistema. Descarga el detalle por semestre en formato Excel (CSV).</p>
 
                 <div class="table-responsive">
                     <table class="table table-hover table-striped align-middle mb-0">
@@ -146,10 +147,10 @@
                                     <td class="text-center fw-semibold">{{ $sem->sesiones }}</td>
                                     <td class="text-center">{{ $sem->registros }}</td>
                                     <td class="text-center">
-                                        <span class="badge bg-success me-1">A: {{ $sem->asistencias }}</span>
-                                        <span class="badge bg-warning text-dark me-1">R: {{ $sem->retardos }}</span>
-                                        <span class="badge bg-info text-dark me-1">P: {{ $sem->permisos }}</span>
-                                        <span class="badge bg-danger">F: {{ $sem->faltas }}</span>
+                                        <span class="badge badge-estado badge-asistencia me-1">A: {{ $sem->asistencias }}</span>
+                                        <span class="badge badge-estado badge-retardo me-1">R: {{ $sem->retardos }}</span>
+                                        <span class="badge badge-estado badge-permiso me-1">P: {{ $sem->permisos }}</span>
+                                        <span class="badge badge-estado badge-falta">F: {{ $sem->faltas }}</span>
                                     </td>
                                     <td>
                                         <div class="d-flex flex-wrap gap-1">
@@ -166,7 +167,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="text-center text-muted py-4">
+                                    <td colspan="6" class="text-center texto-slate py-4">
                                         Aún no hay semestres cerrados. El archivo se llena cuando cierras un semestre desde la tabla superior.
                                     </td>
                                 </tr>

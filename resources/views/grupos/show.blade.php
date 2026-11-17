@@ -6,13 +6,9 @@
     <title>Grupo {{ $grupo->nombre_grupo }} | Gestión y Estadísticas - SAE QR</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <style>
-        .info-icon { position: relative; display: inline-flex; align-items: center; color: #0d6efd; cursor: help; vertical-align: middle; font-size: .8em; margin-left: .15rem; padding: .1rem; }
-        .info-icon .info-icon-text { position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); min-width: 240px; max-width: 320px; background: #212529; color: #fff; font-size: .75rem; font-weight: 400; line-height: 1.35; padding: .5rem .65rem; border-radius: .4rem; box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .2); opacity: 0; visibility: hidden; transition: opacity .15s; z-index: 10; text-align: left; }
-        .info-icon:hover .info-icon-text, .info-icon:focus .info-icon-text, .info-icon:focus-within .info-icon-text { opacity: 1; visibility: visible; }
-    </style>
+        @include('partials.panel-css')
 </head>
-<body class="bg-light">
+<body>
 
     @php
         $nombresMateriasChart = $grupo->materias->pluck('nombre_materia')->toArray();
@@ -21,13 +17,13 @@
     @endphp
 
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <nav class="navbar navbar-expand-lg navbar-light navbar-editorial shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ route('grupos.index') }}">
+            <a class="navbar-brand fw-bold text-dark" href="{{ route('grupos.index') }}">
                 SAE QR | Grupo {{ $grupo->nombre_grupo }}
             </a>
             <div class="d-flex align-items-center gap-2">
-                <a href="{{ route('grupos.index') }}" class="btn btn-light btn-sm text-dark fw-semibold">
+                <a href="{{ route('grupos.index') }}" class="btn btn-outline-secondary btn-sm fw-semibold">
                     <i class="bi bi-arrow-left me-1"></i>Volver a Mis Grupos
                 </a>
                 <a href="{{ route('profesor.dashboard') }}" class="btn btn-outline-secondary btn-sm text-light">
@@ -66,7 +62,7 @@
         @endif
 
         <!-- 1. Datos del Grupo y KPIs Superiores -->
-        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+        <div class="card rounded-4 p-4 bg-white mb-4">
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
                 <div>
                     <div class="d-flex align-items-center gap-2 mb-1">
@@ -76,7 +72,7 @@
                             <i class="bi bi-pencil-square me-1"></i>Editar Grupo
                         </a>
                     </div>
-                    <p class="text-muted mb-0 mt-2">
+                    <p class="texto-slate mb-0 mt-2">
                         @if ($grupo->carrera)
                             <span class="me-3"><strong>Carrera:</strong> {{ $grupo->carrera }}</span>
                         @endif
@@ -88,19 +84,19 @@
                 <div class="d-flex flex-wrap gap-2 text-center">
                     <div class="px-3 py-2 bg-light rounded-3 border">
                         <div class="fs-4 fw-bold text-primary">{{ $grupo->materias->count() }}</div>
-                        <div class="small text-muted">Materias</div>
+                        <div class="small texto-slate">Materias</div>
                     </div>
                     <div class="px-3 py-2 bg-light rounded-3 border">
                         <div class="fs-4 fw-bold text-success">{{ $grupo->matriculas->where('estado', 'aceptado')->count() }}</div>
-                        <div class="small text-muted">Inscritos</div>
+                        <div class="small texto-slate">Inscritos</div>
                     </div>
                     <div class="px-3 py-2 bg-light rounded-3 border">
                         <div class="fs-4 fw-bold text-dark">{{ $statsGrupo['total_sesiones'] }}</div>
-                        <div class="small text-muted">Sesiones</div>
+                        <div class="small texto-slate">Sesiones</div>
                     </div>
                     <div class="px-3 py-2 bg-light rounded-3 border">
                         <div class="fs-4 fw-bold text-{{ $colorGrupoSemaforo }}">{{ $statsGrupo['porcentaje'] }}%</div>
-                        <div class="small text-muted">Asistencia</div>
+                        <div class="small texto-slate">Asistencia</div>
                     </div>
                 </div>
             </div>
@@ -109,7 +105,7 @@
         <!-- 2. Gráficas Estadísticas del Grupo (Chart.js) -->
         <div class="row g-4 mb-4">
             <div class="col-lg-5">
-                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+                <div class="card rounded-4 p-4 bg-white h-100">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h6 class="fw-bold text-dark mb-0">Incidencias en {{ $grupo->nombre_grupo }}</h6>
                         <span class="badge bg-dark rounded-pill">{{ $statsGrupo['total_registros'] }} registros</span>
@@ -119,13 +115,13 @@
                             <canvas id="chartIncidenciasGrupo"></canvas>
                         </div>
                         <div class="row text-center mt-3 g-2">
-                            <div class="col-3"><span class="badge bg-success w-100 py-1">A: {{ $statsGrupo['asistencias'] }}</span></div>
-                            <div class="col-3"><span class="badge bg-warning text-dark w-100 py-1">R: {{ $statsGrupo['retardos'] }}</span></div>
-                            <div class="col-3"><span class="badge bg-info text-dark w-100 py-1">P: {{ $statsGrupo['permisos'] }}</span></div>
-                            <div class="col-3"><span class="badge bg-danger w-100 py-1">F: {{ $statsGrupo['faltas'] }}</span></div>
+                            <div class="col-3"><span class="badge badge-estado badge-asistencia w-100 py-1">A: {{ $statsGrupo['asistencias'] }}</span></div>
+                            <div class="col-3"><span class="badge badge-estado badge-retardo w-100 py-1">R: {{ $statsGrupo['retardos'] }}</span></div>
+                            <div class="col-3"><span class="badge badge-estado badge-permiso w-100 py-1">P: {{ $statsGrupo['permisos'] }}</span></div>
+                            <div class="col-3"><span class="badge badge-estado badge-falta w-100 py-1">F: {{ $statsGrupo['faltas'] }}</span></div>
                         </div>
                     @else
-                        <div class="text-center text-muted my-auto py-4">
+                        <div class="text-center texto-slate my-auto py-4">
                             <i class="bi bi-bar-chart fs-1 d-block mb-1 opacity-50"></i>
                             Sin asistencias registradas aún en este grupo.
                         </div>
@@ -134,7 +130,7 @@
             </div>
 
             <div class="col-lg-7">
-                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+                <div class="card rounded-4 p-4 bg-white h-100">
                     <div class="mb-3">
                         <h6 class="fw-bold text-dark mb-0">% de Asistencia por Materia del Grupo</h6>
                     </div>
@@ -143,7 +139,7 @@
                             <canvas id="chartMateriasGrupo"></canvas>
                         </div>
                     @else
-                        <div class="text-center text-muted my-auto py-4">
+                        <div class="text-center texto-slate my-auto py-4">
                             <i class="bi bi-journal-x fs-1 d-block mb-1 opacity-50"></i>
                             Registra materias en el grupo para comparar su porcentaje de asistencia.
                         </div>
@@ -156,7 +152,7 @@
         <div class="row g-4 mb-4">
             <!-- Formulario lateral para agregar materias al grupo -->
             <div class="col-lg-4">
-                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+                <div class="card rounded-4 p-4 bg-white h-100">
                     <h5 class="fw-bold text-dark mb-3">
                         Agregar Materia al Grupo
                         <span class="info-icon" tabindex="0" role="button" aria-label="Registra una nueva asignatura en {{ $grupo->nombre_grupo }} ({{ $grupo->turno }}).">
@@ -188,7 +184,7 @@
 
             <!-- Tabla de materias pertenecientes a este grupo con Semáforo de Asistencia -->
             <div class="col-lg-8">
-                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+                <div class="card rounded-4 p-4 bg-white h-100">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="fw-bold text-dark mb-0">
                             Materias Impartidas en {{ $grupo->nombre_grupo }}
@@ -223,15 +219,15 @@
                                                 <a href="{{ route('materias.show', $materia->id) }}" class="fw-semibold text-dark text-decoration-none">
                                                     {{ $materia->nombre_materia }}
                                                 </a>
-                                                <div><span class="badge bg-success bg-opacity-10 text-success border border-success-subtle small">Mi asignatura</span></div>
+                                                <div><span class="badge badge-estado badge-asistencia bg-opacity-10 text-success border border-success-subtle small">Mi asignatura</span></div>
                                             @else
                                                 <span class="fw-semibold text-secondary">{{ $materia->nombre_materia }}</span>
-                                                <div class="small text-muted"><i class="bi bi-person-workspace me-1"></i>Prof. {{ $materia->profesor->name ?? 'Otro docente' }}</div>
+                                                <div class="small texto-slate"><i class="bi bi-person-workspace me-1"></i>Prof. {{ $materia->profesor->name ?? 'Otro docente' }}</div>
                                             @endif
                                         </td>
                                         <td class="text-center">
                                             @if ($esMiMateria)
-                                                <a href="{{ route('materias.show', $materia->id) }}" class="badge bg-info text-dark text-decoration-none rounded-pill px-3 py-2" title="Ver y gestionar alumnos de esta materia">
+                                                <a href="{{ route('materias.show', $materia->id) }}" class="badge badge-estado badge-permiso text-decoration-none rounded-pill px-3 py-2" title="Ver y gestionar alumnos de esta materia">
                                                     <i class="bi bi-people-fill me-1"></i>{{ $materia->matriculas->count() }}
                                                 </a>
                                             @else
@@ -242,11 +238,11 @@
                                         </td>
                                         <td>
                                             @if (is_null($pctMat))
-                                                <span class="text-muted small">Sin sesiones</span>
+                                                <span class="texto-slate small">Sin sesiones</span>
                                             @else
                                                 <div class="d-flex justify-content-between small mb-1">
                                                     <span class="fw-bold text-{{ $colorMat === 'warning' ? 'dark' : $colorMat }}">{{ $pctMat }}%</span>
-                                                    <span class="text-muted">{{ $materia->total_registros }} reg.</span>
+                                                    <span class="texto-slate">{{ $materia->total_registros }} reg.</span>
                                                 </div>
                                                 <div class="progress rounded-pill" style="height: 7px;">
                                                     <div class="progress-bar bg-{{ $colorMat }}" role="progressbar" data-width="{{ $pctMat }}"></div>
@@ -316,13 +312,13 @@
                                                     </div>
                                                 </div>
                                             @else
-                                                <span class="badge bg-light text-muted border">Impartida por otro docente</span>
+                                                <span class="badge bg-light texto-slate border">Impartida por otro docente</span>
                                             @endif
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="5" class="text-center py-5 text-muted">
+                                        <td colspan="5" class="text-center py-5 texto-slate">
                                             <i class="bi bi-journal-x fs-1 d-block mb-2 opacity-50"></i>
                                             Aún no has registrado materias para este grupo. Usa el formulario lateral para agregar la primera.
                                         </td>
@@ -336,7 +332,7 @@
         </div>
 
         <!-- 4. Alumnos Inscritos / Solicitudes en este Grupo con Regla Universitaria (3 Retardos = 1 Falta) y Derecho a Examen -->
-        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+        <div class="card rounded-4 p-4 bg-white">
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
                 <div>
                     <h5 class="fw-bold text-dark mb-0">Alumnos Inscritos, Solicitudes y Derecho a Examen Ordinario
@@ -357,7 +353,7 @@
             </div>
 
             <div class="table-responsive">
-                <table class="table table-striped table-hover align-middle mb-0">
+                <table class="table table-moderna table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
                             <th>Alumno</th>
@@ -380,7 +376,7 @@
                             <tr>
                                 <td>
                                     <div class="fw-semibold">{{ $matricula->alumno->name ?? 'Alumno' }}</div>
-                                    <div class="text-muted small">{{ $matricula->alumno->email ?? '-' }}</div>
+                                    <div class="texto-slate small">{{ $matricula->alumno->email ?? '-' }}</div>
                                 </td>
                                 <td>
                                     @if ($matricula->materia)
@@ -389,39 +385,39 @@
                                             {{ $matricula->materia->nombre_materia }}
                                         </a>
                                     @else
-                                        <span class="text-muted">Sin materia</span>
+                                        <span class="texto-slate">Sin materia</span>
                                     @endif
                                 </td>
                                 <td class="text-center">
                                     <div class="fw-bold {{ $faltasAlumno >= 3 ? 'text-danger' : ($faltasAlumno === 2 ? 'text-warning text-dark' : 'text-success') }}">
                                         {{ $faltasAlumno }} / 3 faltas
                                     </div>
-                                    <div class="text-muted" style="font-size: 0.75rem;">
+                                    <div class="texto-slate" style="font-size: 0.75rem;">
                                         Directas: {{ $faltasDirectas }} | Retardos: {{ $retardosAcum }} (+{{ $faltasPorRet }} falta{{ $faltasPorRet === 1 ? '' : 's' }})
                                     </div>
                                 </td>
                                 <td class="text-center">
                                     @if ($faltasAlumno >= 3)
-                                        <span class="badge bg-danger">
+                                        <span class="badge badge-estado badge-falta">
                                             Sin Derecho a Examen (SD)
                                         </span>
                                     @elseif ($faltasAlumno === 2)
-                                        <span class="badge bg-warning text-dark">
+                                        <span class="badge badge-estado badge-retardo">
                                             En Riesgo / Preventivo (2/3)
                                         </span>
                                     @else
-                                        <span class="badge bg-success bg-opacity-10 text-success border border-success">
+                                        <span class="badge badge-estado badge-asistencia bg-opacity-10 text-success border border-success">
                                             Con Derecho a Ordinario
                                         </span>
                                     @endif
                                 </td>
                                 <td class="text-center">
                                     @if ($matricula->estado === 'aceptado')
-                                        <span class="badge bg-success">Aceptado</span>
+                                        <span class="badge badge-estado badge-asistencia">Aceptado</span>
                                     @elseif ($matricula->estado === 'pendiente')
-                                        <span class="badge bg-warning text-dark">Pendiente</span>
+                                        <span class="badge badge-estado badge-retardo">Pendiente</span>
                                     @else
-                                        <span class="badge bg-danger">Rechazado</span>
+                                        <span class="badge badge-estado badge-falta">Rechazado</span>
                                     @endif
                                 </td>
                                 <td class="text-end">
@@ -458,7 +454,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center py-4 text-muted">
+                                <td colspan="6" class="text-center py-4 texto-slate">
                                     No hay alumnos inscritos ni solicitudes registradas en este grupo todavía.
                                 </td>
                             </tr>
@@ -511,7 +507,7 @@
                                 <div id="alumnoSeleccionadoGrupo" class="alert alert-primary d-none align-items-center justify-content-between py-2 px-3 mt-2 mb-0 rounded-3">
                                     <div class="small">
                                         <div class="fw-bold" id="nombreAlumnoSelGrupo"></div>
-                                        <div class="text-muted" id="detalleAlumnoSelGrupo"></div>
+                                        <div class="texto-slate" id="detalleAlumnoSelGrupo"></div>
                                     </div>
                                     <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2" id="btnLimpiarAlumnoGrupo" title="Cambiar alumno">
                                         <i class="bi bi-x-lg"></i>
@@ -684,7 +680,7 @@
                                     nameStrong.textContent = al.name;
 
                                     const subSpan = document.createElement('div');
-                                    subSpan.className = 'text-muted';
+                                    subSpan.className = 'texto-slate';
                                     subSpan.textContent = 'Matrícula: ' + al.matricula_codigo + ' | ' + al.email;
 
                                     infoDiv.appendChild(nameStrong);

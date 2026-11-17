@@ -6,9 +6,9 @@
     <title>Importar Alumnos por CSV - SAE QR</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    @include('partials.info-icon-css')
+    @include('partials.panel-css')
 </head>
-<body class="bg-light">
+<body>
 
     @php
         $usuario = \Illuminate\Support\Facades\Auth::user();
@@ -16,9 +16,9 @@
         $esPreview = isset($filas);
     @endphp
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <nav class="navbar navbar-expand-lg navbar-light navbar-editorial shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="#">SAE QR | Importar Alumnos</a>
+            <a class="navbar-brand fw-bold text-dark" href="#">SAE QR | Importar Alumnos</a>
             <div class="d-flex align-items-center gap-2">
                 @if ($usuario->foto_perfil)
                     <img src="{{ asset('storage/' . $usuario->foto_perfil) }}" alt="Foto de perfil" class="rounded-circle" style="width: 34px; height: 34px; object-fit: cover; border: 2px solid rgba(255,255,255,.5);">
@@ -29,14 +29,14 @@
                     $grupoOrigen = request('grupo_id') ? \App\Models\Grupo::find(request('grupo_id')) : null;
                 @endphp
                 @if ($grupoOrigen)
-                    <a href="{{ route('grupos.show', $grupoOrigen->id) }}" class="btn btn-light btn-sm text-dark fw-semibold rounded-3">
+                    <a href="{{ route('grupos.show', $grupoOrigen->id) }}" class="btn btn-outline-secondary btn-sm fw-semibold rounded-3">
                         <i class="bi bi-arrow-left me-1"></i>Volver al Grupo {{ $grupoOrigen->nombre_grupo }}
                     </a>
                     <a href="{{ route('profesor.dashboard') }}" class="btn btn-outline-secondary btn-sm text-light">
                         <i class="bi bi-house-door me-1"></i>Panel Principal
                     </a>
                 @else
-                    <a href="{{ url('/profesor/dashboard') }}" class="btn btn-light btn-sm text-dark fw-semibold rounded-3">
+                    <a href="{{ url('/profesor/dashboard') }}" class="btn btn-outline-secondary btn-sm fw-semibold rounded-3">
                         <i class="bi bi-arrow-left me-1"></i>Volver al Panel
                     </a>
                 @endif
@@ -67,12 +67,12 @@
 
         <!-- Paso 2: Previsualizacion de la importacion -->
         @if ($esPreview)
-            <div class="card border-0 shadow-sm rounded-4 bg-white mb-4">
+            <div class="card rounded-4 bg-white mb-4">
                 <div class="card-body p-4">
                     <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
                         <div>
                             <h4 class="fw-bold text-dark mb-1">Paso 2 · Revisa antes de confirmar</h4>
-                            <div class="text-muted small">
+                            <div class="texto-slate small">
                                 <i class="bi bi-book me-1"></i>{{ $materia->nombre_materia }}
                                 @if ($materia->grupo)
                                     · Grupo {{ $materia->grupo->nombre_grupo }} · {{ $materia->grupo->carrera }} · {{ $materia->grupo->turno }}
@@ -80,15 +80,15 @@
                             </div>
                         </div>
                         <div class="d-flex gap-2">
-                            <span class="badge bg-success rounded-pill px-3 py-2">{{ count($filas) }} alumnos a inscribir</span>
+                            <span class="badge badge-estado badge-asistencia rounded-pill px-3 py-2">{{ count($filas) }} alumnos a inscribir</span>
                             @if (count($errores) > 0)
-                                <span class="badge bg-danger rounded-pill px-3 py-2">{{ count($errores) }} filas con error</span>
+                                <span class="badge badge-estado badge-falta rounded-pill px-3 py-2">{{ count($errores) }} filas con error</span>
                             @endif
                         </div>
                     </div>
 
                     <div class="table-responsive mb-3">
-                        <table class="table table-striped table-hover align-middle mb-0">
+                        <table class="table table-moderna table-hover align-middle mb-0">
                             <thead class="table-light">
                                 <tr>
                                     <th>Alumno</th>
@@ -107,7 +107,7 @@
                                             @if ($fila['estado'] === 'nuevo')
                                                 <span class="badge bg-primary">Cuenta nueva</span>
                                             @elseif ($fila['estado'] === 'cuenta')
-                                                <span class="badge bg-info text-dark">Cuenta existente</span>
+                                                <span class="badge badge-estado badge-permiso">Cuenta existente</span>
                                             @else
                                                 <span class="badge bg-secondary">Ya estaba inscrito</span>
                                             @endif
@@ -115,7 +115,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="4" class="text-center text-muted py-3">No hay alumnos válidos en el archivo.</td>
+                                        <td colspan="4" class="text-center texto-slate py-3">No hay alumnos válidos en el archivo.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -149,7 +149,7 @@
         @endif
 
         <!-- Paso 1: Seleccionar destino y cargar CSV -->
-        <div class="card border-0 shadow-sm rounded-4 bg-white mb-4">
+        <div class="card rounded-4 bg-white mb-4">
             <div class="card-body p-4">
                 <div>
                     <h4 class="fw-bold text-dark mb-1">

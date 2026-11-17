@@ -6,13 +6,14 @@
     <title>Editar Grupo {{ $grupo->nombre_grupo }} - SAE QR</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    @include('partials.panel-css')
 </head>
-<body class="bg-light">
+<body>
 
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <nav class="navbar navbar-expand-lg navbar-light navbar-editorial shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ route('grupos.index') }}">
+            <a class="navbar-brand fw-bold text-dark" href="{{ route('grupos.index') }}">
                 SAE QR | Editar Grupo
             </a>
             <div class="d-flex align-items-center gap-2">
@@ -41,7 +42,7 @@
                     </div>
                 @endif
 
-                <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden">
+                <div class="card rounded-4 bg-white overflow-hidden">
                     <div class="card-header bg-warning text-dark p-4 border-0">
                         <h4 class="mb-0 fw-bold">Editar Grupo Académico: {{ $grupo->nombre_grupo }}</h4>
                     </div>

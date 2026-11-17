@@ -6,23 +6,19 @@
     <title>Gestión de Materias - SAE QR</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <style>
-        .info-icon { position: relative; display: inline-flex; align-items: center; color: #0d6efd; cursor: help; vertical-align: middle; font-size: .8em; margin-left: .15rem; padding: .1rem; }
-        .info-icon .info-icon-text { position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); min-width: 240px; max-width: 320px; background: #212529; color: #fff; font-size: .75rem; font-weight: 400; line-height: 1.35; padding: .5rem .65rem; border-radius: .4rem; box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .2); opacity: 0; visibility: hidden; transition: opacity .15s; z-index: 10; text-align: left; }
-        .info-icon:hover .info-icon-text, .info-icon:focus .info-icon-text, .info-icon:focus-within .info-icon-text { opacity: 1; visibility: visible; }
-    </style>
+        @include('partials.panel-css')
 </head>
-<body class="bg-light">
+<body>
 
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <nav class="navbar navbar-expand-lg navbar-light navbar-editorial shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="#">SAE QR | Gestión de Materias</a>
+            <a class="navbar-brand fw-bold text-dark" href="#">SAE QR | Gestión de Materias</a>
             <div class="d-flex align-items-center gap-2">
                 <a href="{{ url('/profesor/grupos') }}" class="btn btn-outline-info btn-sm me-2">
                     <i class="bi bi-card-list me-1"></i>Ver Grupos
                 </a>
-                <a href="{{ url('/profesor/dashboard') }}" class="btn btn-light btn-sm text-dark fw-semibold me-3">
+                <a href="{{ url('/profesor/dashboard') }}" class="btn btn-outline-secondary btn-sm fw-semibold me-3">
                     <i class="bi bi-arrow-left me-1"></i>Volver al Panel
                 </a>
                 @include('partials.campana')
@@ -60,7 +56,7 @@
         </div>
 
         <!-- Tabla de Materias -->
-        <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
+        <div class="card rounded-4 overflow-hidden bg-white">
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light">
@@ -74,7 +70,7 @@
                     <tbody>
                         @if($materias->isEmpty())
                             <tr>
-                                <td colspan="4" class="text-center py-5 text-muted">
+                                <td colspan="4" class="text-center py-5 texto-slate">
                                     <div class="d-flex flex-column align-items-center">
                                         <i class="bi bi-journal-x display-1 mb-3 text-secondary opacity-50"></i>
                                         <h5 class="fw-bold">No hay materias registradas aún</h5>

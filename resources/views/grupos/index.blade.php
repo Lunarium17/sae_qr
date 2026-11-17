@@ -6,26 +6,22 @@
     <title>Gestión de Grupos - SAE QR</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <style>
-        .info-icon { position: relative; display: inline-flex; align-items: center; color: #0d6efd; cursor: help; vertical-align: middle; font-size: .8em; margin-left: .15rem; padding: .1rem; }
-        .info-icon .info-icon-text { position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); min-width: 240px; max-width: 320px; background: #212529; color: #fff; font-size: .75rem; font-weight: 400; line-height: 1.35; padding: .5rem .65rem; border-radius: .4rem; box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .2); opacity: 0; visibility: hidden; transition: opacity .15s; z-index: 10; text-align: left; }
-        .info-icon:hover .info-icon-text, .info-icon:focus .info-icon-text, .info-icon:focus-within .info-icon-text { opacity: 1; visibility: visible; }
-    </style>
+    @include('partials.panel-css')
 </head>
-<body class="bg-light">
+<body>
 
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <nav class="navbar navbar-expand-lg navbar-light navbar-editorial shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="#">SAE QR | Gestión de Grupos y Materias</a>
-            <div class="d-flex align-items-center gap-3">
-                <a href="{{ url('/profesor/dashboard') }}" class="btn btn-light btn-sm text-dark fw-semibold me-3">
+            <a class="navbar-brand fw-bold text-dark" href="{{ url('/profesor/dashboard') }}">SAE QR | Gestión de Grupos</a>
+            <div class="d-flex align-items-center gap-2">
+                <a href="{{ url('/profesor/dashboard') }}" class="btn btn-outline-secondary btn-sm fw-semibold rounded-3">
                     <i class="bi bi-arrow-left me-1"></i>Volver al Panel
                 </a>
                 @include('partials.campana')
                 <form action="{{ route('logout') }}" method="POST" class="d-inline">
                     @csrf
-                    <button type="submit" class="btn btn-danger btn-sm">Cerrar Sesión</button>
+                    <button type="submit" class="btn btn-danger btn-sm rounded-3">Cerrar Sesión</button>
                 </form>
             </div>
         </div>
@@ -56,10 +52,10 @@
         </div>
 
         <!-- Tabla Responsiva de Grupos con Semáforo de Asistencia -->
-        <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden">
+        <div class="card rounded-4 bg-white overflow-hidden">
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-striped table-hover align-middle mb-0">
+                    <table class="table table-moderna table-hover align-middle mb-0">
                         <thead class="table-light">
                             <tr>
                                 <th scope="col" class="ps-4 py-3">ID</th>
@@ -74,7 +70,7 @@
                         <tbody>
                             @if($grupos->isEmpty())
                                 <tr>
-                                    <td colspan="7" class="text-center py-5 text-muted">
+                                    <td colspan="7" class="text-center py-5 texto-slate">
                                         <div class="d-flex flex-column align-items-center">
                                             <i class="bi bi-folder-x display-1 mb-3 text-secondary opacity-50"></i>
                                             <h5 class="fw-bold">No hay grupos registrados aún</h5>
@@ -103,7 +99,7 @@
                                         </td>
                                         <td>
                                             <div class="fw-semibold text-dark">{{ $grupo->grado }}</div>
-                                            <span class="text-muted small">{{ $grupo->turno }}</span>
+                                            <span class="texto-slate small">{{ $grupo->turno }}</span>
                                         </td>
                                         <td>{{ preg_replace('/([A-Za-zÁÉÍÓÚáéíóú])(\d{4})/u', '$1 $2', $grupo->periodo_lectivo) }}</td>
                                         <td class="text-center">
@@ -116,11 +112,11 @@
                                         </td>
                                         <td>
                                             @if (is_null($pct))
-                                                <span class="text-muted small"><i class="bi bi-dash-circle me-1"></i>Sin sesiones registradas</span>
+                                                <span class="texto-slate small"><i class="bi bi-dash-circle me-1"></i>Sin sesiones registradas</span>
                                             @else
                                                 <div class="d-flex justify-content-between small mb-1">
                                                     <span class="fw-bold text-{{ $colorBarra === 'warning' ? 'dark' : $colorBarra }}">{{ $pct }}%</span>
-                                                    <span class="text-muted">{{ $grupo->total_registros_grupo }} pases</span>
+                                                    <span class="texto-slate">{{ $grupo->total_registros_grupo }} pases</span>
                                                 </div>
                                                 <div class="progress rounded-pill" style="height: 8px;">
                                                     <div class="progress-bar bg-{{ $colorBarra }}" role="progressbar" data-width="{{ $pct }}"></div>

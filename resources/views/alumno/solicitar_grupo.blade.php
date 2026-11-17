@@ -6,12 +6,13 @@
     <title>Inscripción por Asignatura y Grupo - SAE QR</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    @include('partials.panel-css')
 </head>
-<body class="bg-light">
+<body>
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+    <nav class="navbar navbar-expand-lg navbar-light navbar-editorial shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="#">SAE QR | Inscripción Modular por Asignatura</a>
+            <a class="navbar-brand fw-bold text-dark" href="#">SAE QR | Inscripción Modular por Asignatura</a>
                 <a href="{{ url('/alumno/dashboard') }}" class="btn btn-light btn-sm text-primary fw-semibold">
                     <i class="bi bi-arrow-left me-1"></i>Volver a mi Panel
                 </a>
@@ -37,7 +38,7 @@
         <div class="row g-4">
             <!-- Formulario para solicitar inscripción independiente por asignatura y grupo (Carga AJAX) -->
             <div class="col-md-5">
-                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+                <div class="card rounded-4 p-4 bg-white">
                     <h5 class="fw-bold text-dark mb-4">Solicitar Inscripción en Asignatura
                         <span class="info-icon" tabindex="0" role="button" aria-label="Selecciona el grupo y busca la asignatura que deseas cursar.">
                             <i class="bi bi-info-circle"></i>
@@ -60,7 +61,7 @@
                         </div>
 
                         <div class="mb-3 d-none" id="bloque-buscador-materia">
-                            <label class="form-label fw-semibold small text-muted mb-1">Filtrar asignatura por nombre o clave</label>
+                            <label class="form-label fw-semibold small texto-slate mb-1">Filtrar asignatura por nombre o clave</label>
                             <div class="input-group input-group-sm">
                                 <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
                                 <input type="text" id="input-filtrar-materia" class="form-control" autocomplete="off">
@@ -86,11 +87,11 @@
 
             <!-- Historial de Solicitudes y Materias Inscritas individualmente -->
             <div class="col-md-7">
-                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+                <div class="card rounded-4 p-4 bg-white h-100">
                     <h5 class="fw-bold text-dark mb-1">Mis Matrículas y Solicitudes por Asignatura</h5>
-                    <p class="text-muted small mb-3">Carga académica individual asociada a cada grupo y materia.</p>
+                    <p class="texto-slate small mb-3">Carga académica individual asociada a cada grupo y materia.</p>
                     <div class="table-responsive">
-                        <table class="table table-striped table-hover align-middle">
+                        <table class="table table-moderna table-hover align-middle">
                             <thead class="table-light">
                                 <tr>
                                     <th>Grupo</th>
@@ -102,7 +103,7 @@
                             <tbody>
                                 @if($misMatriculas->isEmpty())
                                     <tr>
-                                        <td colspan="4" class="text-center text-muted py-4">Aún no has enviado solicitudes de inscripción a asignaturas.</td>
+                                        <td colspan="4" class="text-center texto-slate py-4">Aún no has enviado solicitudes de inscripción a asignaturas.</td>
                                     </tr>
                                 @else
                                     @foreach($misMatriculas as $mat)
@@ -112,23 +113,23 @@
                                                     {{ $mat->grupo->nombre_grupo ?? 'N/A' }} ({{ $mat->grupo->turno ?? '' }})
                                                 </span>
                                                 @if (!empty($mat->grupo->carrera))
-                                                    <div class="small text-muted mt-1">{{ $mat->grupo->carrera }} — {{ $mat->grupo->grado }}</div>
+                                                    <div class="small texto-slate mt-1">{{ $mat->grupo->carrera }} — {{ $mat->grupo->grado }}</div>
                                                 @endif
                                             </td>
                                             <td>
                                                 <div class="fw-semibold">{{ $mat->materia->nombre_materia ?? 'N/A' }}</div>
-                                                <small class="text-muted font-monospace">{{ $mat->materia->codigo_materia ?? '' }}</small>
+                                                <small class="texto-slate font-monospace">{{ $mat->materia->codigo_materia ?? '' }}</small>
                                             </td>
-                                            <td class="small text-muted">
+                                            <td class="small texto-slate">
                                                 <i class="bi bi-person-workspace me-1"></i>{{ optional(optional($mat->materia)->profesor)->name ?? 'Docente por asignar' }}
                                             </td>
                                             <td class="text-center">
                                                 @if($mat->estado === 'pendiente')
-                                                    <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split me-1"></i>Pendiente</span>
+                                                    <span class="badge badge-estado badge-retardo"><i class="bi bi-hourglass-split me-1"></i>Pendiente</span>
                                                 @elseif($mat->estado === 'aceptado')
-                                                    <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Aceptado</span>
+                                                    <span class="badge badge-estado badge-asistencia"><i class="bi bi-check-circle me-1"></i>Aceptado</span>
                                                 @else
-                                                    <span class="badge bg-danger"><i class="bi bi-x-circle me-1"></i>Rechazado</span>
+                                                    <span class="badge badge-estado badge-falta"><i class="bi bi-x-circle me-1"></i>Rechazado</span>
                                                 @endif
                                             </td>
                                         </tr>

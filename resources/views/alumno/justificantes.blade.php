@@ -6,20 +6,22 @@
     <title>Mis Justificantes | SAE QR</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <style>
-        .info-icon { position: relative; display: inline-flex; align-items: center; color: #0d6efd; cursor: help; vertical-align: middle; font-size: .8em; margin-left: .15rem; padding: .1rem; }
-        .info-icon .info-icon-text { position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); min-width: 240px; max-width: 320px; background: #212529; color: #fff; font-size: .75rem; font-weight: 400; line-height: 1.35; padding: .45rem .6rem; border-radius: .4rem; box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .2); opacity: 0; visibility: hidden; transition: opacity .15s; z-index: 10; text-align: left; }
-        .info-icon:hover .info-icon-text, .info-icon:focus .info-icon-text, .info-icon:focus-within .info-icon-text { opacity: 1; visibility: visible; }
-    </style>
+    @include('partials.panel-css')
 </head>
-<body class="bg-light">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light navbar-editorial shadow-sm">
         <div class="container">
-            <a class="btn btn-light btn-sm text-primary fw-semibold rounded-3" href="{{ route('alumno.dashboard') }}">
-                <i class="bi bi-arrow-left me-1"></i>Volver al Panel
-            </a>
-               @include('partials.campana')
-               <span class="navbar-text text-white fw-bold">Carga Digital de Justificantes</span>
+            <a class="navbar-brand fw-bold text-dark" href="{{ route('alumno.dashboard') }}">SAE QR | Justificantes</a>
+            <div class="d-flex align-items-center gap-2">
+                <a href="{{ route('alumno.dashboard') }}" class="btn btn-outline-secondary btn-sm fw-semibold rounded-3">
+                    <i class="bi bi-arrow-left me-1"></i>Volver al Panel
+                </a>
+                @include('partials.campana')
+                <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                    @csrf
+                    <button type="submit" class="btn btn-danger btn-sm rounded-3">Cerrar Sesión</button>
+                </form>
+            </div>
         </div>
     </nav>
 
@@ -41,8 +43,8 @@
         <div class="row g-4">
             <!-- Formulario para subir justificante -->
             <div class="col-lg-5">
-                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
-                    <h5 class="fw-bold text-dark mb-4">Subir Comprobante
+                <div class="card rounded-4 p-4 bg-white">
+                    <h5 class="titulo-panel mb-4">Subir Comprobante
                         <span class="info-icon" tabindex="0" role="button" aria-label="Elige la inasistencia o retardo a justificar y adjunta tu comprobante.">
                             <i class="bi bi-info-circle"></i>
                             <span class="info-icon-text" role="tooltip">Elige la inasistencia o retardo a justificar y adjunta tu comprobante.</span>
@@ -92,10 +94,10 @@
 
             <!-- Historial de justificantes enviados -->
             <div class="col-lg-7">
-                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
-                    <h5 class="fw-bold text-dark mb-3">Historial de Solicitudes</h5>
+                <div class="card rounded-4 p-4 bg-white h-100">
+                    <h5 class="titulo-panel mb-3">Historial de Solicitudes</h5>
                     <div class="table-responsive">
-                        <table class="table table-striped table-hover align-middle">
+                        <table class="table table-moderna table-hover align-middle">
                             <thead class="table-light">
                                 <tr>
                                     <th>Fecha Clase</th>
@@ -124,22 +126,22 @@
                                                     <i class="bi bi-file-earmark-text"></i> Ver
                                                 </a>
                                             @else
-                                                <span class="text-muted small">Sin archivo</span>
+                                                <span class="texto-slate small">Sin archivo</span>
                                             @endif
                                         </td>
                                         <td>
                                             @if($just->estado_aprobacion === 'pendiente')
-                                                <span class="badge bg-warning text-dark">Pendiente</span>
+                                                <span class="badge badge-estado badge-retardo">Pendiente</span>
                                             @elseif($just->estado_aprobacion === 'aceptado')
-                                                <span class="badge bg-success">Aceptado (Permiso)</span>
+                                                <span class="badge badge-estado badge-asistencia">Aceptado (Permiso)</span>
                                             @else
-                                                <span class="badge bg-danger">Rechazado</span>
+                                                <span class="badge badge-estado badge-falta">Rechazado</span>
                                             @endif
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="5" class="text-center text-muted py-4">No has enviado ningún justificante todavía.</td>
+                                        <td colspan="5" class="text-center texto-slate py-4">No has enviado ningún justificante todavía.</td>
                                     </tr>
                                 @endforelse
                             </tbody>

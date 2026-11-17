@@ -6,27 +6,23 @@
     <title>Códigos de Acceso Docente - SAE QR</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <style>
-        .info-icon { position: relative; display: inline-flex; align-items: center; color: #0d6efd; cursor: help; vertical-align: middle; font-size: .8em; margin-left: .15rem; padding: .1rem; }
-        .info-icon .info-icon-text { position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); min-width: 240px; max-width: 320px; background: #212529; color: #fff; font-size: .75rem; font-weight: 400; line-height: 1.35; padding: .5rem .65rem; border-radius: .4rem; box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .2); opacity: 0; visibility: hidden; transition: opacity .15s; z-index: 10; text-align: left; }
-        .info-icon:hover .info-icon-text, .info-icon:focus .info-icon-text, .info-icon:focus-within .info-icon-text { opacity: 1; visibility: visible; }
-    </style>
+        @include('partials.panel-css')
 </head>
-<body class="bg-light">
+<body>
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <nav class="navbar navbar-expand-lg navbar-light navbar-editorial shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ route('admin.dashboard') }}">
-                SAE QR | Panel de Administrador
+            <a class="navbar-brand fw-bold text-dark" href="{{ route('admin.dashboard') }}">
+                SAE QR | Ódigos Docentes
             </a>
             <div class="d-flex align-items-center gap-2">
-                <a href="{{ route('admin.dashboard') }}" class="btn btn-light btn-sm text-dark fw-semibold rounded-3">
+                <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary btn-sm fw-semibold rounded-3">
                     Dashboard
                 </a>
-                <a href="{{ route('admin.usuarios') }}" class="btn btn-light btn-sm text-dark fw-semibold rounded-3">
+                <a href="{{ route('admin.usuarios') }}" class="btn btn-outline-secondary btn-sm fw-semibold rounded-3">
                     Usuarios
                 </a>
-                <a href="{{ route('admin.perfil') }}" class="btn btn-light btn-sm text-dark fw-semibold rounded-3">
+                <a href="{{ route('admin.perfil') }}" class="btn btn-outline-secondary btn-sm fw-semibold rounded-3">
                     Mi Perfil
                 </a>
                 <form action="{{ route('logout') }}" method="POST" class="d-inline">
@@ -49,7 +45,7 @@
         </span>
                 </h3>
             </div>
-            <a href="{{ route('admin.dashboard') }}" class="btn btn-light btn-sm text-dark fw-semibold rounded-3">
+            <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary btn-sm fw-semibold rounded-3">
                 <i class="bi bi-arrow-left me-1"></i>Volver al Panel
             </a>
         </div>
@@ -73,7 +69,7 @@
         @endif
 
         <!-- Formulario para generar nuevo código -->
-        <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card rounded-4 mb-4">
             <div class="card-body p-4">
                 <h5 class="fw-bold mb-3">Generar Nuevo Código Docente</h5>
                 <form action="{{ route('admin.codigos.generar') }}" method="POST" class="row g-3 align-items-end">
@@ -96,7 +92,7 @@
         </div>
 
         <!-- Tabla de códigos generados -->
-        <div class="card border-0 shadow-sm rounded-4">
+        <div class="card rounded-4">
             <div class="card-header bg-white border-bottom pt-4 px-4">
                 <div class="d-flex justify-content-between align-items-center">
                     <h5 class="fw-bold mb-0">Historial de Códigos</h5>
@@ -105,7 +101,7 @@
             </div>
             <div class="card-body p-4">
                 <div class="table-responsive">
-                    <table class="table table-striped table-hover align-middle mb-0">
+                    <table class="table table-moderna table-hover align-middle mb-0">
                         <thead class="table-light">
                             <tr>
                                 <th>Código</th>
@@ -131,7 +127,7 @@
                                                 Canjeado
                                             </span>
                                         @else
-                                            <span class="badge bg-success px-3 py-2 rounded-pill">
+                                            <span class="badge badge-estado badge-asistencia px-3 py-2 rounded-pill">
                                                 Disponible · un solo uso
                                             </span>
                                         @endif
@@ -139,19 +135,19 @@
                                     <td>
                                         @if ($cod->usado && $cod->usadoPor)
                                             <div class="fw-semibold">{{ $cod->usadoPor->name }}</div>
-                                            <small class="text-muted">{{ $cod->usadoPor->email }}</small>
+                                            <small class="texto-slate">{{ $cod->usadoPor->email }}</small>
                                             @if ($cod->usado_en)
-                                                <div class="text-muted" style="font-size: 0.75rem;">
+                                                <div class="texto-slate" style="font-size: 0.75rem;">
                                                     Usado el {{ $cod->usado_en->format('d/m/Y H:i') }}
                                                 </div>
                                             @endif
                                         @elseif ($cod->usado)
-                                            <span class="text-muted fst-italic">Usuario eliminado</span>
+                                            <span class="texto-slate fst-italic">Usuario eliminado</span>
                                         @else
-                                            <span class="text-muted small">Sin utilizar aún</span>
+                                            <span class="texto-slate small">Sin utilizar aún</span>
                                         @endif
                                     </td>
-                                    <td class="small text-muted">
+                                    <td class="small texto-slate">
                                         {{ $cod->created_at ? $cod->created_at->format('d/m/Y H:i') : '—' }}
                                     </td>
                                     <td class="text-end">
@@ -173,7 +169,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="text-center text-muted py-4">
+                                    <td colspan="6" class="text-center texto-slate py-4">
                                         No hay códigos registrados todavía. Utiliza el formulario superior para generar el primero.
                                     </td>
                                 </tr>

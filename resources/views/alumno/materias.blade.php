@@ -6,8 +6,9 @@
     <title>Mis Materias Inscritas - SAE QR</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    @include('partials.panel-css')
 </head>
-<body class="bg-light">
+<body>
 
     @php
         $alumno = \Illuminate\Support\Facades\Auth::user();
@@ -51,9 +52,9 @@
         }
     @endphp
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+    <nav class="navbar navbar-expand-lg navbar-light navbar-editorial shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="#">SAE QR | Mis Materias</a>
+            <a class="navbar-brand fw-bold text-dark" href="#">SAE QR | Mis Materias</a>
             <div class="d-flex align-items-center gap-2">
                 @if ($alumno->foto_perfil)
                     <img src="{{ asset('storage/' . $alumno->foto_perfil) }}" alt="Foto de perfil" class="rounded-circle" style="width: 34px; height: 34px; object-fit: cover; border: 2px solid rgba(255,255,255,.5);">
@@ -73,17 +74,17 @@
     </nav>
 
     <div class="container my-5">
-        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+        <div class="card rounded-4 p-4 bg-white">
             <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
                 <div>
                     <h5 class="fw-bold text-dark mb-1">Mis Materias Inscritas y Derecho a Examen Ordinario</h5>
-                    <div class="text-muted small">3 retardos = 1 falta · máx. 3 faltas.</div>
+                    <div class="texto-slate small">3 retardos = 1 falta · máx. 3 faltas.</div>
                 </div>
                 <span class="badge bg-primary rounded-pill">{{ $matriculasAceptadas->count() }} Materias Aceptadas</span>
             </div>
 
             <div class="table-responsive">
-                <table class="table table-striped table-hover align-middle mb-0">
+                <table class="table table-moderna table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
                             <th>Grupo / Carrera</th>
@@ -112,7 +113,7 @@
                                                 <span class="fw-semibold" style="color: {{ \App\Support\CarreraColor::color($mat->grupo->carrera) }}; font-size: .75rem; line-height: 1.25;">{{ $mat->grupo->carrera }}</span>
                                             @endif
                                             @if (!empty($mat->grupo->grado))
-                                                <span class="text-muted ms-1">{{ $mat->grupo->grado }}</span>
+                                                <span class="texto-slate ms-1">{{ $mat->grupo->grado }}</span>
                                             @endif
                                         </div>
                                     @endif
@@ -122,22 +123,22 @@
                                         <span class="badge bg-dark me-1">{{ $mat->materia->codigo_materia }}</span>
                                         <span class="fw-semibold text-dark">{{ $mat->materia->nombre_materia }}</span>
                                     @else
-                                        <span class="text-muted">Sin materia</span>
+                                        <span class="texto-slate">Sin materia</span>
                                     @endif
                                 </td>
                                 <td class="text-center">
-                                    <span class="badge bg-success me-1">A: {{ $mat->asistencias_mat }}</span>
-                                    <span class="badge bg-warning text-dark me-1">R: {{ $mat->retardos_mat }}</span>
-                                    <span class="badge bg-info text-dark me-1">P: {{ $mat->permisos_mat }}</span>
-                                    <span class="badge bg-danger">F: {{ $mat->faltas_mat }}</span>
+                                    <span class="badge badge-estado badge-asistencia me-1">A: {{ $mat->asistencias_mat }}</span>
+                                    <span class="badge badge-estado badge-retardo me-1">R: {{ $mat->retardos_mat }}</span>
+                                    <span class="badge badge-estado badge-permiso me-1">P: {{ $mat->permisos_mat }}</span>
+                                    <span class="badge badge-estado badge-falta">F: {{ $mat->faltas_mat }}</span>
                                 </td>
                                 <td>
                                     @if (is_null($pctM))
-                                        <span class="text-muted small">Sin sesiones aún</span>
+                                        <span class="texto-slate small">Sin sesiones aún</span>
                                     @else
                                         <div class="d-flex justify-content-between small mb-1">
                                             <span class="fw-bold text-{{ $colorM === 'warning' ? 'dark' : $colorM }}">{{ $pctM }}%</span>
-                                            <span class="text-muted">{{ $mat->total_sesiones }} sesiones</span>
+                                            <span class="texto-slate">{{ $mat->total_sesiones }} sesiones</span>
                                         </div>
                                         <div class="progress rounded-pill" style="height: 7px;">
                                             <div class="progress-bar bg-{{ $colorM }}" role="progressbar" data-width="{{ $pctM }}"></div>
@@ -148,21 +149,21 @@
                                     <div class="fw-bold {{ $mat->faltas_totales_mat >= 3 ? 'text-danger' : ($mat->faltas_totales_mat === 2 ? 'text-warning text-dark' : 'text-success') }}">
                                         {{ $mat->faltas_totales_mat }} / 3 faltas
                                     </div>
-                                    <div class="text-muted" style="font-size: 0.75rem;">
+                                    <div class="texto-slate" style="font-size: 0.75rem;">
                                         {{ $mat->faltas_mat }} dir. + {{ $mat->faltas_retardos_mat }} por {{ $mat->retardos_mat }} ret.
                                     </div>
                                 </td>
                                 <td class="text-center">
                                     @if ($mat->faltas_totales_mat >= 3)
-                                        <span class="badge bg-danger">
+                                        <span class="badge badge-estado badge-falta">
                                             Sin Derecho a Examen (SD)
                                         </span>
                                     @elseif ($mat->faltas_totales_mat === 2)
-                                        <span class="badge bg-warning text-dark">
+                                        <span class="badge badge-estado badge-retardo">
                                             En Riesgo / Preventivo (2/3)
                                         </span>
                                     @else
-                                        <span class="badge bg-success bg-opacity-10 text-success border border-success">
+                                        <span class="badge badge-estado badge-asistencia bg-opacity-10 text-success border border-success">
                                             Con Derecho a Ordinario
                                         </span>
                                     @endif
@@ -170,7 +171,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center py-4 text-muted">
+                                <td colspan="6" class="text-center py-4 texto-slate">
                                     Aún no tienes materias aceptadas. Ve al inicio y haz clic en <strong>"Buscar y Solicitar Grupo"</strong> para inscribirte.
                                 </td>
                             </tr>

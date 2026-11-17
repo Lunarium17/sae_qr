@@ -6,27 +6,23 @@
     <title>{{ $materia->nombre_materia }} | Alumnos Inscritos - SAE QR</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <style>
-        .info-icon { position: relative; display: inline-flex; align-items: center; color: #0d6efd; cursor: help; vertical-align: middle; font-size: .8em; margin-left: .15rem; padding: .1rem; }
-        .info-icon .info-icon-text { position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); min-width: 240px; max-width: 320px; background: #212529; color: #fff; font-size: .75rem; font-weight: 400; line-height: 1.35; padding: .5rem .65rem; border-radius: .4rem; box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .2); opacity: 0; visibility: hidden; transition: opacity .15s; z-index: 10; text-align: left; }
-        .info-icon:hover .info-icon-text, .info-icon:focus .info-icon-text, .info-icon:focus-within .info-icon-text { opacity: 1; visibility: visible; }
-    </style>
+        @include('partials.panel-css')
 </head>
-<body class="bg-light">
+<body>
 
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <nav class="navbar navbar-expand-lg navbar-light navbar-editorial shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ $materia->grupo_id ? route('grupos.show', $materia->grupo_id) : route('grupos.index') }}">
+            <a class="navbar-brand fw-bold text-dark" href="{{ $materia->grupo_id ? route('grupos.show', $materia->grupo_id) : route('grupos.index') }}">
                 SAE QR | {{ $materia->nombre_materia }}
             </a>
             <div class="d-flex align-items-center gap-2">
                 @if ($materia->grupo_id)
-                    <a href="{{ route('grupos.show', $materia->grupo_id) }}" class="btn btn-light btn-sm text-dark fw-semibold">
+                    <a href="{{ route('grupos.show', $materia->grupo_id) }}" class="btn btn-outline-secondary btn-sm fw-semibold">
                         <i class="bi bi-arrow-left me-1"></i>Volver al Grupo {{ $materia->grupo->nombre_grupo }}
                     </a>
                 @else
-                    <a href="{{ route('grupos.index') }}" class="btn btn-light btn-sm text-dark fw-semibold">
+                    <a href="{{ route('grupos.index') }}" class="btn btn-outline-secondary btn-sm fw-semibold">
                         <i class="bi bi-arrow-left me-1"></i>Volver a Grupos
                     </a>
                 @endif
@@ -65,7 +61,7 @@
         @endif
 
         <!-- 1. Encabezado de la Materia y Acciones Rápidas -->
-        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+        <div class="card rounded-4 p-4 bg-white mb-4">
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
                 <div>
                     <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
@@ -76,7 +72,7 @@
                         </a>
                     </div>
                     @if ($materia->grupo)
-                        <p class="text-muted mb-0 mt-2">
+                        <p class="texto-slate mb-0 mt-2">
                             <span class="me-3"><strong>Grupo:</strong> {{ $materia->grupo->nombre_grupo }}</span>
                             @if ($materia->grupo->carrera)
                                 <span class="me-3"><strong>Carrera:</strong> {{ $materia->grupo->carrera }}</span>
@@ -91,11 +87,11 @@
                 <div class="d-flex flex-wrap align-items-center gap-3">
                     <div class="px-3 py-2 bg-light rounded-3 border text-center">
                         <div class="fs-5 fw-bold text-success">{{ $materia->matriculas->where('estado', 'aceptado')->count() }}</div>
-                        <div class="small text-muted">Alumnos Aceptados</div>
+                        <div class="small texto-slate">Alumnos Aceptados</div>
                     </div>
                     <div class="px-3 py-2 bg-light rounded-3 border text-center">
                         <div class="fs-5 fw-bold text-warning text-dark">{{ $materia->matriculas->where('estado', 'pendiente')->count() }}</div>
-                        <div class="small text-muted">Pendientes</div>
+                        <div class="small texto-slate">Pendientes</div>
                     </div>
                     <a href="{{ route('sesiones.index', ['materia_id' => $materia->id]) }}" class="btn btn-primary rounded-3 px-4 py-2 fw-semibold shadow-sm">
                         <i class="bi bi-qr-code-scan me-2"></i>Iniciar Clase QR
@@ -107,7 +103,7 @@
         <div class="row g-4">
             <!-- 2. Formulario Lateral: Inscribir Alumno Manualmente por Búsqueda Dinámica -->
             <div class="col-lg-4">
-                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+                <div class="card rounded-4 p-4 bg-white h-100">
                     <h5 class="fw-bold text-dark mb-3">
                         Inscribir Alumno Manualmente
                         <span class="info-icon" tabindex="0" role="button" aria-label="Busca por nombre, matrícula o correo para inscribir en {{ $materia->nombre_materia }}.">
@@ -139,7 +135,7 @@
                             <div id="alumnoSeleccionadoMateria" class="alert alert-primary d-none align-items-center justify-content-between py-2 px-3 mt-2 mb-0 rounded-3">
                                 <div class="small">
                                     <div class="fw-bold" id="nombreAlumnoSelMateria"></div>
-                                    <div class="text-muted" id="detalleAlumnoSelMateria"></div>
+                                    <div class="texto-slate" id="detalleAlumnoSelMateria"></div>
                                 </div>
                                 <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2" id="btnLimpiarAlumnoMateria" title="Cambiar alumno">
                                     <i class="bi bi-x-lg"></i>
@@ -156,7 +152,7 @@
 
             <!-- 3. Tabla de Alumnos Inscritos y Resumen de Asistencia en esta Materia -->
             <div class="col-lg-8">
-                <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+                <div class="card rounded-4 p-4 bg-white h-100">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="fw-bold text-dark mb-0">
                             Padrón de Alumnos de la Materia
@@ -169,7 +165,7 @@
                     </div>
 
                     <div class="table-responsive">
-                        <table class="table table-striped table-hover align-middle mb-0">
+                        <table class="table table-moderna table-hover align-middle mb-0">
                             <thead class="table-light">
                                 <tr>
                                     <th>Alumno</th>
@@ -193,16 +189,16 @@
                                     <tr>
                                         <td>
                                             <div class="fw-semibold text-dark">{{ $matricula->alumno->name ?? 'Alumno' }}</div>
-                                            <div class="text-muted small">{{ $matricula->alumno->email ?? '-' }}</div>
+                                            <div class="texto-slate small">{{ $matricula->alumno->email ?? '-' }}</div>
                                         </td>
                                         <td class="text-center">
                                             <div class="mb-1">
-                                                <span class="badge bg-success me-1" title="Asistencias">A: {{ $asistCount }}</span>
-                                                <span class="badge bg-warning text-dark me-1" title="Retardos acumulados">R: {{ $retCount }}</span>
-                                                <span class="badge bg-info text-dark me-1" title="Permisos / Justificados">P: {{ $permCount }}</span>
-                                                <span class="badge bg-danger" title="Faltas directas">F: {{ $faltCount }}</span>
+                                                <span class="badge badge-estado badge-asistencia me-1" title="Asistencias">A: {{ $asistCount }}</span>
+                                                <span class="badge badge-estado badge-retardo me-1" title="Retardos acumulados">R: {{ $retCount }}</span>
+                                                <span class="badge badge-estado badge-permiso me-1" title="Permisos / Justificados">P: {{ $permCount }}</span>
+                                                <span class="badge badge-estado badge-falta" title="Faltas directas">F: {{ $faltCount }}</span>
                                             </div>
-                                            <div class="small text-muted">
+                                            <div class="small texto-slate">
                                                 Total computado: <strong>{{ $faltasTotales }} / 3 faltas</strong>
                                                 @if ($faltasPorRet > 0)
                                                     <span class="text-danger">({{ $faltCount }} dir. + {{ $faltasPorRet }} por retardos)</span>
@@ -211,26 +207,26 @@
                                         </td>
                                         <td class="text-center">
                                             @if ($faltasTotales >= 3)
-                                                <span class="badge bg-danger">
+                                                <span class="badge badge-estado badge-falta">
                                                     Sin Derecho a Examen (SD)
                                                 </span>
                                             @elseif ($faltasTotales === 2)
-                                                <span class="badge bg-warning text-dark">
+                                                <span class="badge badge-estado badge-retardo">
                                                     En Riesgo (2/3)
                                                 </span>
                                             @else
-                                                <span class="badge bg-success bg-opacity-10 text-success border border-success">
+                                                <span class="badge badge-estado badge-asistencia bg-opacity-10 text-success border border-success">
                                                     Con Derecho a Ordinario
                                                 </span>
                                             @endif
                                         </td>
                                         <td class="text-center">
                                             @if ($matricula->estado === 'aceptado')
-                                                <span class="badge bg-success">Aceptado</span>
+                                                <span class="badge badge-estado badge-asistencia">Aceptado</span>
                                             @elseif ($matricula->estado === 'pendiente')
-                                                <span class="badge bg-warning text-dark">Pendiente</span>
+                                                <span class="badge badge-estado badge-retardo">Pendiente</span>
                                             @else
-                                                <span class="badge bg-danger">Rechazado</span>
+                                                <span class="badge badge-estado badge-falta">Rechazado</span>
                                             @endif
                                         </td>
                                         <td class="text-end">
@@ -267,7 +263,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="5" class="text-center py-5 text-muted">
+                                        <td colspan="5" class="text-center py-5 texto-slate">
                                             <i class="bi bi-people fs-1 d-block mb-2 opacity-50"></i>
                                             Aún no hay alumnos inscritos en esta materia. Puedes inscribirlos manualmente desde el panel izquierdo.
                                         </td>
@@ -353,7 +349,7 @@
                                 nameStrong.textContent = al.name;
 
                                 const subSpan = document.createElement('div');
-                                subSpan.className = 'text-muted';
+                                subSpan.className = 'texto-slate';
                                 subSpan.textContent = 'Matrícula: ' + al.matricula_codigo + ' | ' + al.email;
 
                                 infoDiv.appendChild(nameStrong);

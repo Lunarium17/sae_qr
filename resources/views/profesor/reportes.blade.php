@@ -6,49 +6,28 @@
     <title>Reportes y Exportación | SAE QR</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <style>
-        .table-moderna thead th {
-            background-color: #f8fafc;
-            color: #334155;
-            font-size: .78rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: .03em;
-            border-bottom: 1px solid #e2e8f0;
-            white-space: nowrap;
-            padding: .75rem .85rem;
-        }
-        .table-moderna tbody td {
-            font-size: .85rem;
-            color: #1e293b;
-            border-bottom: 1px solid #eef2f7;
-            padding: .7rem .85rem;
-            vertical-align: middle;
-        }
-        .table-moderna tbody tr:hover { background-color: #f8fafc; }
-        .badge-estado { border-radius: 50rem; font-weight: 600; text-transform: uppercase; font-size: .68rem; padding: .35rem .65rem; }
-        .badge-asistencia { background: #dcfce7; color: #14532d; }
-        .badge-retardo { background: #fef9c3; color: #713f12; }
-        .badge-permiso { background: #dbeafe; color: #1e3a8a; }
-        .badge-falta { background: #fee2e2; color: #7f1d1d; }
-    </style>
+    @include('partials.panel-css')
 </head>
-<body class="bg-light">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light navbar-editorial shadow-sm">
         <div class="container">
-            <span class="navbar-text text-white fw-bold">Módulo Analítico de Reportes</span>
-            <div class="d-flex align-items-center gap-3">
-                <a class="btn btn-light btn-sm text-dark fw-semibold rounded-3" href="{{ route('profesor.dashboard') }}">
+            <a class="navbar-brand fw-bold text-dark" href="{{ route('profesor.dashboard') }}">SAE QR | Reportes</a>
+            <div class="d-flex align-items-center gap-2">
+                <a class="btn btn-outline-secondary btn-sm fw-semibold rounded-3" href="{{ route('profesor.dashboard') }}">
                     <i class="bi bi-arrow-left me-1"></i>Volver al Panel
                 </a>
                 @include('partials.campana')
+                <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                    @csrf
+                    <button type="submit" class="btn btn-danger btn-sm rounded-3">Cerrar Sesión</button>
+                </form>
             </div>
         </div>
     </nav>
 
     <div class="container my-5">
         <!-- Filtros y botones de descarga directa -->
-        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+        <div class="card rounded-4 p-4 bg-white mb-4">
             <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
                 <h5 class="fw-bold mb-0">Filtros y Descarga de Reportes</h5>
                 <div class="d-flex flex-wrap gap-2">
@@ -101,11 +80,11 @@
         @endphp
 
         <!-- Tabla de resultados homologada con el reporte de Excel y el PDF descargable -->
-        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+        <div class="card rounded-4 p-4 bg-white">
             <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
                 <div>
-                    <h4 class="fw-bold text-dark mb-0">Reporte Consolidado de Asistencia Escolar</h4>
-                    <p class="text-muted small mb-0">Docente: {{ Auth::user()->name }} | Fecha de consulta: {{ date('Y-m-d H:i') }}</p>
+                    <h4 class="fw-bold mb-0" style="color: #0F172A;">Reporte Consolidado de Asistencia Escolar</h4>
+                    <p class="texto-slate small mb-0">Docente: {{ Auth::user()->name }} | Fecha de consulta: {{ date('Y-m-d H:i') }}</p>
                 </div>
                 <div class="d-flex flex-wrap gap-2">
                     <span class="badge bg-light text-dark border fs-6">{{ $registros->count() }} Registros</span>
@@ -154,7 +133,7 @@
                                 <td>{{ $reg->sesion->materia->nombre_materia ?? '-' }}</td>
                                 <td class="text-nowrap">{{ $reg->alumno->matricula_codigo ?? 'S/M' }}</td>
                                 <td class="fw-semibold">{{ $reg->alumno->name ?? '-' }}</td>
-                                <td class="small text-muted">{{ $reg->alumno->email ?? '-' }}</td>
+                                <td class="small texto-slate">{{ $reg->alumno->email ?? '-' }}</td>
                                 <td class="text-nowrap">{{ $reg->timestamp_escaneo ?? $reg->hora_pase ?? '--:--' }}</td>
                                 <td class="text-center">
                                     <span class="badge badge-estado {{ $badgeEstado }}">{{ $reg->estado_incidencia }}</span>
@@ -163,7 +142,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="10" class="text-center text-muted py-4">No hay registros de asistencia para los filtros seleccionados.</td>
+                                <td colspan="10" class="text-center texto-slate py-4">No hay registros de asistencia para los filtros seleccionados.</td>
                             </tr>
                         @endforelse
                     </tbody>

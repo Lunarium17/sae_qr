@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     @include('partials.panel-css')
 </head>
-<body class="bg-light">
+<body>
 
     @php
         $profesor = \Illuminate\Support\Facades\Auth::user();
@@ -66,16 +66,16 @@
         $periodosActivos = $misMaterias->pluck('grupo.periodo_lectivo')->filter()->unique()->values();
     @endphp
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <nav class="navbar navbar-expand-lg navbar-light navbar-editorial shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ route('profesor.dashboard') }}">SAE QR | Inicio</a>
+            <a class="navbar-brand fw-bold text-dark" href="{{ route('profesor.dashboard') }}">SAE QR | Inicio</a>
             <div class="d-flex align-items-center gap-2">
                 @if ($profesor->foto_perfil)
-                    <img src="{{ asset('storage/' . $profesor->foto_perfil) }}" alt="Foto de perfil" class="rounded-circle" style="width: 34px; height: 34px; object-fit: cover; border: 2px solid rgba(255,255,255,.5);">
+                    <img src="{{ asset('storage/' . $profesor->foto_perfil) }}" alt="Foto de perfil" class="rounded-circle" style="width: 34px; height: 34px; object-fit: cover; border: 2px solid #E2E8F0;">
                 @else
-                    <span class="d-inline-flex align-items-center justify-content-center rounded-circle fw-bold text-white" style="width: 34px; height: 34px; background: hsl({{ $avHue }}, 65%, 45%); font-size: .85rem;">{{ mb_strtoupper(mb_substr($profesor->name ?? 'U', 0, 1)) }}</span>
+                    <span class="d-inline-flex align-items-center justify-content-center rounded-circle fw-bold" style="width: 34px; height: 34px; background: #EFF6FF; color: #2563EB; font-size: .75rem;">{{ mb_strtoupper(mb_substr($profesor->name ?? 'U', 0, 1)) }}</span>
                 @endif
-                <a href="{{ route('profesor.perfil') }}" class="btn btn-light btn-sm text-dark fw-semibold rounded-3">
+                <a href="{{ route('profesor.perfil') }}" class="btn btn-outline-secondary btn-sm fw-semibold rounded-3">
                     Mi Perfil
                 </a>
                 @include('partials.campana')
@@ -112,80 +112,83 @@
             </div>
         </div>
 
-        <!-- 2. Tarjetas de KPIs Clicables en Tiempo Real -->
-        <div class="row g-3 mb-4">
-            <div class="col-md-3 col-sm-6">
-                <a href="{{ route('grupos.index') }}" class="d-block text-decoration-none text-reset h-100">
-                    <div class="card card-hover border-0 border-start border-4 border-primary shadow-sm rounded-4 p-3 kpi-azul h-100">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="text-secondary small text-uppercase fw-bold mb-1">Grupos y Materias</h6>
-                                <h3 class="fw-bold text-primary mb-0">{{ $gruposCount }} Grupos</h3>
+        <!-- 2. Métricas Bento: Protagonista + Indicadores -->
+        <div class="row g-4 mb-5">
+            <div class="col-12 col-md-6">
+                <a href="{{ route('profesor.estadisticas') }}" class="d-block text-decoration-none h-100">
+                    <div class="bento kpi-prota h-100 p-4 d-flex align-items-center justify-content-between gap-3">
+                        <div>
+                            <div class="small fw-semibold" style="color: rgba(255,255,255,.65);">Asistencia Global</div>
+                            <div class="numero-hero text-white mt-2">{{ $porcentajeAsistencia }}%</div>
+                            <div class="progress rounded-pill mt-3" style="height: 10px; width: 220px; max-width: 100%;">
+                                <div class="progress-bar" role="progressbar" data-width="{{ $porcentajeAsistencia }}" style="background: {{ ['success' => '#34D399', 'warning' => '#FBBF24', 'danger' => '#F87171'][$colorSemaforoGlobal] ?? '#34D399' }};"></div>
                             </div>
-                            <div class="rounded-4 p-3 text-white" style="background: #2563eb;">
-                                <i class="bi bi-collection fs-3"></i>
+                            <div class="d-flex align-items-center gap-2 small mt-3" style="color: rgba(255,255,255,.65);">
+                                <span class="punto-estado" style="background: #34D399;"></span>{{ $asistenciasEfectivas }} de {{ $totalRegistros }} registros efectivos
                             </div>
+                        </div>
+                        <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 92px; height: 92px; background: rgba(255,255,255,.10); border: 1px solid rgba(255,255,255,.18);">
+                            <i class="bi bi-graph-up-arrow fs-2"></i>
                         </div>
                     </div>
                 </a>
             </div>
-
-            <div class="col-md-3 col-sm-6">
-                <a href="{{ route('profesor.solicitudes') }}" class="d-block text-decoration-none text-reset h-100">
-                    <div class="card card-hover border-0 border-start border-4 border-success shadow-sm rounded-4 p-3 kpi-esmeralda h-100">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="text-secondary small text-uppercase fw-bold mb-1">Matrícula Activa</h6>
-                                <h3 class="fw-bold text-success mb-0">{{ $alumnosAceptadosCount }} Inscritos</h3>
-                            </div>
-                            <div class="rounded-4 p-3 text-white" style="background: #059669;">
-                                <i class="bi bi-people-fill fs-3"></i>
-                            </div>
+            <div class="col-6 col-md-2">
+                <a href="{{ route('grupos.index') }}" class="d-block text-decoration-none h-100">
+                    <div class="bento metrica-cielo h-100 p-3 d-flex flex-column justify-content-between" style="min-height: 184px;">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <span class="texto-slate small fw-semibold">Grupos</span>
+                            <i class="bi bi-collection fs-6" style="color: #94A3B8;"></i>
+                        </div>
+                        <div class="numero-bento">{{ $gruposCount }}</div>
+                        <div class="d-flex align-items-center gap-2 texto-slate" style="font-size: .72rem;">
+                            <span class="punto-estado" style="background: #2563EB;"></span>{{ $materiasCount }} materias
                         </div>
                     </div>
                 </a>
             </div>
-
-            <div class="col-md-3 col-sm-6">
-                <a href="{{ route('sesiones.index') }}" class="d-block text-decoration-none text-reset h-100">
-                    <div class="card card-hover border-0 border-start border-4 shadow-sm rounded-4 p-3 kpi-indigo h-100" style="border-color: #6366f1;">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="text-secondary small text-uppercase fw-bold mb-1">Clases Impartidas</h6>
-                                <h3 class="fw-bold mb-0" style="color: #4f46e5;">{{ $totalSesiones }} Sesiones</h3>
+            <div class="col-6 col-md-2">
+                <a href="{{ route('profesor.solicitudes') }}" class="d-block text-decoration-none h-100">
+                    <div class="bento metrica-esmeralda h-100 p-3 d-flex flex-column justify-content-between" style="min-height: 184px;">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <span class="texto-slate small fw-semibold">Matrícula</span>
+                            <i class="bi bi-people-fill fs-6" style="color: #94A3B8;"></i>
+                        </div>
+                        <div class="numero-bento">{{ $alumnosAceptadosCount }}</div>
+                        @if ($solicitudesPendientes > 0)
+                            <div class="d-flex align-items-center gap-2 texto-slate" style="font-size: .72rem;">
+                                <span class="punto-estado" style="background: #D97706;"></span>{{ $solicitudesPendientes }} solicitudes
                             </div>
-                            <div class="rounded-4 p-3 text-white" style="background: #6366f1;">
-                                <i class="bi bi-easel fs-3"></i>
+                        @else
+                            <div class="d-flex align-items-center gap-2 texto-slate" style="font-size: .72rem;">
+                                <span class="punto-estado" style="background: #059669;"></span>Solicitudes al día
                             </div>
+                        @endif
+                    </div>
+                </a>
+            </div>
+            <div class="col-6 col-md-2">
+                <a href="{{ route('sesiones.index') }}" class="d-block text-decoration-none h-100">
+                    <div class="bento metrica-indigo h-100 p-3 d-flex flex-column justify-content-between" style="min-height: 184px;">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <span class="texto-slate small fw-semibold">Clases</span>
+                            <i class="bi bi-easel fs-6" style="color: #94A3B8;"></i>
+                        </div>
+                        <div class="numero-bento">{{ $totalSesiones }}</div>
+                        <div class="d-flex align-items-center gap-2 texto-slate" style="font-size: .72rem;">
+                            <span class="punto-estado" style="background: {{ $sesionesActivasCount > 0 ? '#059669' : '#6366F1' }};"></span>{{ $sesionesActivasCount }} activa{{ $sesionesActivasCount === 1 ? '' : 's' }} ahora
                         </div>
                     </div>
                 </a>
             </div>
-
-            <div class="col-md-3 col-sm-6">
-                <a href="{{ route('profesor.estadisticas') }}" class="d-block text-decoration-none text-reset h-100">
-                    <div class="card card-hover border-0 border-start border-4 border-{{ $colorSemaforoGlobal }} shadow-sm rounded-4 p-3 bg-{{ $colorSemaforoGlobal }} bg-opacity-10 h-100">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <div>
-                                <h6 class="text-secondary small text-uppercase fw-bold mb-1">Asistencia Global</h6>
-                                <h3 class="fw-bold text-{{ $colorSemaforoGlobal }} mb-0">{{ $porcentajeAsistencia }}%</h3>
-                            </div>
-                            <div class="bg-{{ $colorSemaforoGlobal }} {{ $colorSemaforoGlobal === 'warning' ? 'text-dark' : 'text-white' }} rounded-4 p-3">
-                                <i class="bi bi-graph-up-arrow fs-3"></i>
-                            </div>
-                        </div>
-                        <div class="progress rounded-pill bg-white" style="height: 8px;">
-                            <div class="progress-bar bg-{{ $colorSemaforoGlobal }}" role="progressbar" data-width="{{ $porcentajeAsistencia }}"></div>
-                        </div>
-                    </div>
-                </a>
-            </div>
-
         </div>
 
         <!-- 3. Secciones del Panel -->
-        <h5 class="fw-bold text-dark mb-3 px-1">Secciones</h5>
-        <div class="row g-3">
+        <div class="d-flex align-items-center gap-3 mb-4 px-1">
+            <h5 class="titulo-panel mb-0">Secciones</h5>
+            <div class="hr-divisor flex-grow-1"></div>
+        </div>
+        <div class="row g-4">
             <div class="col-md-6 col-lg-4">
                 <a href="{{ route('sesiones.index') }}" class="card tile-card tile-primaria shadow-sm rounded-4 p-4 bg-white h-100 text-decoration-none">
                     <div class="d-flex justify-content-between align-items-start mb-3">
@@ -197,7 +200,7 @@
                         @endif
                     </div>
                     <h5 class="fw-bold text-dark">Sesiones y Escáner</h5>
-                    <p class="text-muted small mb-2">Genera el QR de tu clase y registra los pases de tus alumnos en tiempo real.</p>
+                    <p class="texto-slate small mb-2">Genera el QR de tu clase y registra los pases de tus alumnos en tiempo real.</p>
                     <span class="text-primary small fw-semibold mt-auto"><i class="bi bi-arrow-right-short tile-flecha"></i></span>
                 </a>
             </div>
@@ -211,7 +214,7 @@
                         <span class="badge bg-dark rounded-pill">{{ $gruposCount }} grupos</span>
                     </div>
                     <h5 class="fw-bold text-dark">Grupos y Materias</h5>
-                    <p class="text-muted small mb-2">Administra tus grupos oficiales universitarios y asigna las materias que impartes.</p>
+                    <p class="texto-slate small mb-2">Administra tus grupos oficiales universitarios y asigna las materias que impartes.</p>
                     <span class="text-dark small fw-semibold mt-auto"><i class="bi bi-arrow-right-short tile-flecha"></i></span>
                 </a>
             </div>
@@ -227,7 +230,7 @@
                         @endif
                     </div>
                     <h5 class="fw-bold text-dark">Solicitudes de Alumnos</h5>
-                    <p class="text-muted small mb-2">Aprueba o rechaza las solicitudes de alta de alumnos en tus materias.</p>
+                    <p class="texto-slate small mb-2">Aprueba o rechaza las solicitudes de alta de alumnos en tus materias.</p>
                     <span class="text-warning small fw-semibold mt-auto"><i class="bi bi-arrow-right-short tile-flecha"></i></span>
                 </a>
             </div>
@@ -243,7 +246,7 @@
                         @endif
                     </div>
                     <h5 class="fw-bold text-dark">Justificantes</h5>
-                    <p class="text-muted small mb-2">Revisa y valida los justificantes de ausencias que envían tus alumnos.</p>
+                    <p class="texto-slate small mb-2">Revisa y valida los justificantes de ausencias que envían tus alumnos.</p>
                     <span class="text-info small fw-semibold mt-auto"><i class="bi bi-arrow-right-short tile-flecha"></i></span>
                 </a>
             </div>
@@ -256,7 +259,7 @@
                         </div>
                     </div>
                     <h5 class="fw-bold text-dark">Reportes y Exportación</h5>
-                    <p class="text-muted small mb-2">Consulta y descarga reportes de asistencia por materia en PDF o Excel.</p>
+                    <p class="texto-slate small mb-2">Consulta y descarga reportes de asistencia por materia en PDF o Excel.</p>
                     <span class="text-success small fw-semibold mt-auto"><i class="bi bi-arrow-right-short tile-flecha"></i></span>
                 </a>
             </div>
@@ -272,7 +275,7 @@
                         </span>
                     </div>
                     <h5 class="fw-bold text-dark">Estadísticas y Riesgo</h5>
-                    <p class="text-muted small mb-2">Gráficas de incidencias y control del derecho a examen ordinario por alumno.</p>
+                    <p class="texto-slate small mb-2">Gráficas de incidencias y control del derecho a examen ordinario por alumno.</p>
                     <span class="text-secondary small fw-semibold mt-auto"><i class="bi bi-arrow-right-short tile-flecha"></i></span>
                 </a>
             </div>
