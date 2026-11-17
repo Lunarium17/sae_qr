@@ -7,6 +7,40 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
         @include('partials.panel-css')
+    <style>
+        /* Acento institucional para la tarjeta principal de la materia */
+        .materia-prota { border-top: 4px solid #2563EB; }
+
+        /* Clave de la materia destacada (ej. BD-701) */
+        .clave-materia {
+            display: inline-flex; align-items: center; gap: .45rem;
+            background: #EFF6FF; color: #1D4ED8;
+            border: 1px solid #BFDBFE; border-radius: 50rem;
+            padding: .45rem 1rem; font-weight: 700; font-size: .95rem;
+        }
+        .clave-materia i { font-size: 1rem; }
+
+        /* Mini-tarjetas Bento de métricas */
+        .metrica-mini {
+            background: #FFFFFF;
+            border: 1px solid rgba(203, 213, 225, .9);
+            border-radius: 1rem;
+            padding: .7rem 1.15rem;
+            display: inline-flex; align-items: center; gap: .7rem;
+            box-shadow: 0 2px 6px -2px rgba(15,23,42,.08);
+            min-width: 132px;
+        }
+        .metrica-mini i { font-size: 1.3rem; flex-shrink: 0; }
+        .metrica-mini .num { font-size: 1.45rem; font-weight: 800; line-height: 1.05; }
+        .metrica-mini .lbl { font-size: .72rem; color: #64748B; font-weight: 600; }
+        .metrica-mini-azul i { color: #2563EB; }
+        .metrica-mini-azul .num { color: #1D4ED8; }
+        .metrica-mini-ambar i { color: #D97706; }
+        .metrica-mini-ambar .num { color: #B45309; }
+
+        /* Separacion reforzada de las tarjetas inferiores */
+        .panel-definido { box-shadow: 0 4px 12px -6px rgba(15,23,42,.12); }
+    </style>
 </head>
 <body>
 
@@ -18,15 +52,15 @@
             </a>
             <div class="d-flex align-items-center gap-2">
                 @if ($materia->grupo_id)
-                    <a href="{{ route('grupos.show', $materia->grupo_id) }}" class="btn btn-outline-secondary btn-sm fw-semibold">
+                    <a href="{{ route('grupos.show', $materia->grupo_id) }}" class="btn btn-outline-secondary btn-sm fw-semibold rounded-3">
                         <i class="bi bi-arrow-left me-1"></i>Volver al Grupo {{ $materia->grupo->nombre_grupo }}
                     </a>
                 @else
-                    <a href="{{ route('grupos.index') }}" class="btn btn-outline-secondary btn-sm fw-semibold">
+                    <a href="{{ route('grupos.index') }}" class="btn btn-outline-secondary btn-sm fw-semibold rounded-3">
                         <i class="bi bi-arrow-left me-1"></i>Volver a Grupos
                     </a>
                 @endif
-                <a href="{{ route('profesor.dashboard') }}" class="btn btn-outline-secondary btn-sm text-light">
+                <a href="{{ route('profesor.dashboard') }}" class="btn btn-outline-secondary btn-sm fw-semibold rounded-3">
                     <i class="bi bi-house-door me-1"></i>Panel Principal
                 </a>
                 @include('partials.campana')
@@ -61,11 +95,11 @@
         @endif
 
         <!-- 1. Encabezado de la Materia y Acciones Rápidas -->
-        <div class="card rounded-4 p-4 bg-white mb-4">
+        <div class="card rounded-4 p-4 bg-white mb-4 materia-prota">
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
                 <div>
                     <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
-                        <span class="badge bg-dark fs-6 px-3 py-2 rounded-pill">{{ $materia->codigo_materia }}</span>
+                        <span class="clave-materia"><i class="bi bi-journal-bookmark-fill"></i>{{ $materia->codigo_materia }}</span>
                         <h3 class="fw-bold text-dark mb-0">{{ $materia->nombre_materia }}</h3>
                         <a href="{{ route('materias.edit', $materia->id) }}" class="btn btn-sm btn-outline-warning text-dark rounded-3 ms-1">
                             <i class="bi bi-pencil-square me-1"></i>Editar Materia
@@ -85,14 +119,21 @@
                 </div>
 
                 <div class="d-flex flex-wrap align-items-center gap-3">
-                    <div class="px-3 py-2 bg-light rounded-3 border text-center">
-                        <div class="fs-5 fw-bold text-success">{{ $materia->matriculas->where('estado', 'aceptado')->count() }}</div>
-                        <div class="small texto-slate">Alumnos Aceptados</div>
+                    <div class="metrica-mini metrica-mini-azul">
+                        <i class="bi bi-person-check-fill"></i>
+                        <div>
+                            <div class="num">{{ $materia->matriculas->where('estado', 'aceptado')->count() }}</div>
+                            <div class="lbl">Alumnos Aceptados</div>
+                        </div>
                     </div>
-                    <div class="px-3 py-2 bg-light rounded-3 border text-center">
-                        <div class="fs-5 fw-bold text-warning text-dark">{{ $materia->matriculas->where('estado', 'pendiente')->count() }}</div>
-                        <div class="small texto-slate">Pendientes</div>
+                    <div class="metrica-mini metrica-mini-ambar">
+                        <i class="bi bi-hourglass-split"></i>
+                        <div>
+                            <div class="num">{{ $materia->matriculas->where('estado', 'pendiente')->count() }}</div>
+                            <div class="lbl">Pendientes</div>
+                        </div>
                     </div>
+                    <div class="vr d-none d-sm-block opacity-25"></div>
                     <a href="{{ route('sesiones.index', ['materia_id' => $materia->id]) }}" class="btn btn-primary rounded-3 px-4 py-2 fw-semibold shadow-sm">
                         <i class="bi bi-qr-code-scan me-2"></i>Iniciar Clase QR
                     </a>
@@ -103,7 +144,7 @@
         <div class="row g-4">
             <!-- 2. Formulario Lateral: Inscribir Alumno Manualmente por Búsqueda Dinámica -->
             <div class="col-lg-4">
-                <div class="card rounded-4 p-4 bg-white h-100">
+                <div class="card rounded-4 p-4 bg-white h-100 panel-definido">
                     <h5 class="fw-bold text-dark mb-3">
                         Inscribir Alumno Manualmente
                         <span class="info-icon" tabindex="0" role="button" aria-label="Busca por nombre, matrícula o correo para inscribir en {{ $materia->nombre_materia }}.">
@@ -152,7 +193,7 @@
 
             <!-- 3. Tabla de Alumnos Inscritos y Resumen de Asistencia en esta Materia -->
             <div class="col-lg-8">
-                <div class="card rounded-4 p-4 bg-white h-100">
+                <div class="card rounded-4 p-4 bg-white h-100 panel-definido">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="fw-bold text-dark mb-0">
                             Padrón de Alumnos de la Materia
@@ -161,7 +202,7 @@
                                 <span class="info-icon-text" role="tooltip">3 retardos = 1 falta. Con 2 faltas: en riesgo. Con 3: sin derecho a examen.</span>
                             </span>
                         </h5>
-                        <span class="badge bg-dark rounded-pill">{{ $materia->matriculas->count() }} Registros</span>
+                        <span class="badge badge-estado badge-permiso rounded-pill">{{ $materia->matriculas->count() }} Registros</span>
                     </div>
 
                     <div class="table-responsive">
@@ -201,7 +242,7 @@
                                             <div class="small texto-slate">
                                                 Total computado: <strong>{{ $faltasTotales }} / 3 faltas</strong>
                                                 @if ($faltasPorRet > 0)
-                                                    <span class="text-danger">({{ $faltCount }} dir. + {{ $faltasPorRet }} por retardos)</span>
+                                                    <span class="fw-semibold" style="color: #B45309;">({{ $faltCount }} dir. + {{ $faltasPorRet }} por retardos)</span>
                                                 @endif
                                             </div>
                                         </td>
@@ -215,7 +256,7 @@
                                                     En Riesgo (2/3)
                                                 </span>
                                             @else
-                                                <span class="badge badge-estado badge-asistencia bg-opacity-10 text-success border border-success">
+                                                <span class="badge badge-estado badge-asistencia">
                                                     Con Derecho a Ordinario
                                                 </span>
                                             @endif
