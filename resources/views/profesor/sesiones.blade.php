@@ -21,6 +21,7 @@
             <a href="{{ url('/profesor/dashboard') }}" class="btn btn-light btn-sm text-dark fw-semibold rounded-3">
                 <i class="bi bi-arrow-left me-1"></i>Volver al Panel
             </a>
+            @include('partials.campana')
         </div>
     </nav>
 

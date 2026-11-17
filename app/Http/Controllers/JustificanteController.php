@@ -73,6 +73,8 @@ class JustificanteController extends Controller
             $rutaArchivo = $request->file('documento')->store('justificantes', 'public');
         }
 
+        $registro = RegistroAsistencia::with('sesion.materia')->find($request->registro_id);
+
         Justificante::updateOrCreate(
             ['registro_id' => $request->registro_id],
             [
@@ -82,6 +84,19 @@ class JustificanteController extends Controller
                 'estado_aprobacion'   => 'pendiente',
             ]
         );
+
+        // Aviso al docente de la sesion
+        $docenteId = $registro?->sesion?->profesor_id;
+        if (!is_null($docenteId)) {
+            $docente = \App\Models\User::find($docenteId);
+            if ($docente) {
+                $docente->notify(new \App\Notifications\JustificanteRecibido(
+                    Auth::user()->name,
+                    $registro->sesion->materia->nombre_materia ?? 'la asignatura',
+                    $registro->estado_incidencia === 'retardo' ? 'un retardo' : 'una falta'
+                ));
+            }
+        }
 
         return redirect()->back()->with('success', 'Justificante enviado correctamente para revisión del profesor.');
     }
@@ -122,11 +137,26 @@ class JustificanteController extends Controller
             })
             ->findOrFail($id);
 
+        $estadoAnterior = $justificante->estado_aprobacion;
+
         $justificante->estado_aprobacion = $request->estado_aprobacion;
         $justificante->comentario_profesor = $request->filled('comentario_profesor')
             ? trim($request->comentario_profesor)
             : null;
         $justificante->save();
+
+        // Aviso al alumno con la decisión del docente
+        $alumnoId = $justificante->registroAsistencia->user_id ?? null;
+        if ($estadoAnterior !== $request->estado_aprobacion && !is_null($alumnoId)) {
+            $alumnoNotif = \App\Models\User::find($alumnoId);
+            if ($alumnoNotif) {
+                $materiaNombre = $justificante->registroAsistencia->sesion->materia->nombre_materia ?? 'la asignatura';
+                $alumnoNotif->notify(new \App\Notifications\JustificanteDecision(
+                    $request->estado_aprobacion,
+                    $materiaNombre
+                ));
+            }
+        }
 
         // Si el profesor lo acepta, cambiamos automáticamente la falta/retardo a 'permiso'
         if ($request->estado_aprobacion === 'aceptado') {

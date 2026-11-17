@@ -14,10 +14,11 @@
             <a class="navbar-brand fw-bold" href="{{ route('grupos.index') }}">
                 SAE QR | Editar Materia
             </a>
-            <a href="{{ $materia->grupo_id ? route('grupos.show', $materia->grupo_id) : route('grupos.index') }}" class="btn btn-light btn-sm text-dark fw-semibold">
-                <i class="bi bi-arrow-left me-1"></i>Volver al Grupo
-            </a>
-        </div>
+                <a href="{{ $materia->grupo_id ? route('grupos.show', $materia->grupo_id) : route('grupos.index') }}" class="btn btn-light btn-sm text-dark fw-semibold">
+                    <i class="bi bi-arrow-left me-1"></i>Volver al Grupo
+                </a>
+                @include('partials.campana')
+            </div>
     </nav>
 
     <div class="container my-5">

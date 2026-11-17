@@ -22,6 +22,7 @@
                 <a href="{{ route('grupos.index') }}" class="btn btn-outline-light btn-sm">
                     <i class="bi bi-arrow-left me-1"></i>Volver a Mis Grupos
                 </a>
+                @include('partials.campana')
             </div>
         </div>
     </nav>

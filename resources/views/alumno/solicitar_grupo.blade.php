@@ -12,10 +12,11 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
         <div class="container">
             <a class="navbar-brand fw-bold" href="#">SAE QR | Inscripción Modular por Asignatura</a>
-            <a href="{{ url('/alumno/dashboard') }}" class="btn btn-light btn-sm text-primary fw-semibold">
-                <i class="bi bi-arrow-left me-1"></i>Volver a mi Panel
-            </a>
-        </div>
+                <a href="{{ url('/alumno/dashboard') }}" class="btn btn-light btn-sm text-primary fw-semibold">
+                    <i class="bi bi-arrow-left me-1"></i>Volver a mi Panel
+                </a>
+                @include('partials.campana')
+            </div>
     </nav>
 
     <div class="container my-5">

@@ -33,6 +33,7 @@
                 <a href="{{ route('profesor.dashboard') }}" class="btn btn-outline-secondary btn-sm text-light">
                     <i class="bi bi-house-door me-1"></i>Panel Principal
                 </a>
+                @include('partials.campana')
             </div>
         </div>
     </nav>
@@ -134,9 +135,8 @@
 
             <div class="col-lg-7">
                 <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="mb-3">
                         <h6 class="fw-bold text-dark mb-0">% de Asistencia por Materia del Grupo</h6>
-                        <span class="small text-muted">Semáforo de rendimiento</span>
                     </div>
                     @if ($grupo->materias->isNotEmpty())
                         <div style="height: 230px;">
@@ -262,6 +262,10 @@
 
                                                     <a href="{{ route('materias.show', $materia->id) }}" class="btn btn-sm btn-outline-dark rounded-3" title="Gestionar Alumnos de la Materia">
                                                         <i class="bi bi-people me-1"></i>Alumnos
+                                                    </a>
+
+                                                    <a href="{{ route('profesor.materias.importar') }}" class="btn btn-sm btn-outline-success rounded-3" title="Inscribir alumnos por CSV en esta materia">
+                                                        <i class="bi bi-file-earmark-arrow-up me-1"></i>Importar
                                                     </a>
 
                                                     <button type="button" class="btn btn-sm btn-outline-warning text-dark rounded-3" data-bs-toggle="modal" data-bs-target="#modalEditarMateria-{{ $materia->id }}" title="Editar Materia">

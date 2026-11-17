@@ -25,6 +25,7 @@
                 <a href="{{ url('/profesor/dashboard') }}" class="btn btn-light btn-sm text-dark fw-semibold me-3">
                     <i class="bi bi-arrow-left me-1"></i>Volver al Panel
                 </a>
+                @include('partials.campana')
                 <form action="{{ route('logout') }}" method="POST" class="d-inline">
                     @csrf
                     <button type="submit" class="btn btn-danger btn-sm">Cerrar Sesión</button>

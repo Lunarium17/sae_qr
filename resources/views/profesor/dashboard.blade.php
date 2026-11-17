@@ -64,6 +64,19 @@
         $porcentajeAsistencia = $totalRegistros > 0 ? round(($asistenciasEfectivas / $totalRegistros) * 100) : 0;
 
         $colorSemaforoGlobal = $porcentajeAsistencia >= 85 ? 'success' : ($porcentajeAsistencia >= 70 ? 'warning' : 'danger');
+
+        // Desglose por grupo para los indicadores
+        $inscritosPorGrupo = $misMateriaIds->isNotEmpty()
+            ? \App\Models\Matricula::whereIn('materia_id', $misMateriaIds)->where('estado', 'aceptado')->get(['grupo_id'])->groupBy('grupo_id')->map->count()
+            : collect();
+        $sesionesPorGrupo = \App\Models\SesionClase::where('profesor_id', $profesorId)->vigente()->get(['grupo_id'])->groupBy('grupo_id')->map->count();
+
+        $chipsMaterias = $grupos->filter(fn ($g) => $g->materias->isNotEmpty())
+            ->map(fn ($g) => ['carrera' => $g->carrera ?? '', 'texto' => $g->nombre_grupo . ' · ' . $g->materias->count() . ' mat.'])->values();
+        $chipsInscritos = $grupos->filter(fn ($g) => ($inscritosPorGrupo[$g->id] ?? 0) > 0)
+            ->map(fn ($g) => ['carrera' => $g->carrera ?? '', 'texto' => $g->nombre_grupo . ' · ' . $inscritosPorGrupo[$g->id]])->values();
+        $chipsSesiones = $grupos->filter(fn ($g) => ($sesionesPorGrupo[$g->id] ?? 0) > 0)
+            ->map(fn ($g) => ['carrera' => $g->carrera ?? '', 'texto' => $g->nombre_grupo . ' · ' . $sesionesPorGrupo[$g->id] . ' ses.'])->values();
     @endphp
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
@@ -78,6 +91,7 @@
                 <a href="{{ route('profesor.perfil') }}" class="btn btn-light btn-sm text-dark fw-semibold rounded-3">
                     Mi Perfil
                 </a>
+                @include('partials.campana')
                 <form action="{{ route('logout') }}" method="POST" class="d-inline">
                     @csrf
                     <button type="submit" class="btn btn-danger btn-sm rounded-3">Cerrar Sesión</button>
@@ -131,10 +145,17 @@
             <div class="col-md-3 col-sm-6">
                 <a href="{{ route('grupos.index') }}" class="d-block text-decoration-none text-reset h-100">
                     <div class="card card-hover border-0 border-start border-4 border-primary shadow-sm rounded-4 p-3 bg-white h-100">
-                        <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex justify-content-between align-items-start">
                             <div>
                                 <h6 class="text-muted small text-uppercase fw-bold mb-1">Grupos y Materias</h6>
-                                <h3 class="fw-bold text-dark mb-0">{{ $gruposCount }} Grupos</h3>
+                                <h3 class="fw-bold text-dark mb-1">{{ $gruposCount }} Grupos</h3>
+                                <div class="d-flex flex-wrap gap-1">
+                                    @foreach ($chipsMaterias as $chip)
+                                        <span class="badge d-inline-flex align-items-center gap-1" style="{{ \App\Support\CarreraColor::suave($chip['carrera']) }}; font-size: .65rem; padding: .2rem .45rem;">
+                                            <span class="d-inline-block rounded-circle" style="width: 6px; height: 6px; background: {{ \App\Support\CarreraColor::color($chip['carrera']) }};"></span>{{ $chip['texto'] }}
+                                        </span>
+                                    @endforeach
+                                </div>
                             </div>
                             <div class="bg-primary bg-opacity-10 text-primary rounded-4 p-3">
                                 <i class="bi bi-collection fs-3"></i>
@@ -147,10 +168,17 @@
             <div class="col-md-3 col-sm-6">
                 <a href="{{ route('profesor.solicitudes') }}" class="d-block text-decoration-none text-reset h-100">
                     <div class="card card-hover border-0 border-start border-4 border-info shadow-sm rounded-4 p-3 bg-white h-100">
-                        <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex justify-content-between align-items-start">
                             <div>
                                 <h6 class="text-muted small text-uppercase fw-bold mb-1">Matrícula Activa</h6>
-                                <h3 class="fw-bold text-dark mb-0">{{ $alumnosAceptadosCount }} Inscritos</h3>
+                                <h3 class="fw-bold text-dark mb-1">{{ $alumnosAceptadosCount }} Inscritos</h3>
+                                <div class="d-flex flex-wrap gap-1">
+                                    @foreach ($chipsInscritos as $chip)
+                                        <span class="badge d-inline-flex align-items-center gap-1" style="{{ \App\Support\CarreraColor::suave($chip['carrera']) }}; font-size: .65rem; padding: .2rem .45rem;">
+                                            <span class="d-inline-block rounded-circle" style="width: 6px; height: 6px; background: {{ \App\Support\CarreraColor::color($chip['carrera']) }};"></span>{{ $chip['texto'] }}
+                                        </span>
+                                    @endforeach
+                                </div>
                             </div>
                             <div class="bg-info bg-opacity-10 text-info rounded-4 p-3">
                                 <i class="bi bi-people-fill fs-3"></i>
@@ -163,10 +191,17 @@
             <div class="col-md-3 col-sm-6">
                 <a href="{{ route('sesiones.index') }}" class="d-block text-decoration-none text-reset h-100">
                     <div class="card card-hover border-0 border-start border-4 border-primary shadow-sm rounded-4 p-3 bg-white h-100">
-                        <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex justify-content-between align-items-start">
                             <div>
                                 <h6 class="text-muted small text-uppercase fw-bold mb-1">Clases Impartidas</h6>
-                                <h3 class="fw-bold text-primary mb-0">{{ $totalSesiones }} Sesiones</h3>
+                                <h3 class="fw-bold text-primary mb-1">{{ $totalSesiones }} Sesiones</h3>
+                                <div class="d-flex flex-wrap gap-1">
+                                    @foreach ($chipsSesiones as $chip)
+                                        <span class="badge d-inline-flex align-items-center gap-1" style="{{ \App\Support\CarreraColor::suave($chip['carrera']) }}; font-size: .65rem; padding: .2rem .45rem;">
+                                            <span class="d-inline-block rounded-circle" style="width: 6px; height: 6px; background: {{ \App\Support\CarreraColor::color($chip['carrera']) }};"></span>{{ $chip['texto'] }}
+                                        </span>
+                                    @endforeach
+                                </div>
                             </div>
                             <div class="bg-primary bg-opacity-10 text-primary rounded-4 p-3">
                                 <i class="bi bi-easel fs-3"></i>

@@ -30,7 +30,8 @@
             <a class="btn btn-light btn-sm text-dark fw-semibold rounded-3" href="{{ route('profesor.dashboard') }}">
                 <i class="bi bi-arrow-left me-1"></i>Volver al Panel
             </a>
-            <span class="navbar-text text-white fw-bold">Módulo Analítico de Reportes</span>
+               @include('partials.campana')
+               <span class="navbar-text text-white fw-bold">Módulo Analítico de Reportes</span>
         </div>
     </nav>
 

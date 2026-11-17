@@ -13,11 +13,12 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container">
             <a class="navbar-brand fw-bold" href="{{ route('grupos.index') }}">SAE QR | Gestión de Grupos</a>
-            <div class="d-flex align-items-center">
-                <a href="{{ route('grupos.index') }}" class="btn btn-outline-light btn-sm me-3">
-                    <i class="bi bi-arrow-left me-1"></i>Volver a Mis Grupos
-                </a>
-            </div>
+                <div class="d-flex align-items-center">
+                    <a href="{{ route('grupos.index') }}" class="btn btn-outline-light btn-sm me-3">
+                        <i class="bi bi-arrow-left me-1"></i>Volver a Mis Grupos
+                    </a>
+                    @include('partials.campana')
+                </div>
         </div>
     </nav>
 

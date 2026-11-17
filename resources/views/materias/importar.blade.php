@@ -6,6 +6,7 @@
     <title>Importar Alumnos por CSV - SAE QR</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    @include('partials.info-icon-css')
 </head>
 <body class="bg-light">
 
@@ -27,6 +28,7 @@
                 <a href="{{ url('/profesor/dashboard') }}" class="btn btn-light btn-sm text-dark fw-semibold rounded-3">
                     <i class="bi bi-arrow-left me-1"></i>Volver al Panel
                 </a>
+                @include('partials.campana')
                 <form action="{{ route('logout') }}" method="POST" class="d-inline">
                     @csrf
                     <button type="submit" class="btn btn-danger btn-sm rounded-3">Cerrar Sesión</button>
@@ -61,7 +63,7 @@
                             <div class="text-muted small">
                                 <i class="bi bi-book me-1"></i>{{ $materia->nombre_materia }}
                                 @if ($materia->grupo)
-                                    · Grupo {{ $materia->grupo->nombre_grupo }} ({{ $materia->grupo->carrera }} · {{ $materia->grupo->turno }})
+                                    · Grupo {{ $materia->grupo->nombre_grupo }} · {{ $materia->grupo->carrera }} · {{ $materia->grupo->turno }}
                                 @endif
                             </div>
                         </div>
@@ -79,7 +81,7 @@
                                 <tr>
                                     <th>Alumno</th>
                                     <th>Email</th>
-                                    <th>Matrícula (será su contraseña)</th>
+                                    <th>Matrícula</th>
                                     <th class="text-center">Estado</th>
                                 </tr>
                             </thead>
@@ -137,8 +139,15 @@
         <!-- Paso 1: Seleccionar destino y cargar CSV -->
         <div class="card border-0 shadow-sm rounded-4 bg-white mb-4">
             <div class="card-body p-4">
-                <h4 class="fw-bold text-dark mb-1">Paso 1 · Elige dónde y sube el archivo</h4>
-                <p class="text-muted small">Se creará una cuenta por alumno nuevo (su contraseña inicial será su matrícula) y quedará inscrito directamente en la materia elegida.</p>
+                <div>
+                    <h4 class="fw-bold text-dark mb-1">
+                        Paso 1 · Elige dónde y sube el archivo
+                        <span class="info-icon" tabindex="0" role="button" aria-label="Se creará una cuenta por alumno nuevo con su matrícula como contraseña inicial, y quedará inscrito directamente en la materia elegida.">
+                            <i class="bi bi-info-circle"></i>
+                            <span class="info-icon-text" role="tooltip">Se creará una cuenta por alumno nuevo con su matrícula como contraseña inicial, y quedará inscrito directamente en la materia elegida. Si el correo ya existe en el sistema, la cuenta se reutiliza y solo se inscribe en la materia.</span>
+                        </span>
+                    </h4>
+                </div>
 
                 <form action="{{ route('profesor.materias.importar.preview') }}" method="POST" enctype="multipart/form-data" class="row g-3">
                     @csrf
@@ -164,34 +173,32 @@
                         </select>
                     </div>
                     <div class="col-md-8">
-                        <label class="form-label fw-semibold">Archivo CSV de alumnos (columnas: nombre, email, matricula) <span class="text-danger">*</span></label>
+                        <label class="form-label fw-semibold">
+                            Archivo CSV de alumnos
+                            <span class="info-icon" tabindex="0" role="button" aria-label="Columnas exactas: nombre, email, matricula.">
+                                <i class="bi bi-info-circle"></i>
+                                <span class="info-icon-text" role="tooltip">El archivo debe tener las columnas exactas: nombre, email, matricula. La matrícula será la contraseña inicial del alumno nuevo.</span>
+                            </span>
+                            <span class="text-danger">*</span>
+                        </label>
                         <input type="file" name="archivo_csv" class="form-control rounded-3" accept=".csv,text/csv" required>
-                        <div class="form-text">
-                            Descarga la plantilla con el formato exacto:
-                            <a href="{{ route('profesor.materias.plantilla') }}" class="fw-semibold"><i class="bi bi-file-earmark-arrow-down me-1"></i>plantilla_alumnos_saeqr.csv</a>
-                            · Máximo 200 alumnos por archivo.
+                        <div class="d-flex flex-wrap align-items-center gap-2 mt-2">
+                            <a href="{{ route('profesor.materias.plantilla') }}" class="btn btn-outline-primary btn-sm rounded-3">
+                                <i class="bi bi-file-earmark-arrow-down me-1"></i>Descargar plantilla
+                            </a>
+                            <code class="bg-light border rounded px-2 py-1 small">nombre, email, matricula</code>
+                            <span class="info-icon" tabindex="0" role="button" aria-label="Máximo 200 alumnos por archivo.">
+                                <i class="bi bi-info-circle"></i>
+                                <span class="info-icon-text" role="tooltip">Puedes importar hasta 200 alumnos por archivo.</span>
+                            </span>
                         </div>
                     </div>
                     <div class="col-md-4 d-flex align-items-end">
                         <button type="submit" class="btn btn-primary w-100 rounded-3 py-2 fw-semibold">
-                            <i class="bi bi-upload me-2"></i>Revisar archivo (Paso 2)
+                            <i class="bi bi-upload me-2"></i>Revisar archivo
                         </button>
                     </div>
                 </form>
-            </div>
-        </div>
-
-        <!-- Ayuda rapida -->
-        <div class="card border-0 shadow-sm rounded-4 bg-white">
-            <div class="card-body p-4">
-                <h5 class="fw-bold text-dark mb-2"><i class="bi bi-info-circle me-2 text-primary"></i>¿Cómo funciona?</h5>
-                <ul class="small text-muted mb-0">
-                    <li class="mb-1">1. Elige la carrera, el grupo y la materia donde se inscribirán los alumnos.</li>
-                    <li class="mb-1">2. Sube el CSV siguiendo la plantilla (nombre, email, matricula).</li>
-                    <li class="mb-1">3. El sistema te muestra una previsualización con errores marcados; nada se inscribe hasta que confirmes.</li>
-                    <li class="mb-1">4. Al confirmar: los alumnos nuevos obtienen una cuenta con su matrícula como contraseña inicial y quedan inscritos (aceptados) al instante.</li>
-                    <li>Si el email ya existe en el sistema, la cuenta se reutiliza y solo se inscribe en la materia.</li>
-                </ul>
             </div>
         </div>
 

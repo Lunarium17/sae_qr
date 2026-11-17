@@ -17,10 +17,11 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container">
             <a class="navbar-brand fw-bold" href="#">SAE QR | Registrar Materia</a>
-            <a href="{{ route('materias.index') }}" class="btn btn-light btn-sm text-dark fw-semibold">
-                <i class="bi bi-arrow-left me-1"></i>Volver al Listado
-            </a>
-        </div>
+                <a href="{{ route('materias.index') }}" class="btn btn-light btn-sm text-dark fw-semibold">
+                    <i class="bi bi-arrow-left me-1"></i>Volver al Listado
+                </a>
+                @include('partials.campana')
+            </div>
     </nav>
 
     <div class="container my-5">

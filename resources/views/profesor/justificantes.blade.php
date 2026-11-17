@@ -13,7 +13,8 @@
             <a class="btn btn-light btn-sm text-dark fw-semibold rounded-3" href="{{ route('profesor.dashboard') }}">
                 <i class="bi bi-arrow-left me-1"></i>Volver al Panel
             </a>
-            <span class="navbar-text text-white fw-bold">Revisión de Permisos y Justificantes</span>
+               @include('partials.campana')
+               <span class="navbar-text text-white fw-bold">Revisión de Permisos y Justificantes</span>
         </div>
     </nav>
 
@@ -35,7 +36,7 @@
                             <th>Motivo del Alumno</th>
                             <th>Comprobante</th>
                             <th>Estado</th>
-                            <th style="min-width: 280px;">Comentario Docente (Opcional) y Acción</th>
+                            <th style="min-width: 280px;">Comentario Docente y Acción</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -72,7 +73,7 @@
                                             @csrf
                                             @method('PATCH')
                                             <div class="mb-2">
-                                                <input type="text" name="comentario_profesor" class="form-control form-control-sm rounded-3" maxlength="500" placeholder="Observación opcional (ej. Sello legible / Falta firma)...">
+                                                <input type="text" name="comentario_profesor" class="form-control form-control-sm rounded-3" maxlength="500">
                                             </div>
                                             <div class="d-flex gap-2">
                                                 <button type="submit" name="estado_aprobacion" value="aceptado" class="btn btn-sm btn-success rounded-3 flex-fill">

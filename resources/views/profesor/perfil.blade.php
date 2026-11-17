@@ -6,6 +6,7 @@
     <title>Mi Perfil Docente | SAE QR</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    @include('partials.info-icon-css')
 </head>
 <body class="bg-light">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
@@ -13,7 +14,8 @@
             <a class="btn btn-light btn-sm text-dark fw-semibold rounded-3" href="{{ route('profesor.dashboard') }}">
                 <i class="bi bi-arrow-left me-1"></i>Volver al Panel
             </a>
-            <span class="navbar-text text-white fw-bold">Perfil y Datos del Profesor</span>
+               @include('partials.campana')
+               <span class="navbar-text text-white fw-bold">Perfil y Datos del Profesor</span>
         </div>
     </nav>
 
@@ -74,9 +76,14 @@
                                     @endif
                                 </div>
                                 <div class="flex-grow-1" style="min-width: 220px;">
-                                    <label class="form-label fw-semibold" for="inputFotoPerfil">Cambiar foto</label>
+                                    <label class="form-label fw-semibold mb-0" for="inputFotoPerfil">
+                                        Cambiar foto
+                                        <span class="info-icon" tabindex="0" role="button" aria-label="JPG, PNG o WEBP, máximo 2 MB. La foto se actualizará al guardar los cambios.">
+                                            <i class="bi bi-info-circle"></i>
+                                            <span class="info-icon-text" role="tooltip">JPG, PNG o WEBP · máximo 2 MB. La foto se actualizará al guardar los cambios.</span>
+                                        </span>
+                                    </label>
                                     <input type="file" name="foto_perfil" id="inputFotoPerfil" accept="image/jpeg,image/png,image/webp" class="form-control rounded-3">
-                                    <div class="form-text">JPG, PNG o WEBP · máximo 2 MB. La foto se actualizará al guardar los cambios.</div>
                                     @if ($profesor->foto_perfil)
                                         <div class="form-check mt-1">
                                             <input class="form-check-input" type="checkbox" name="eliminar_foto" id="eliminarFoto" value="1">

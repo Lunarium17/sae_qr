@@ -26,6 +26,7 @@
                 <a href="{{ route('alumno.dashboard') }}" class="btn btn-light btn-sm text-primary fw-semibold rounded-3">
                     <i class="bi bi-arrow-left me-1"></i>Volver al Inicio
                 </a>
+                @include('partials.campana')
                 <form action="{{ route('logout') }}" method="POST" class="d-inline">
                     @csrf
                     <button type="submit" class="btn btn-danger btn-sm rounded-3">Cerrar Sesión</button>

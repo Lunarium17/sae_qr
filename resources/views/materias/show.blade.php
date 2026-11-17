@@ -33,6 +33,7 @@
                 <a href="{{ route('profesor.dashboard') }}" class="btn btn-outline-secondary btn-sm text-light">
                     <i class="bi bi-house-door me-1"></i>Panel Principal
                 </a>
+                @include('partials.campana')
             </div>
         </div>
     </nav>

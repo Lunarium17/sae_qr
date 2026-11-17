@@ -15,6 +15,7 @@ use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\HistorialAlumnoController;
 use App\Http\Controllers\PerfilAlumnoController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\NotificacionController;
 
 // Rutas públicas de autenticación y registro (con protección contra fuerza bruta / Rate Limiting)
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -26,6 +27,13 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // Redirección raíz
 Route::get('/', function () {
     return redirect('/login');
+});
+
+// Notificaciones de la campana (usuarios autenticados)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/notificaciones', [NotificacionController::class, 'index'])->name('notificaciones.index');
+    Route::post('/notificaciones/leer-todas', [NotificacionController::class, 'leerTodas'])->name('notificaciones.leerTodas');
+    Route::post('/notificaciones/{id}/leer', [NotificacionController::class, 'leer'])->name('notificaciones.leer');
 });
 
 // Panel protegido exclusivamente para ADMINISTRADORES

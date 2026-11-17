@@ -22,6 +22,7 @@
             <a href="{{ url('/profesor/dashboard') }}" class="btn btn-light btn-sm text-dark fw-semibold">
                 <i class="bi bi-arrow-left me-1"></i>Volver al Panel
             </a>
+            @include('partials.campana')
         </div>
     </nav>
 
@@ -62,7 +63,7 @@
             <div class="card-body p-4">
                 <form action="{{ route('profesor.solicitudes') }}" method="GET" class="row g-3 align-items-end">
                     <div class="col-md-4">
-                        <label for="buscar" class="form-label fw-semibold small">Buscar Alumno (Nombre, Matrícula o Correo)</label>
+                        <label for="buscar" class="form-label fw-semibold small">Buscar Alumno</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
                             <input type="text" name="buscar" id="buscar" value="{{ $buscar }}" class="form-control" placeholder="Buscar por nombre, matrícula o correo">
@@ -106,7 +107,7 @@
         <div class="card border-0 shadow-sm rounded-4 overflow-hidden bg-white">
             <div class="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
                 <h5 class="fw-bold mb-0">Listado de Solicitudes e Inscripciones</h5>
-                <span class="badge bg-secondary rounded-pill">{{ $solicitudes->total() }} registro(s)</span>
+                <span class="badge bg-secondary rounded-pill">{{ $solicitudes->total() }} registros</span>
             </div>
             <div class="table-responsive">
                     <table class="table table-striped table-hover align-middle mb-0">
@@ -137,8 +138,9 @@
                                     </td>
                                     <td class="text-muted">{{ $sol->alumno->email ?? '—' }}</td>
                                     <td>
-                                        <a href="{{ route('grupos.show', $sol->grupo_id) }}" class="badge bg-primary bg-opacity-10 text-primary border border-primary text-decoration-none">
-                                            {{ $sol->grupo->nombre_grupo ?? 'Grupo' }} ({{ $sol->grupo->turno ?? '' }})
+                                        <a href="{{ route('grupos.show', $sol->grupo_id) }}" class="badge text-decoration-none" style="{{ \App\Support\CarreraColor::suave($sol->grupo->carrera ?? '') }}">
+                                            <span class="d-inline-block rounded-circle me-1" style="width: 7px; height: 7px; background: {{ \App\Support\CarreraColor::color($sol->grupo->carrera ?? '') }};"></span>
+                                            {{ $sol->grupo->nombre_grupo ?? 'Grupo' }} · {{ $sol->grupo->turno ?? '' }}
                                         </a>
                                     </td>
                                     <td>
@@ -156,25 +158,29 @@
                                         @endif
                                     </td>
                                     <td class="text-center pe-4">
-                                        <!-- Botón Aceptar -->
-                                        <form action="{{ route('profesor.solicitudes.actualizar', $sol->id) }}" method="POST" class="d-inline">
-                                            @csrf
-                                            @method('PATCH')
-                                            <input type="hidden" name="estado" value="aceptado">
-                                            <button type="submit" class="btn btn-sm btn-success rounded-3 me-1" {{ $sol->estado === 'aceptado' ? 'disabled' : '' }}>
-                                                <i class="bi bi-check-lg me-1"></i>Aceptar
-                                            </button>
-                                        </form>
+                                        <!-- Botón Aceptar: se oculta cuando la solicitud ya está aceptada -->
+                                        @if ($sol->estado !== 'aceptado')
+                                            <form action="{{ route('profesor.solicitudes.actualizar', $sol->id) }}" method="POST" class="d-inline">
+                                                @csrf
+                                                @method('PATCH')
+                                                <input type="hidden" name="estado" value="aceptado">
+                                                <button type="submit" class="btn btn-sm btn-success rounded-3 me-1">
+                                                    <i class="bi bi-check-lg me-1"></i>Aceptar
+                                                </button>
+                                            </form>
+                                        @endif
 
-                                        <!-- Botón Rechazar -->
-                                        <form action="{{ route('profesor.solicitudes.actualizar', $sol->id) }}" method="POST" class="d-inline">
-                                            @csrf
-                                            @method('PATCH')
-                                            <input type="hidden" name="estado" value="rechazado">
-                                            <button type="submit" class="btn btn-sm btn-outline-warning text-dark rounded-3 me-1" {{ $sol->estado === 'rechazado' ? 'disabled' : '' }}>
-                                                <i class="bi bi-x-lg me-1"></i>Rechazar
-                                            </button>
-                                        </form>
+                                        <!-- Botón Rechazar: se oculta cuando la solicitud ya está rechazada -->
+                                        @if ($sol->estado !== 'rechazado')
+                                            <form action="{{ route('profesor.solicitudes.actualizar', $sol->id) }}" method="POST" class="d-inline">
+                                                @csrf
+                                                @method('PATCH')
+                                                <input type="hidden" name="estado" value="rechazado">
+                                                <button type="submit" class="btn btn-sm btn-outline-warning text-dark rounded-3 me-1">
+                                                    <i class="bi bi-x-lg me-1"></i>Rechazar
+                                                </button>
+                                            </form>
+                                        @endif
 
                                         <!-- Botón Dar de Baja -->
                                         <form action="{{ route('profesor.matriculas.destroy', $sol->id) }}" method="POST" class="d-inline js-form-baja-solicitud">
@@ -227,7 +233,7 @@
                             </div>
 
                             <div class="mb-2">
-                                <label class="form-label fw-semibold">2. Buscar Alumno (Nombre, Matrícula o Correo)</label>
+                                <label class="form-label fw-semibold">2. Buscar Alumno</label>
                                 <div class="input-group">
                                     <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
                                     <input type="text" id="inputBuscarAlumnoSol" class="form-control" autocomplete="off" placeholder="Escribe al menos 2 letras para buscar...">
@@ -338,7 +344,7 @@
                                 return;
                             }
 
-                            estadoEl.textContent = 'Mostrando ' + lista.length + ' coincidencia(s). Haz clic en el alumno:';
+                            estadoEl.textContent = 'Mostrando ' + lista.length + ' coincidencias. Haz clic en el alumno:';
                             resultadosEl.classList.remove('d-none');
 
                             lista.forEach(function (al) {

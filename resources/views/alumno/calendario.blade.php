@@ -13,7 +13,8 @@
             <a class="btn btn-light btn-sm text-primary fw-semibold rounded-3" href="{{ route('alumno.dashboard') }}">
                 <i class="bi bi-arrow-left me-1"></i>Volver al Panel
             </a>
-            <span class="navbar-text text-white fw-bold">Calendario e Historial Mensual</span>
+               @include('partials.campana')
+               <span class="navbar-text text-white fw-bold">Calendario e Historial Mensual</span>
         </div>
     </nav>
 

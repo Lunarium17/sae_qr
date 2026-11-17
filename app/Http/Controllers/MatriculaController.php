@@ -87,12 +87,33 @@ class MatriculaController extends Controller
             return back()->with('error', 'Ya enviaste una solicitud para esta asignatura en el grupo seleccionado.');
         }
 
+        $grupoId = $materia->grupo_id ?? $request->grupo_id;
+
+        if (!$grupoId) {
+            return back()->with('error', 'La asignatura debe estar asociada a un grupo para inscribir alumnos.');
+        }
+
+        $grupo = Grupo::find($grupoId);
+
         Matricula::create([
             'user_id'    => Auth::id(),
             'grupo_id'   => $request->grupo_id,
             'materia_id' => $request->materia_id,
             'estado'     => 'pendiente',
         ]);
+
+        // Aviso al docente titular de la materia
+        if (!is_null($materia->profesor_id)) {
+            $docente = User::find($materia->profesor_id);
+            if ($docente) {
+                $docente->notify(new \App\Notifications\SolicitudInscripcionNueva(
+                    Auth::user()->name,
+                    $materia->nombre_materia,
+                    $grupo->nombre_grupo ?? '',
+                    $materia->id
+                ));
+            }
+        }
 
         return back()->with('success', 'Solicitud de inscripción por asignatura enviada. El docente titular de esa materia revisará tu solicitud.');
     }
@@ -252,9 +273,24 @@ class MatriculaController extends Controller
             return back()->with('error', 'No tienes permiso para gestionar solicitudes de una asignatura impartida por otro docente.');
         }
 
+        $estadoAnterior = $matricula->estado;
+
         $matricula->update([
             'estado' => $request->estado,
         ]);
+
+        // Aviso al alumno con la decisión del docente
+        if ($estadoAnterior !== $request->estado && in_array($request->estado, ['aceptado', 'rechazado'], true)) {
+            $alumnoNotif = User::find($matricula->user_id);
+            if ($alumnoNotif) {
+                $grupoNotif = $matricula->grupo_id ? Grupo::find($matricula->grupo_id) : null;
+                $alumnoNotif->notify(new \App\Notifications\SolicitudDecision(
+                    $request->estado,
+                    $matricula->materia->nombre_materia ?? 'la asignatura',
+                    $grupoNotif->nombre_grupo ?? ''
+                ));
+            }
+        }
 
         $mensaje = match ($request->estado) {
             'aceptado'  => 'Solicitud aprobada: el alumno ha quedado inscrito en tu asignatura y grupo.',
