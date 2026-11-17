@@ -169,8 +169,8 @@
                         <span class="punto-pulso"></span>
                         <span>En curso · {{ $sesionQrActiva->materia->nombre_materia }}{{ $sesionQrActiva->materia->grupo ? ' · Grupo ' . $sesionQrActiva->materia->grupo->nombre_grupo : '' }}</span>
                     @else
-                        <i class="bi bi-qr-code"></i>
-                        <span>Listo para registro de asistencia</span>
+                        <i class="bi bi-patch-check"></i>
+                        <span>Credencial vigente · {{ now()->format('d/m/Y') }}</span>
                     @endif
                 </span>
                 <div class="d-flex align-items-center justify-content-center gap-3 mt-2">

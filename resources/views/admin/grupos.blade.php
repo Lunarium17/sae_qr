@@ -76,7 +76,7 @@
         <div class="card rounded-4 mb-4">
             <div class="card-body px-4 py-4">
                 <div class="table-responsive">
-                    <table class="table table-hover table-striped align-middle mb-0">
+                    <table class="table table-moderna table-hover align-middle mb-0">
                         <thead class="table-light">
                             <tr>
                                 <th>Grupo / Carrera</th>
@@ -97,7 +97,7 @@
                                     </td>
                                     <td>
                                         <div class="fw-semibold text-dark">{{ $grupo->grado }}</div>
-                                        <span class="badge bg-light text-dark border">{{ $grupo->turno }}</span>
+                                        <span class="badge badge-estado badge-permiso">{{ $grupo->turno }}</span>
                                         <div class="texto-slate" style="font-size: 0.72rem;">{{ preg_replace('/([A-Za-zÁÉÍÓÚáéíóú])(\d{4})/u', '$1 $2', $grupo->periodo_lectivo) }}</div>
                                     </td>
                                     <td>

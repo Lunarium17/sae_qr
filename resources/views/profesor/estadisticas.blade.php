@@ -241,7 +241,7 @@
                 <div class="card rounded-4 p-4 bg-white h-100">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="fw-bold text-dark mb-0">Distribución de Incidencias</h5>
-                        <span class="badge bg-dark rounded-pill">{{ $totalRegistros }} pases</span>
+                        <span class="badge badge-estado badge-permiso rounded-pill">{{ $totalRegistros }} pases</span>
                     </div>
                     @if ($materiaSel)
                         <div class="small text-primary fw-semibold mb-2"><i class="bi bi-funnel me-1"></i>{{ $materiaSel->nombre_materia }}</div>
@@ -313,7 +313,7 @@
             <!-- Chips de filtro por carrera (vista Por Carrera) -->
             @if ($vista === 'carrera')
                 <div class="d-flex flex-wrap gap-2 mb-3">
-                    <a class="badge rounded-pill px-3 py-2 text-decoration-none {{ !$carreraFiltro ? 'bg-dark text-white' : 'bg-light text-dark border' }}" href="{{ url()->current() }}?vista=carrera">Todas las carreras</a>
+                    <a class="badge rounded-pill px-3 py-2 text-decoration-none {{ !$carreraFiltro ? 'badge-estado badge-permiso' : 'badge-estado' }}" style="{{ !$carreraFiltro ? '' : 'background: #F1F5F9; color: #334155; border: 1px solid #E2E8F0;' }}" href="{{ url()->current() }}?vista=carrera">Todas las carreras</a>
                     @foreach ($carrerasDocente as $c)
                         <a class="badge rounded-pill px-3 py-2 text-decoration-none" style="{{ $carreraFiltro === $c ? \App\Support\CarreraColor::badge($c) : \App\Support\CarreraColor::suave($c) }}" href="{{ url()->current() }}?vista=carrera&carrera={{ urlencode($c) }}">
                             {{ $c }}

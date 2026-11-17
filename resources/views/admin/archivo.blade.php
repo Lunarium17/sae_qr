@@ -61,7 +61,7 @@
                 <p class="texto-slate small mb-3">Al cerrar un semestre, sus sesiones se archivan: los docentes inician el siguiente periodo desde cero y este historial queda guardado aquí para el administrador.</p>
 
                 <div class="table-responsive">
-                    <table class="table table-hover table-striped align-middle mb-0">
+                    <table class="table table-moderna table-hover align-middle mb-0">
                         <thead class="table-light">
                             <tr>
                                 <th>Periodo</th>
@@ -125,7 +125,7 @@
                 <p class="texto-slate small mb-3">Historial completo conservado por el sistema. Descarga el detalle por semestre en formato Excel (CSV).</p>
 
                 <div class="table-responsive">
-                    <table class="table table-hover table-striped align-middle mb-0">
+                    <table class="table table-moderna table-hover align-middle mb-0">
                         <thead class="table-light">
                             <tr>
                                 <th>Periodo</th>

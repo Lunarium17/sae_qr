@@ -87,7 +87,7 @@
                     <p class="texto-slate small mb-0">Docente: {{ Auth::user()->name }} | Fecha de consulta: {{ date('Y-m-d H:i') }}</p>
                 </div>
                 <div class="d-flex flex-wrap gap-2">
-                    <span class="badge bg-light text-dark border fs-6">{{ $registros->count() }} Registros</span>
+                    <span class="badge badge-estado badge-permiso fs-6">{{ $registros->count() }} Registros</span>
                     <span class="badge badge-estado badge-asistencia fs-6">Asistencias: {{ $cntAsistencia }}</span>
                     <span class="badge badge-estado badge-retardo fs-6">Retardos: {{ $cntRetardo }}</span>
                     <span class="badge badge-estado badge-permiso fs-6">Permisos: {{ $cntPermiso }}</span>

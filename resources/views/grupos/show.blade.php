@@ -231,7 +231,7 @@
                                                     <i class="bi bi-people-fill me-1"></i>{{ $materia->matriculas->count() }}
                                                 </a>
                                             @else
-                                                <span class="badge bg-light text-secondary border rounded-pill px-3 py-2">
+                                                <span class="badge badge-estado rounded-pill px-3 py-2" style="background: #F1F5F9; color: #334155; border: 1px solid #E2E8F0;">
                                                     <i class="bi bi-people-fill me-1"></i>{{ $materia->matriculas->count() }}
                                                 </span>
                                             @endif

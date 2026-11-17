@@ -389,7 +389,7 @@
                         </span>
                     </h5>
                 </div>
-                <span class="badge bg-dark rounded-pill px-3 py-2">{{ $historialSesiones->count() }} Sesiones Registradas</span>
+                <span class="badge badge-estado badge-permiso rounded-pill px-3 py-2">{{ $historialSesiones->count() }} Sesiones Registradas</span>
             </div>
 
             <div class="table-responsive">

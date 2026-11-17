@@ -10,7 +10,7 @@
             <button type="button" class="btn btn-link btn-sm text-decoration-none p-0" id="jsCampanaLeerTodas">Marcar todas como leídas</button>
         </div>
         <div style="max-height: 340px; overflow-y: auto;" id="jsCampanaLista">
-            <div class="px-3 py-4 text-center text-muted small">No tienes notificaciones.</div>
+            <div class="px-3 py-4 text-center texto-slate small">No tienes notificaciones.</div>
         </div>
     </div>
 </div>
@@ -45,11 +45,11 @@
             t.className = 'fw-semibold small text-dark';
             t.textContent = n.titulo;
             const x = document.createElement('div');
-            x.className = 'small text-muted';
+            x.className = 'small texto-slate';
             x.style.lineHeight = '1.3';
             x.textContent = n.texto;
             const f = document.createElement('div');
-            f.className = 'text-muted';
+            f.className = 'texto-slate';
             f.style.fontSize = '.65rem';
             f.textContent = n.fecha;
             col.append(t, x, f);
@@ -69,7 +69,7 @@
             lista.innerHTML = '';
             if (!data.items.length) {
                 const v = document.createElement('div');
-                v.className = 'px-3 py-4 text-center text-muted small';
+                v.className = 'px-3 py-4 text-center texto-slate small';
                 v.textContent = 'No tienes notificaciones.';
                 lista.append(v);
                 return;

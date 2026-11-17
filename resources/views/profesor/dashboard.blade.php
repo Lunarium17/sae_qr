@@ -211,7 +211,7 @@
                         <div class="bg-dark bg-opacity-10 text-dark rounded-4 p-3">
                             <i class="bi bi-collection fs-3"></i>
                         </div>
-                        <span class="badge bg-dark rounded-pill">{{ $gruposCount }} grupos</span>
+                        <span class="badge badge-estado badge-permiso rounded-pill">{{ $gruposCount }} grupos</span>
                     </div>
                     <h5 class="fw-bold text-dark">Grupos y Materias</h5>
                     <p class="texto-slate small mb-2">Administra tus grupos oficiales universitarios y asigna las materias que impartes.</p>
