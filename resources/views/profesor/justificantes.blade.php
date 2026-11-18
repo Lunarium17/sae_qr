@@ -30,8 +30,8 @@
             <div class="alert alert-success rounded-3 shadow-sm">{{ session('success') }}</div>
         @endif
 
-        <div class="card rounded-4 p-4 bg-white">
-            <h4 class="titulo-panel mb-4"><i class="bi bi-envelope-paper me-2 text-info"></i>Comprobantes Recibidos</h4>
+        <div class="card acento-prota rounded-4 p-4 bg-white">
+            <h4 class="titulo-panel mb-4"><i class="bi bi-envelope-paper icono-encabezado me-2"></i>Comprobantes Recibidos</h4>
 
             <div class="table-responsive">
                 <table class="table table-moderna table-hover align-middle">

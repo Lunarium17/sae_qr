@@ -9,7 +9,7 @@
         @include('partials.panel-css')
     <style>
         /* Acento institucional para la tarjeta principal de la materia */
-        .materia-prota { border-top: 4px solid #2563EB; }
+        .materia-prota { border-top: 4px solid #0F294A; }
 
         /* Clave de la materia destacada (ej. BD-701) */
         .clave-materia {
@@ -168,7 +168,7 @@
                         </div>
                     </div>
                     <div class="vr d-none d-sm-block opacity-25"></div>
-                    <a href="{{ route('sesiones.index', ['materia_id' => $materia->id]) }}" class="btn btn-primary rounded-3 px-4 py-2 fw-semibold shadow-sm">
+                    <a href="{{ route('sesiones.index', ['materia_id' => $materia->id]) }}" class="btn btn-prota rounded-3 px-4 py-2 fw-semibold shadow-sm">
                         <i class="bi bi-qr-code-scan me-2"></i>Iniciar Clase QR
                     </a>
                 </div>
@@ -178,9 +178,9 @@
         <div class="row g-4">
             <!-- 2. Formulario Lateral: Inscribir Alumno Manualmente por Búsqueda Dinámica -->
             <div class="col-lg-4">
-                <div class="card rounded-4 p-4 bg-white h-100 panel-definido">
+                <div class="card acento-prota rounded-4 p-4 bg-white h-100 panel-definido">
                     <h5 class="fw-bold text-dark mb-3">
-                        Inscribir Alumno Manualmente
+                        <i class="bi bi-person-plus-fill icono-encabezado me-2"></i>Inscribir Alumno Manualmente
                         <span class="info-icon" tabindex="0" role="button" aria-label="Busca por nombre, matrícula o correo para inscribir en {{ $materia->nombre_materia }}.">
                             <i class="bi bi-info-circle"></i>
                             <span class="info-icon-text" role="tooltip">Busca por nombre, matrícula o correo para inscribir en {{ $materia->nombre_materia }}.</span>
@@ -218,7 +218,7 @@
                             </div>
                         </div>
 
-                        <button type="submit" id="btnSubmitInscribirMateria" class="btn btn-primary w-100 rounded-3 py-2 fw-semibold" disabled>
+                        <button type="submit" id="btnSubmitInscribirMateria" class="btn btn-institucional w-100 rounded-3 py-2 fw-semibold" disabled>
                             <i class="bi bi-check2-circle me-2"></i>Inscribir en esta Materia
                         </button>
                     </form>
@@ -227,10 +227,10 @@
 
             <!-- 3. Tabla de Alumnos Inscritos y Resumen de Asistencia en esta Materia -->
             <div class="col-lg-8">
-                <div class="card rounded-4 p-4 bg-white h-100 panel-definido">
+                <div class="card acento-prota rounded-4 p-4 bg-white h-100 panel-definido">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="fw-bold text-dark mb-0">
-                            Padrón de Alumnos de la Materia
+                            <i class="bi bi-journal-bookmark-fill icono-encabezado me-2"></i>Padrón de Alumnos de la Materia
                             <span class="info-icon" tabindex="0" role="button" aria-label="3 retardos = 1 falta. Con 2 faltas: en riesgo. Con 3: sin derecho a examen.">
                                 <i class="bi bi-info-circle"></i>
                                 <span class="info-icon-text" role="tooltip">3 retardos = 1 falta. Con 2 faltas: en riesgo. Con 3: sin derecho a examen.</span>

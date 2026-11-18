@@ -39,20 +39,20 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
                 <h2 class="fw-bold text-dark mb-0">
-                    Mis Grupos Académicos
+                    <i class="bi bi-mortarboard-fill icono-encabezado me-2"></i>Mis Grupos Académicos
                     <span class="info-icon" tabindex="0" role="button" aria-label="Tus grupos, materias, alumnos inscritos y asistencia.">
                         <i class="bi bi-info-circle"></i>
                         <span class="info-icon-text" role="tooltip">Tus grupos, materias, alumnos inscritos y asistencia.</span>
                     </span>
                 </h2>
             </div>
-            <a href="{{ route('grupos.create') }}" class="btn btn-primary rounded-pill px-4 py-2 shadow-sm">
+            <a href="{{ route('grupos.create') }}" class="btn btn-prota rounded-pill px-4 py-2 shadow-sm">
                 <i class="bi bi-plus-circle me-2"></i>Crear Nuevo Grupo
             </a>
         </div>
 
         <!-- Tabla Responsiva de Grupos con Semáforo de Asistencia -->
-        <div class="card rounded-4 bg-white overflow-hidden">
+        <div class="card acento-prota rounded-4 bg-white overflow-hidden">
             <div class="card-body p-0">
                 <div class="table-responsive">
                     <table class="table table-moderna table-hover align-middle mb-0">
@@ -124,7 +124,7 @@
                                             @endif
                                         </td>
                                         <td class="text-center pe-4">
-                                            <a href="{{ route('grupos.show', $grupo->id) }}" class="btn btn-sm btn-primary rounded-3 me-1" title="Gestionar Materias, Alumnos y Estadísticas">
+                                            <a href="{{ route('grupos.show', $grupo->id) }}" class="btn btn-sm btn-institucional rounded-3 me-1" title="Gestionar Materias, Alumnos y Estadísticas">
                                                 <i class="bi bi-journal-bookmark-fill me-1"></i>Gestionar Materias
                                             </a>
                                             <a href="{{ route('grupos.edit', $grupo->id) }}" class="btn btn-sm btn-outline-secondary rounded-3 me-1" title="Editar Grupo">

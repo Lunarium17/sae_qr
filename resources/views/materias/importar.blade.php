@@ -61,11 +61,13 @@
 
         <!-- Paso 2: Previsualizacion de la importacion -->
         @if ($esPreview)
-            <div class="card rounded-4 bg-white mb-4">
+            <div class="card acento-prota rounded-4 bg-white mb-4">
                 <div class="card-body p-4">
                     <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
                         <div>
-                            <h4 class="fw-bold text-dark mb-1">Paso 2 · Revisa antes de confirmar</h4>
+                            <h4 class="fw-bold text-dark mb-1">
+                                <i class="bi bi-clipboard-check-fill icono-encabezado me-2"></i>Paso 2 · Revisa antes de confirmar
+                            </h4>
                             <div class="texto-slate small">
                                 <i class="bi bi-book me-1"></i>{{ $materia->nombre_materia }}
                                 @if ($materia->grupo)
@@ -130,7 +132,7 @@
                     <div class="d-flex flex-wrap gap-2">
                         <form action="{{ route('profesor.materias.importar.store') }}" method="POST" class="d-inline">
                             @csrf
-                            <button type="submit" class="btn btn-primary rounded-3 px-4 py-2 fw-semibold" {{ count($filas) === 0 ? 'disabled' : '' }}>
+                            <button type="submit" class="btn btn-institucional rounded-3 px-4 py-2 fw-semibold" {{ count($filas) === 0 ? 'disabled' : '' }}>
                                 <i class="bi bi-check2-circle me-2"></i>Confirmar e inscribir {{ count($filas) }} alumnos
                             </button>
                         </form>
@@ -143,11 +145,11 @@
         @endif
 
         <!-- Paso 1: Seleccionar destino y cargar CSV -->
-        <div class="card rounded-4 bg-white mb-4">
+        <div class="card acento-prota rounded-4 bg-white mb-4">
             <div class="card-body p-4">
                 <div>
                     <h4 class="fw-bold text-dark mb-1">
-                        Paso 1 · Elige dónde y sube el archivo
+                        <i class="bi bi-file-earmark-arrow-up-fill icono-encabezado me-2"></i>Paso 1 · Elige dónde y sube el archivo
                         <span class="info-icon" tabindex="0" role="button" aria-label="Se creará una cuenta por alumno nuevo con su matrícula como contraseña inicial, y quedará inscrito directamente en la materia elegida.">
                             <i class="bi bi-info-circle"></i>
                             <span class="info-icon-text" role="tooltip">Se creará una cuenta por alumno nuevo con su matrícula como contraseña inicial, y quedará inscrito directamente en la materia elegida. Si el correo ya existe en el sistema, la cuenta se reutiliza y solo se inscribe en la materia.</span>
@@ -207,7 +209,7 @@
                         </div>
                     </div>
                     <div class="col-md-4 d-flex align-items-end">
-                        <button type="submit" class="btn btn-primary w-100 rounded-3 py-2 fw-semibold">
+                        <button type="submit" class="btn btn-institucional w-100 rounded-3 py-2 fw-semibold">
                             <i class="bi bi-upload me-2"></i>Revisar archivo
                         </button>
                     </div>

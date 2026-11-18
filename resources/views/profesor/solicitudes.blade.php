@@ -54,7 +54,7 @@
                 </h2>
             </div>
             @if ($misMaterias->isNotEmpty())
-                <button type="button" class="btn btn-institucional rounded-3 px-3 py-2 fw-semibold shadow-sm" data-bs-toggle="modal" data-bs-target="#modalInscribirDesdeSolicitudes">
+                <button type="button" class="btn btn-prota rounded-3 px-3 py-2 fw-semibold shadow-sm" data-bs-toggle="modal" data-bs-target="#modalInscribirDesdeSolicitudes">
                     <i class="bi bi-person-plus-fill me-2"></i>Inscribir Alumno por Búsqueda
                 </button>
             @endif
@@ -106,9 +106,11 @@
             </div>
         </div>
 
-        <div class="card rounded-4 overflow-hidden bg-white">
+        <div class="card acento-prota rounded-4 overflow-hidden bg-white">
             <div class="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
-                <h5 class="fw-bold mb-0">Listado de Solicitudes e Inscripciones</h5>
+                <h5 class="fw-bold mb-0">
+                    <i class="bi bi-list-check icono-encabezado me-2"></i>Listado de Solicitudes e Inscripciones
+                </h5>
                 <span class="badge badge-estado badge-permiso rounded-pill">{{ $solicitudes->total() }} registros</span>
             </div>
             <div class="table-responsive">

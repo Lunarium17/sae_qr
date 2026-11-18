@@ -55,7 +55,7 @@
                         </div>
 
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary rounded-3 py-2 fw-semibold">
+                            <button type="submit" class="btn btn-institucional rounded-3 py-2 fw-semibold">
                                 <i class="bi bi-save me-2"></i>Guardar Materia
                             </button>
                             <a href="{{ route('materias.index') }}" class="btn btn-light rounded-3 py-2 texto-slate">Cancelar</a>

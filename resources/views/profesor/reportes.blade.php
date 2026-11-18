@@ -27,9 +27,9 @@
 
     <div class="container my-5">
         <!-- Filtros y botones de descarga directa -->
-        <div class="card rounded-4 p-4 bg-white mb-4">
+        <div class="card acento-prota rounded-4 p-4 bg-white mb-4">
             <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
-                <h5 class="fw-bold mb-0">Filtros y Descarga de Reportes</h5>
+                <h5 class="fw-bold mb-0"><i class="bi bi-funnel-fill icono-encabezado me-2"></i>Filtros y Descarga de Reportes</h5>
                 <div class="d-flex flex-wrap gap-2">
                     <a href="{{ route('profesor.reportes.csv', ['materia_id' => $materiaId, 'mes' => $mes]) }}" class="btn btn-institucional rounded-3 fw-semibold">
                         <i class="bi bi-file-earmark-spreadsheet me-1"></i>Descargar CSV (Excel)
@@ -60,7 +60,7 @@
                     <input type="month" name="mes" value="{{ $mes }}" class="form-control">
                 </div>
                 <div class="col-md-3 d-flex gap-2">
-                    <button type="submit" class="btn btn-institucional w-100 rounded-3 py-2 fw-semibold">
+                    <button type="submit" class="btn btn-prota w-100 rounded-3 py-2 fw-semibold">
                         <i class="bi bi-search me-1"></i>Aplicar Filtro
                     </button>
                     @if($materiaId || $mes)
@@ -80,10 +80,10 @@
         @endphp
 
         <!-- Tabla de resultados homologada con el reporte de Excel y el PDF descargable -->
-        <div class="card rounded-4 p-4 bg-white">
+        <div class="card acento-prota rounded-4 p-4 bg-white">
             <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
                 <div>
-                    <h4 class="fw-bold mb-0" style="color: #0F172A;">Reporte Consolidado de Asistencia Escolar</h4>
+                    <h4 class="fw-bold mb-0" style="color: #0F172A;"><i class="bi bi-file-earmark-bar-graph icono-encabezado me-2"></i>Reporte Consolidado de Asistencia Escolar</h4>
                     <p class="texto-slate small mb-0">Docente: {{ Auth::user()->name }} | Fecha de consulta: {{ date('Y-m-d H:i') }}</p>
                 </div>
                 <div class="d-flex flex-wrap align-items-center gap-2">

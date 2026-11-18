@@ -13,10 +13,6 @@
             .btn-cabecera-prota { border: 1px solid rgba(255,255,255,.25); color: #FFFFFF; background: transparent; }
             .btn-cabecera-prota:hover, .btn-cabecera-prota:focus { background: rgba(255,255,255,.10); color: #FFFFFF; border-color: rgba(255,255,255,.4); }
             .etiqueta-seccion { color: #64748B; font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
-            .acento-prota { border-top: 4px solid #0F294A; }
-            .btn-prota { background: #0F294A; border-color: #0F294A; color: #FFFFFF; }
-            .btn-prota:hover, .btn-prota:focus, .btn-prota:active { background: #16375F; border-color: #16375F; color: #FFFFFF; }
-            .icono-encabezado { color: #1D4ED8; }
             .pildora-materia { background: #EFF6FF; color: #1D4ED8; border: 1px solid #BFDBFE; }
         </style>
 </head>
@@ -545,7 +541,7 @@
                         </div>
                         <div class="modal-footer border-0 pt-0 px-4 pb-4">
                             <button type="button" class="btn btn-light rounded-3" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" id="btnSubmitInscribirGrupo" class="btn btn-primary fw-semibold rounded-3" disabled>
+                            <button type="submit" id="btnSubmitInscribirGrupo" class="btn btn-institucional fw-semibold rounded-3" disabled>
                                 <i class="bi bi-check2-circle me-1"></i>Inscribir Alumno
                             </button>
                         </div>

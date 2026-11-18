@@ -80,9 +80,9 @@
 
         @if(!$sesionActiva)
             <!-- Formulario para Abrir Nueva Sesión de Clase -->
-            <div class="card rounded-4 p-4 bg-white mb-4">
+            <div class="card acento-prota rounded-4 p-4 bg-white mb-4">
                 <h4 class="fw-bold text-dark mb-3">
-                    Abrir Nueva Sesión de Clase
+                    <i class="bi bi-plus-circle-fill icono-encabezado me-2"></i>Abrir Nueva Sesión de Clase
                     <span class="info-icon" tabindex="0" role="button" aria-label="Elige materia, grupo y tolerancia para habilitar la lectura de QR.">
                         <i class="bi bi-info-circle"></i>
                         <span class="info-icon-text" role="tooltip">Elige materia, grupo y tolerancia para habilitar la lectura de QR.</span>
@@ -107,7 +107,7 @@
                         <input type="number" name="tolerancia_minutos" class="form-control rounded-3" value="15" min="0" max="60" required>
                     </div>
                     <div class="col-md-3">
-                        <button type="submit" class="btn btn-institucional w-100 rounded-3 py-2 fw-semibold">
+                        <button type="submit" class="btn btn-prota w-100 rounded-3 py-2 fw-semibold">
                             <i class="bi bi-play-circle-fill me-2"></i>Iniciar Clase
                         </button>
                     </div>
@@ -117,7 +117,7 @@
             <!-- Panel de Sesión Activa y Cámara Escáner QR -->
             <div class="row g-4 mb-5">
                 <div class="col-md-5">
-                    <div class="card rounded-4 p-4 bg-white text-center h-100">
+                    <div class="card acento-prota rounded-4 p-4 bg-white text-center h-100">
                         <span class="badge badge-suave-verde mb-2 align-self-center px-3 py-2 rounded-pill">
                             <i class="bi bi-broadcast me-1"></i>SESIÓN ACTIVA EN CURSO
                         </span>
@@ -165,9 +165,11 @@
 
                 <!-- Lista de Asistencia en Tiempo Real -->
                 <div class="col-md-7">
-                    <div class="card rounded-4 p-4 bg-white h-100">
+                    <div class="card acento-prota rounded-4 p-4 bg-white h-100">
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h5 class="fw-bold text-dark mb-0">Alumnos Registrados en esta Sesión</h5>
+                            <h5 class="fw-bold text-dark mb-0">
+                                <i class="bi bi-people-fill icono-encabezado me-2"></i>Alumnos Registrados en esta Sesión
+                            </h5>
                             <button onclick="location.reload()" class="btn btn-sm btn-outline-secondary rounded-pill">
                                 <i class="bi bi-arrow-clockwise me-1"></i>Actualizar Tabla
                             </button>
@@ -414,11 +416,11 @@
         @endif
 
         <!-- Historial de Sesiones Anteriores Impartidas por el Docente -->
-        <div class="card rounded-4 p-4 bg-white mt-4">
+        <div class="card acento-prota rounded-4 p-4 bg-white mt-4">
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
                 <div>
                     <h5 class="fw-bold text-dark mb-0">
-                        Historial de Sesiones de Clase
+                        <i class="bi bi-clock-history icono-encabezado me-2"></i>Historial de Sesiones de Clase
                         <span class="info-icon" tabindex="0" role="button" aria-label="Historial de tus sesiones, asistencias por clase y ajustes manuales.">
                             <i class="bi bi-info-circle"></i>
                             <span class="info-icon-text" role="tooltip">Historial de tus sesiones, asistencias por clase y ajustes manuales.</span>

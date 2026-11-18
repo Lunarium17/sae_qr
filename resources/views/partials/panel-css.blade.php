@@ -176,4 +176,10 @@
     .kpi-mini { background: #FFFFFF; border: 1px solid rgba(203, 213, 225, .9); border-radius: 1rem; padding: .6rem 1.05rem; min-width: 104px; text-align: center; box-shadow: 0 2px 6px -2px rgba(15,23,42,.08); }
     .kpi-mini .num { font-size: 1.35rem; font-weight: 800; line-height: 1.1; color: #0F172A; }
     .kpi-mini .lbl { font-size: .72rem; color: #64748B; font-weight: 600; }
+
+    /* Identidad Azul Profundo institucional (#0F294A) del panel docente */
+    .acento-prota { border-top: 4px solid #0F294A; }
+    .btn-prota { background: #0F294A; border-color: #0F294A; color: #FFFFFF; }
+    .btn-prota:hover, .btn-prota:focus, .btn-prota:active { background: #16375F; border-color: #16375F; color: #FFFFFF; }
+    .icono-encabezado { color: #0F294A; }
 </style>

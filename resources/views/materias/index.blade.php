@@ -50,7 +50,7 @@
                     </span>
                 </h2>
             </div>
-            <a href="{{ route('materias.create') }}" class="btn btn-primary rounded-pill px-4 py-2 shadow-sm">
+            <a href="{{ route('materias.create') }}" class="btn btn-prota rounded-pill px-4 py-2 shadow-sm">
                 <i class="bi bi-plus-circle me-2"></i>Nueva Materia
             </a>
         </div>

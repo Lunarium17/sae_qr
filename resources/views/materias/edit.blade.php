@@ -15,7 +15,8 @@
             <a class="navbar-brand fw-bold text-dark" href="{{ route('grupos.index') }}">
                 SAE QR | Editar Materia
             </a>
-                <a href="{{ $materia->grupo_id ? route('grupos.show', $materia->grupo_id) : route('grupos.index') }}" class="btn btn-outline-secondary btn-sm fw-semibold">
+            <div class="d-flex align-items-center gap-3">
+                <a href="{{ $materia->grupo_id ? route('grupos.show', $materia->grupo_id) : route('grupos.index') }}" class="btn btn-outline-secondary btn-sm fw-semibold rounded-3">
                     <i class="bi bi-arrow-left me-1"></i>Volver al Grupo
                 </a>
                 @include('partials.campana')
@@ -57,8 +58,8 @@
                             </div>
 
                             <div class="d-flex justify-content-end gap-2">
-                                <a href="{{ $materia->grupo_id ? route('grupos.show', $materia->grupo_id) : route('grupos.index') }}" class="btn btn-light rounded-3">Cancelar</a>
-                                <button type="submit" class="btn btn-warning fw-semibold rounded-3">
+                                <a href="{{ $materia->grupo_id ? route('grupos.show', $materia->grupo_id) : route('grupos.index') }}" class="btn btn-outline-secondary rounded-3">Cancelar</a>
+                                <button type="submit" class="btn btn-prota fw-semibold rounded-3">
                                     <i class="bi bi-check2-circle me-1"></i>Guardar Cambios
                                 </button>
                             </div>

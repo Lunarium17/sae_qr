@@ -108,7 +108,7 @@
             $efecC = $regsC->whereIn('estado_incidencia', ['asistencia', 'retardo', 'permiso'])->count();
             $nombresCarrerasChart[] = $carrera;
             $porcentajesCarrerasChart[] = $totC > 0 ? round(($efecC / $totC) * 100) : 0;
-            $coloresCarrerasChart[] = \App\Support\CarreraColor::color($carrera);
+            $coloresCarrerasChart[] = ['#0F294A', '#0284C7'][count($coloresCarrerasChart) % 2];
         }
 
         if ($vista === 'materia') {
@@ -197,20 +197,20 @@
 
         <!-- Filtros de vista: General / Por Materia / Por Carrera -->
         <div class="d-flex flex-wrap align-items-center gap-2 mb-4">
-            <a class="btn btn-sm rounded-pill px-3 py-2 {{ $vista === 'general' ? 'btn-institucional' : 'btn-outline-secondary' }}" href="{{ url()->current() }}?vista=general">
+            <a class="btn btn-sm rounded-pill px-3 py-2 {{ $vista === 'general' ? 'btn-prota' : 'btn-outline-secondary' }}" href="{{ url()->current() }}?vista=general">
                 <i class="bi bi-grid-1x2 me-1"></i>General
             </a>
-            <a class="btn btn-sm rounded-pill px-3 py-2 {{ $vista === 'materia' ? 'btn-institucional' : 'btn-outline-secondary' }}" href="{{ url()->current() }}?vista=materia">
+            <a class="btn btn-sm rounded-pill px-3 py-2 {{ $vista === 'materia' ? 'btn-prota' : 'btn-outline-secondary' }}" href="{{ url()->current() }}?vista=materia">
                 <i class="bi bi-book me-1"></i>Por Materia
             </a>
-            <a class="btn btn-sm rounded-pill px-3 py-2 {{ $vista === 'carrera' ? 'btn-institucional' : 'btn-outline-secondary' }}" href="{{ url()->current() }}?vista=carrera">
+            <a class="btn btn-sm rounded-pill px-3 py-2 {{ $vista === 'carrera' ? 'btn-prota' : 'btn-outline-secondary' }}" href="{{ url()->current() }}?vista=carrera">
                 <i class="bi bi-mortarboard me-1"></i>Por Carrera
             </a>
         </div>
 
         <!-- Selector de materia cuando la vista es por materia -->
         @if ($vista === 'materia')
-            <div class="card rounded-4 p-3 bg-white mb-4">
+            <div class="card acento-prota rounded-4 p-3 bg-white mb-4">
                 <div class="row g-2 align-items-center">
                     <div class="col-md-4">
                         <label class="form-label fw-semibold mb-0 small">Materia a analizar</label>
@@ -232,9 +232,11 @@
         <div class="row g-4 mb-4">
             <!-- Gráfica de Dona: Desglose de Incidencias según el filtro -->
             <div class="col-lg-5">
-                <div class="card rounded-4 p-4 bg-white h-100">
+                <div class="card acento-prota rounded-4 p-4 bg-white h-100">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="fw-bold text-dark mb-0">Distribución de Incidencias</h5>
+                        <h5 class="fw-bold text-dark mb-0">
+                            <i class="bi bi-pie-chart-fill icono-encabezado me-2"></i>Distribución de Incidencias
+                        </h5>
                         <span class="badge badge-estado badge-permiso rounded-pill">{{ $totalRegistros }} pases</span>
                     </div>
                     @if ($materiaSel)
@@ -255,9 +257,11 @@
 
             <!-- Gráfica de Barras: Comparativa según la vista -->
             <div class="col-lg-7">
-                <div class="card rounded-4 p-4 bg-white h-100">
+                <div class="card acento-prota rounded-4 p-4 bg-white h-100">
                     <div class="mb-3">
-                        <h5 class="fw-bold text-dark mb-0">{{ $barTitulo }}</h5>
+                        <h5 class="fw-bold text-dark mb-0">
+                            <i class="bi bi-bar-chart-fill icono-encabezado me-2"></i>{{ $barTitulo }}
+                        </h5>
                     </div>
                     @if (count($barLabels) > 0)
                         <div style="height: 280px;">
@@ -274,10 +278,12 @@
         </div>
 
         <!-- 2. Control de Derecho a Examen Ordinario (Regla: 3 Retardos = 1 Falta) -->
-        <div class="card rounded-4 p-4 bg-white mb-4">
+        <div class="card acento-prota rounded-4 p-4 bg-white mb-4">
             <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
                 <div>
-                    <h5 class="fw-bold text-dark mb-1">Control de Derecho a Examen Ordinario</h5>
+                    <h5 class="fw-bold text-dark mb-1">
+                        <i class="bi bi-award-fill icono-encabezado me-2"></i>Control de Derecho a Examen Ordinario
+                    </h5>
                     <div class="texto-slate small">3 retardos = 1 falta · máx. 3 faltas.</div>
                     @if ($materiaSel)
                         <div class="small text-primary fw-semibold"><i class="bi bi-funnel me-1"></i>Filtro: {{ $materiaSel->nombre_materia }}</div>
@@ -417,7 +423,7 @@
                 const labels = JSON.parse(datosEl.dataset.gruposLabels || '[]');
                 const valores = JSON.parse(datosEl.dataset.gruposValores || '[]');
                 const coloresCustom = JSON.parse(datosEl.dataset.coloresCustom || 'null');
-                const colores = coloresCustom || valores.map(v => v >= 85 ? '#198754' : (v >= 70 ? '#2563EB' : '#dc3545'));
+                const colores = coloresCustom || valores.map((v, i) => v < 50 ? '#DC2626' : ['#0F294A', '#1D4ED8', '#0284C7'][i % 3]);
 
                 new Chart(canvasBarras, {
                     type: 'bar',
