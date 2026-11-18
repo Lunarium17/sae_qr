@@ -7,6 +7,13 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     @include('partials.panel-css')
+    <style>
+        .tarjeta-grupo { border: 1px solid #E2E8F0; box-shadow: 0 4px 14px -4px rgba(15, 23, 42, .08); }
+        .tarjeta-grupo .form-control,
+        .tarjeta-grupo .form-select { border: 1px solid #CBD5E1; color: #0F172A; }
+        .tarjeta-grupo .form-control:focus,
+        .tarjeta-grupo .form-select:focus { border-color: #2563EB; box-shadow: 0 0 0 .2rem rgba(37, 99, 235, .18); }
+    </style>
 </head>
 <body>
 
@@ -14,12 +21,16 @@
     <nav class="navbar navbar-expand-lg navbar-light navbar-editorial shadow-sm">
         <div class="container">
             <a class="navbar-brand fw-bold text-dark" href="{{ route('grupos.index') }}">SAE QR | Gestión de Grupos</a>
-                <div class="d-flex align-items-center">
-                    <a href="{{ route('grupos.index') }}" class="btn btn-outline-light btn-sm me-3">
-                        <i class="bi bi-arrow-left me-1"></i>Volver a Mis Grupos
-                    </a>
-                    @include('partials.campana')
-                </div>
+            <div class="d-flex align-items-center gap-3">
+                <a href="{{ route('grupos.index') }}" class="btn btn-outline-secondary btn-sm fw-semibold rounded-3">
+                    <i class="bi bi-arrow-left me-1"></i>Volver a Mis Grupos
+                </a>
+                @include('partials.campana')
+                <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                    @csrf
+                    <button type="submit" class="btn btn-danger btn-sm rounded-3">Cerrar Sesión</button>
+                </form>
+            </div>
         </div>
     </nav>
 
@@ -37,9 +48,10 @@
                     </div>
                 @endif
 
-                <div class="card rounded-4 bg-white overflow-hidden">
-                    <div class="card-header bg-primary text-white p-4 border-0">
-                        <h4 class="mb-0 fw-bold">Crear Nuevo Grupo Académico</h4>
+                <div class="card tarjeta-grupo rounded-4 bg-white overflow-hidden">
+                    <div class="card-header franja-institucional text-white p-4 border-0">
+                        <h4 class="mb-1 fw-bold">Crear Nuevo Grupo Académico</h4>
+                        <div class="opacity-75 small">Completa los datos académicos del grupo para gestionar sus materias e inscripciones</div>
                     </div>
                     <div class="card-body p-5">
                         <!-- Formulario conectado a la ruta 'store' del Controlador -->
@@ -86,16 +98,16 @@
                                 <!-- Periodo Lectivo -->
                                 <div class="col-md-4">
                                     <label for="periodo_lectivo" class="form-label fw-bold text-dark">Periodo Semestral <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control rounded-3 py-2" id="periodo_lectivo" name="periodo_lectivo" value="{{ old('periodo_lectivo') }}" required>
+                                    <input type="text" class="form-control rounded-3 py-2" id="periodo_lectivo" name="periodo_lectivo" value="{{ old('periodo_lectivo') }}" required placeholder="Ej. Agosto - Diciembre 2026">
                                 </div>
                             </div>
 
                             <hr class="my-4">
                             
                             <div class="d-flex justify-content-end gap-2">
-                                <a href="{{ route('grupos.index') }}" class="btn btn-light rounded-3 px-4 py-2">Cancelar</a>
-                                <button type="submit" class="btn btn-primary rounded-3 px-4 py-2">
-                                    <i class="bi bi-save me-2"></i>Guardar Grupo
+                                <a href="{{ route('grupos.index') }}" class="btn btn-outline-secondary rounded-3 px-4 py-2">Cancelar</a>
+                                <button type="submit" class="btn btn-institucional rounded-3 px-4 py-2 fw-semibold">
+                                    Guardar Grupo
                                 </button>
                             </div>
                         </form>
