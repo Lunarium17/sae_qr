@@ -126,9 +126,11 @@
         <!-- 2. Gráficas Estadísticas del Grupo (Chart.js) -->
         <div class="row g-4 mb-4">
             <div class="col-lg-5">
-                <div class="card rounded-4 p-4 bg-white h-100">
+                <div class="card acento-prota rounded-4 p-4 bg-white h-100">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 class="fw-bold text-dark mb-0">Incidencias en {{ $grupo->nombre_grupo }}</h6>
+                        <h6 class="fw-bold text-dark mb-0">
+                            <i class="bi bi-pie-chart-fill icono-encabezado me-2"></i>Incidencias en {{ $grupo->nombre_grupo }}
+                        </h6>
                         <span class="badge badge-estado badge-permiso rounded-pill">{{ $statsGrupo['total_registros'] }} registros</span>
                     </div>
                     @if ($statsGrupo['total_registros'] > 0)
@@ -153,9 +155,11 @@
             </div>
 
             <div class="col-lg-7">
-                <div class="card rounded-4 p-4 bg-white h-100">
+                <div class="card acento-prota rounded-4 p-4 bg-white h-100">
                     <div class="mb-3">
-                        <h6 class="fw-bold text-dark mb-0">% de Asistencia por Materia del Grupo</h6>
+                        <h6 class="fw-bold text-dark mb-0">
+                            <i class="bi bi-bar-chart-fill icono-encabezado me-2"></i>% de Asistencia por Materia del Grupo
+                        </h6>
                     </div>
                     @if ($grupo->materias->isNotEmpty())
                         <div style="height: 230px;">
@@ -621,7 +625,30 @@
                             }
                         },
                         plugins: [
-                            { legend: { display: false } },
+                            {
+                                legend: {
+                                    display: true,
+                                    position: 'top',
+                                    align: 'start',
+                                    labels: {
+                                        boxWidth: 14,
+                                        boxHeight: 8,
+                                        color: '#475569',
+                                        font: { size: 11, weight: 600 },
+                                        generateLabels(chart) {
+                                            const ds = chart.data.datasets[0];
+                                            return [{
+                                                text: ds.label,
+                                                fillStyle: '#1D4ED8',
+                                                strokeStyle: '#1D4ED8',
+                                                lineWidth: 0,
+                                                fontColor: '#475569'
+                                            }];
+                                        }
+                                    },
+                                    onClick: () => {}
+                                }
+                            },
                             {
                                 id: 'etiquetaCero',
                                 afterDatasetsDraw(chart) {
