@@ -51,7 +51,7 @@
                             <tr>
                                 <td class="fw-semibold">{{ $just->registroAsistencia->alumno->name }}</td>
                                 <td>
-                                    <span class="badge bg-secondary">{{ $just->registroAsistencia->sesion->materia->codigo_materia }}</span>
+                                    <span class="badge badge-estado neutra-slate font-monospace">{{ $just->registroAsistencia->sesion->materia->codigo_materia }}</span>
                                     {{ $just->registroAsistencia->sesion->materia->nombre_materia }}
                                 </td>
                                 <td>{{ $just->registroAsistencia->sesion->fecha }}</td>

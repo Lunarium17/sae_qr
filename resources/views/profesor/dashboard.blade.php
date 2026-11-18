@@ -196,7 +196,7 @@
                             <i class="bi bi-qr-code-scan fs-3"></i>
                         </div>
                         @if ($sesionesActivasCount > 0)
-                            <span class="badge bg-success rounded-pill">Clase activa</span>
+                            <span class="badge badge-suave-verde rounded-pill">Clase activa</span>
                         @endif
                     </div>
                     <h5 class="fw-bold text-dark">Sesiones y Escáner</h5>
@@ -226,7 +226,7 @@
                             <i class="bi bi-person-plus-fill fs-3"></i>
                         </div>
                         @if ($solicitudesPendientes > 0)
-                            <span class="badge bg-danger rounded-pill">{{ $solicitudesPendientes }} pendientes</span>
+                            <span class="badge badge-estado badge-falta rounded-pill">{{ $solicitudesPendientes }} pendientes</span>
                         @endif
                     </div>
                     <h5 class="fw-bold text-dark">Solicitudes de Alumnos</h5>

@@ -285,7 +285,7 @@
                         <div class="small fw-semibold" style="color: {{ \App\Support\CarreraColor::color($carreraFiltro) }}"><i class="bi bi-funnel me-1"></i>Filtro: {{ $carreraFiltro }}</div>
                     @endif
                 </div>
-                <span class="badge {{ count($alumnosEnRiesgo) > 0 ? 'bg-danger' : 'bg-success' }} rounded-pill px-3 py-2">
+                <span class="badge badge-estado rounded-pill px-3 py-2 {{ count($alumnosEnRiesgo) > 0 ? 'badge-falta' : 'badge-suave-verde' }}">
                     {{ count($alumnosEnRiesgo) }} Casos Detectados
                 </span>
             </div>

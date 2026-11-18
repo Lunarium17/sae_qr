@@ -103,7 +103,7 @@
                                             @elseif ($fila['estado'] === 'cuenta')
                                                 <span class="badge badge-estado badge-permiso">Cuenta existente</span>
                                             @else
-                                                <span class="badge bg-secondary">Ya estaba inscrito</span>
+                                                <span class="badge badge-estado neutra-slate">Ya estaba inscrito</span>
                                             @endif
                                         </td>
                                     </tr>

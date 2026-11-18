@@ -235,7 +235,7 @@
                 <a href="{{ route('alumno.qr') }}" class="d-block text-decoration-none h-100">
                     <div class="bento bento-azul h-100 p-4 position-relative" style="min-height: 216px;">
                         @if ($sesionesActivasPendientes->count() > 0)
-                            <span class="badge bg-success position-absolute rounded-pill" style="top: 1rem; right: 1rem;">Clase activa</span>
+                            <span class="badge badge-suave-verde position-absolute rounded-pill" style="top: 1rem; right: 1rem;">Clase activa</span>
                         @endif
                         <div style="max-width: 65%;">
                             <h6 class="fw-bold text-dark mb-1" style="color: #0F172A;">Mi Código QR</h6>

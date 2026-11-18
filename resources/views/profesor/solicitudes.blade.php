@@ -386,7 +386,7 @@
 
                                 if (al.ya_inscrito) {
                                     const badge = document.createElement('span');
-                                    badge.className = 'badge bg-secondary ms-2';
+                                    badge.className = 'badge badge-estado neutra-slate ms-2';
                                     badge.textContent = 'Ya inscrito';
                                     btn.appendChild(badge);
                                     btn.disabled = true;
