@@ -7,6 +7,13 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
         @include('partials.panel-css')
+        <style>
+            .cabecera-grupo-prota { background: #0F294A; }
+            .carrera-eyebrow { color: #7DD3FC; font-size: .72rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+            .btn-cabecera-prota { border: 1px solid rgba(255,255,255,.25); color: #FFFFFF; background: transparent; }
+            .btn-cabecera-prota:hover, .btn-cabecera-prota:focus { background: rgba(255,255,255,.10); color: #FFFFFF; border-color: rgba(255,255,255,.4); }
+            .etiqueta-seccion { color: #64748B; font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
+        </style>
 </head>
 <body>
 
@@ -62,41 +69,50 @@
         @endif
 
         <!-- 1. Datos del Grupo y KPIs Superiores -->
-        <div class="card rounded-4 p-4 bg-white mb-4">
-            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
-                <div>
-                    <div class="d-flex align-items-center gap-2 mb-1">
-                        <span class="badge badge-estado azul-suave fs-6 px-3 py-2 rounded-pill">{{ $grupo->nombre_grupo }}</span>
-                        <h3 class="fw-bold text-dark mb-0">Información y Estadísticas del Grupo</h3>
-                        <a href="{{ route('grupos.edit', $grupo->id) }}" class="btn btn-sm btn-outline-secondary rounded-3 ms-2">
-                            <i class="bi bi-pencil-square me-1"></i>Editar Grupo
-                        </a>
-                    </div>
-                    <p class="texto-slate mb-0 mt-2">
+        <div class="card rounded-4 bg-white border-0 shadow-sm mb-4 overflow-hidden">
+            <div class="cabecera-grupo-prota p-4">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                    <div>
                         @if ($grupo->carrera)
-                            <span class="me-3"><strong>Carrera:</strong> {{ $grupo->carrera }}</span>
+                            <div class="carrera-eyebrow">{{ $grupo->carrera }}</div>
                         @endif
-                        <span class="me-3"><strong>Semestre:</strong> {{ $grupo->grado }}</span>
-                        <span class="me-3"><strong>Turno:</strong> {{ $grupo->turno }}</span>
-                        <span><strong>Periodo Semestral:</strong> {{ preg_replace('/([A-Za-zÁÉÍÓÚáéíóú])(\d{4})/u', '$1 $2', $grupo->periodo_lectivo) }}</span>
-                    </p>
+                        <h3 class="text-white fw-bold mb-0 {{ $grupo->carrera ? 'mt-1' : '' }}">Grupo {{ $grupo->nombre_grupo }}</h3>
+                    </div>
+                    <a href="{{ route('grupos.edit', $grupo->id) }}" class="btn btn-sm btn-cabecera-prota">
+                        <i class="bi bi-pencil-square me-1"></i>Editar Grupo
+                    </a>
                 </div>
-                <div class="d-flex flex-wrap gap-2 text-center">
-                    <div class="kpi-mini">
-                        <div class="num">{{ $grupo->materias->count() }}</div>
-                        <div class="lbl">Materias</div>
+            </div>
+            <div class="p-4">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                    <div>
+                        <div class="etiqueta-seccion">Información y Estadísticas del Grupo</div>
+                        <p class="texto-slate mb-0 mt-2">
+                            @if ($grupo->carrera)
+                                <span class="me-3"><strong>Carrera:</strong> {{ $grupo->carrera }}</span>
+                            @endif
+                            <span class="me-3"><strong>Semestre:</strong> {{ $grupo->grado }}</span>
+                            <span class="me-3"><strong>Turno:</strong> {{ $grupo->turno }}</span>
+                            <span><strong>Periodo Semestral:</strong> {{ preg_replace('/([A-Za-zÁÉÍÓÚáéíóú])(\d{4})/u', '$1 $2', $grupo->periodo_lectivo) }}</span>
+                        </p>
                     </div>
-                    <div class="kpi-mini">
-                        <div class="num">{{ $grupo->matriculas->where('estado', 'aceptado')->count() }}</div>
-                        <div class="lbl">Inscritos</div>
-                    </div>
-                    <div class="kpi-mini">
-                        <div class="num">{{ $statsGrupo['total_sesiones'] }}</div>
-                        <div class="lbl">Sesiones</div>
-                    </div>
-                    <div class="kpi-mini">
-                        <div class="num text-{{ $colorGrupoSemaforo }}">{{ $statsGrupo['porcentaje'] }}%</div>
-                        <div class="lbl">Asistencia</div>
+                    <div class="d-flex flex-wrap gap-2 text-center">
+                        <div class="kpi-mini">
+                            <div class="num">{{ $grupo->materias->count() }}</div>
+                            <div class="lbl">Materias</div>
+                        </div>
+                        <div class="kpi-mini">
+                            <div class="num">{{ $grupo->matriculas->where('estado', 'aceptado')->count() }}</div>
+                            <div class="lbl">Inscritos</div>
+                        </div>
+                        <div class="kpi-mini">
+                            <div class="num">{{ $statsGrupo['total_sesiones'] }}</div>
+                            <div class="lbl">Sesiones</div>
+                        </div>
+                        <div class="kpi-mini">
+                            <div class="num text-{{ $colorGrupoSemaforo }}">{{ $statsGrupo['porcentaje'] }}%</div>
+                            <div class="lbl">Asistencia</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -574,7 +590,8 @@
             if (canvasBarras && datosEl) {
                 const labels = JSON.parse(datosEl.dataset.materiasLabels || '[]');
                 const valores = JSON.parse(datosEl.dataset.materiasValores || '[]');
-                const colores = valores.map(v => v >= 85 ? '#198754' : (v >= 70 ? '#ffc107' : '#dc3545'));
+                const paletaAzules = ['#0F294A', '#1D4ED8', '#0284C7'];
+                const colores = labels.map((_, i) => paletaAzules[i % paletaAzules.length]);
 
                 new Chart(canvasBarras, {
                     type: 'bar',
@@ -597,7 +614,28 @@
                                 ticks: { callback: value => value + '%' }
                             }
                         },
-                        plugins: { legend: { display: false } }
+                        plugins: [
+                            { legend: { display: false } },
+                            {
+                                id: 'etiquetaCero',
+                                afterDatasetsDraw(chart) {
+                                    const meta = chart.getDatasetMeta(0);
+                                    if (!meta) return;
+                                    meta.data.forEach((barra, i) => {
+                                        if (Number(chart.data.datasets[0].data[i]) === 0) {
+                                            const ctx = chart.ctx;
+                                            ctx.save();
+                                            ctx.fillStyle = '#94A3B8';
+                                            ctx.font = '600 11px system-ui, sans-serif';
+                                            ctx.textAlign = 'center';
+                                            ctx.textBaseline = 'bottom';
+                                            ctx.fillText('0%', barra.x, barra.y - 4);
+                                            ctx.restore();
+                                        }
+                                    });
+                                }
+                            }
+                        ]
                     }
                 });
             }
