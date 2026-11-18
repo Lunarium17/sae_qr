@@ -13,6 +13,11 @@
             .btn-cabecera-prota { border: 1px solid rgba(255,255,255,.25); color: #FFFFFF; background: transparent; }
             .btn-cabecera-prota:hover, .btn-cabecera-prota:focus { background: rgba(255,255,255,.10); color: #FFFFFF; border-color: rgba(255,255,255,.4); }
             .etiqueta-seccion { color: #64748B; font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
+            .acento-prota { border-top: 4px solid #0F294A; }
+            .btn-prota { background: #0F294A; border-color: #0F294A; color: #FFFFFF; }
+            .btn-prota:hover, .btn-prota:focus, .btn-prota:active { background: #16375F; border-color: #16375F; color: #FFFFFF; }
+            .icono-encabezado { color: #1D4ED8; }
+            .pildora-materia { background: #EFF6FF; color: #1D4ED8; border: 1px solid #BFDBFE; }
         </style>
 </head>
 <body>
@@ -170,9 +175,9 @@
         <div class="row g-4 mb-4">
             <!-- Formulario lateral para agregar materias al grupo -->
             <div class="col-lg-4">
-                <div class="card rounded-4 p-4 bg-white h-100">
+                <div class="card acento-prota rounded-4 p-4 bg-white h-100">
                     <h5 class="fw-bold text-dark mb-3">
-                        Agregar Materia al Grupo
+                        <i class="bi bi-journal-plus icono-encabezado me-2"></i>Agregar Materia al Grupo
                         <span class="info-icon" tabindex="0" role="button" aria-label="Registra una nueva asignatura en {{ $grupo->nombre_grupo }} ({{ $grupo->turno }}).">
                             <i class="bi bi-info-circle"></i>
                             <span class="info-icon-text" role="tooltip">Registra una nueva asignatura en {{ $grupo->nombre_grupo }} ({{ $grupo->turno }}).</span>
@@ -193,7 +198,7 @@
                             <input type="text" name="nombre_materia" value="{{ old('nombre_materia') }}" class="form-control rounded-3" maxlength="100" required>
                         </div>
 
-                        <button type="submit" class="btn btn-primary w-100 rounded-3 py-2 fw-semibold">
+                        <button type="submit" class="btn btn-prota w-100 rounded-3 py-2 fw-semibold">
                             <i class="bi bi-journal-plus me-2"></i>Guardar Materia en este Grupo
                         </button>
                     </form>
@@ -202,10 +207,10 @@
 
             <!-- Tabla de materias pertenecientes a este grupo con Semáforo de Asistencia -->
             <div class="col-lg-8">
-                <div class="card rounded-4 p-4 bg-white h-100">
+                <div class="card acento-prota rounded-4 p-4 bg-white h-100">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="fw-bold text-dark mb-0">
-                            Materias Impartidas en {{ $grupo->nombre_grupo }}
+                            <i class="bi bi-journal-bookmark-fill icono-encabezado me-2"></i>Materias Impartidas en {{ $grupo->nombre_grupo }}
                         </h5>
                         <span class="badge badge-estado badge-permiso rounded-pill">{{ $grupo->materias->count() }} Registradas</span>
                     </div>
@@ -223,11 +228,11 @@
                             </thead>
                             <tbody>
                                 @forelse ($grupo->materias as $materia)
-                                    @php
-                                        $pctMat = $materia->porcentaje_asistencia;
-                                        $colorMat = is_null($pctMat) ? 'secondary' : ($pctMat >= 85 ? 'success' : ($pctMat >= 70 ? 'warning' : 'danger'));
-                                        $esMiMateria = is_null($materia->profesor_id) || (int) $materia->profesor_id === (int) \Illuminate\Support\Facades\Auth::id();
-                                    @endphp
+                                @php
+                                    $pctMat = $materia->porcentaje_asistencia;
+                                    $colorMat = is_null($pctMat) ? null : ($pctMat >= 80 ? '#1D4ED8' : ($pctMat >= 60 ? '#D97706' : '#DC2626'));
+                                    $esMiMateria = is_null($materia->profesor_id) || (int) $materia->profesor_id === (int) \Illuminate\Support\Facades\Auth::id();
+                                @endphp
                                     <tr>
                                         <td>
                                             <span class="badge badge-estado neutra-slate rounded-pill px-3 py-2 font-monospace">{{ $materia->codigo_materia }}</span>
@@ -259,26 +264,26 @@
                                                 <span class="texto-slate small">Sin sesiones</span>
                                             @else
                                                 <div class="d-flex justify-content-between small mb-1">
-                                                    <span class="fw-bold text-{{ $colorMat === 'warning' ? 'dark' : $colorMat }}">{{ $pctMat }}%</span>
+                                                    <span class="fw-bold" style="color: {{ $colorMat }}">{{ $pctMat }}%</span>
                                                     <span class="texto-slate">{{ $materia->total_registros }} reg.</span>
                                                 </div>
                                                 <div class="progress rounded-pill" style="height: 7px;">
-                                                    <div class="progress-bar bg-{{ $colorMat }}" role="progressbar" data-width="{{ $pctMat }}"></div>
+                                                    <div class="progress-bar" style="background: {{ $colorMat }};" role="progressbar" data-width="{{ $pctMat }}"></div>
                                                 </div>
                                             @endif
                                         </td>
                                         <td class="text-end">
                                             @if ($esMiMateria)
                                                 <div class="d-inline-flex flex-wrap gap-1 justify-content-end">
-                                                    <a href="{{ route('sesiones.index', ['materia_id' => $materia->id]) }}" class="btn btn-sm btn-primary rounded-3" title="Iniciar Pase de Lista QR para esta materia">
+                                                    <a href="{{ route('sesiones.index', ['materia_id' => $materia->id]) }}" class="btn btn-sm btn-institucional rounded-3" title="Iniciar Pase de Lista QR para esta materia">
                                                         <i class="bi bi-qr-code-scan me-1"></i>Iniciar QR
                                                     </a>
 
-                                                    <a href="{{ route('materias.show', $materia->id) }}" class="btn btn-sm btn-outline-dark rounded-3" title="Gestionar Alumnos de la Materia">
+                                                    <a href="{{ route('materias.show', $materia->id) }}" class="btn btn-sm btn-outline-secondary rounded-3" title="Gestionar Alumnos de la Materia">
                                                         <i class="bi bi-people me-1"></i>Alumnos
                                                     </a>
 
-                                                    <a href="{{ route('profesor.materias.importar', ['grupo_id' => $grupo->id]) }}" class="btn btn-sm btn-outline-success rounded-3" title="Inscribir alumnos por CSV en esta materia">
+                                                    <a href="{{ route('profesor.materias.importar', ['grupo_id' => $grupo->id]) }}" class="btn btn-sm btn-outline-secondary rounded-3" title="Inscribir alumnos por CSV en esta materia">
                                                         <i class="bi bi-file-earmark-arrow-up me-1"></i>Importar
                                                     </a>
 
@@ -350,10 +355,11 @@
         </div>
 
         <!-- 4. Alumnos Inscritos / Solicitudes en este Grupo con Regla Universitaria (3 Retardos = 1 Falta) y Derecho a Examen -->
-        <div class="card rounded-4 p-4 bg-white">
+        <div class="card acento-prota rounded-4 p-4 bg-white">
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
                 <div>
-                    <h5 class="fw-bold text-dark mb-0">Alumnos Inscritos, Solicitudes y Derecho a Examen Ordinario
+                    <h5 class="fw-bold text-dark mb-0">
+                        <i class="bi bi-people-fill icono-encabezado me-2"></i>Alumnos Inscritos, Solicitudes y Derecho a Examen Ordinario
                         <span class="info-icon" tabindex="0" role="button" aria-label="Cada 3 retardos equivalen a 1 falta. Con 3 faltas el alumno pasa a sin derecho (SD).">
                             <i class="bi bi-info-circle"></i>
                             <span class="info-icon-text" role="tooltip">Cada 3 retardos equivalen a 1 falta. Con 3 faltas el alumno pasa a sin derecho (SD).</span>
@@ -362,7 +368,7 @@
                 </div>
                 <div class="d-flex align-items-center gap-2">
                     @if ($misMateriasGrupo->isNotEmpty())
-                        <button type="button" class="btn btn-sm btn-primary rounded-3" data-bs-toggle="modal" data-bs-target="#modalInscribirAlumnoGrupo">
+                        <button type="button" class="btn btn-sm btn-prota rounded-3" data-bs-toggle="modal" data-bs-target="#modalInscribirAlumnoGrupo">
                             <i class="bi bi-person-plus-fill me-1"></i>Inscribir Alumno en mi Asignatura
                         </button>
                     @endif
@@ -398,10 +404,10 @@
                                 </td>
                                 <td>
                                     @if ($matricula->materia)
-                                        <a href="{{ route('materias.show', $matricula->materia->id) }}" class="text-decoration-none text-dark">
-                                            <span class="badge badge-estado neutra-slate me-1 font-monospace">{{ $matricula->materia->codigo_materia }}</span>
-                                            {{ $matricula->materia->nombre_materia }}
-                                        </a>
+                                            <a href="{{ route('materias.show', $matricula->materia->id) }}" class="text-decoration-none text-dark">
+                                                <span class="badge pildora-materia me-1 font-monospace">{{ $matricula->materia->codigo_materia }}</span>
+                                                {{ $matricula->materia->nombre_materia }}
+                                            </a>
                                     @else
                                         <span class="texto-slate">Sin materia</span>
                                     @endif
