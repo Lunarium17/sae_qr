@@ -103,10 +103,10 @@
                                         </td>
                                         <td>{{ preg_replace('/([A-Za-zÁÉÍÓÚáéíóú])(\d{4})/u', '$1 $2', $grupo->periodo_lectivo) }}</td>
                                         <td class="text-center">
-                                            <span class="badge bg-dark rounded-pill px-2 py-1 me-1">
+                                            <span class="badge badge-estado neutra-slate rounded-pill px-2 py-1 me-1">
                                                 {{ $grupo->materias_count }} mat.
                                             </span>
-                                            <span class="badge bg-info text-dark rounded-pill px-2 py-1">
+                                            <span class="badge badge-estado badge-permiso rounded-pill px-2 py-1">
                                                 {{ $grupo->alumnos_aceptados_count }} alum.
                                             </span>
                                         </td>
@@ -127,7 +127,7 @@
                                             <a href="{{ route('grupos.show', $grupo->id) }}" class="btn btn-sm btn-primary rounded-3 me-1" title="Gestionar Materias, Alumnos y Estadísticas">
                                                 <i class="bi bi-journal-bookmark-fill me-1"></i>Gestionar Materias
                                             </a>
-                                            <a href="{{ route('grupos.edit', $grupo->id) }}" class="btn btn-sm btn-outline-warning text-dark rounded-3 me-1" title="Editar Grupo">
+                                            <a href="{{ route('grupos.edit', $grupo->id) }}" class="btn btn-sm btn-outline-secondary rounded-3 me-1" title="Editar Grupo">
                                                 <i class="bi bi-pencil-square"></i>
                                             </a>
                                             <form action="{{ route('grupos.destroy', $grupo->id) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Seguro que deseas eliminar este grupo y sus materias asociadas?');">

@@ -48,7 +48,7 @@
                 </h2>
             </div>
             @if ($misMaterias->isNotEmpty())
-                <button type="button" class="btn btn-primary rounded-3 px-3 py-2 fw-semibold shadow-sm" data-bs-toggle="modal" data-bs-target="#modalInscribirDesdeSolicitudes">
+                <button type="button" class="btn btn-institucional rounded-3 px-3 py-2 fw-semibold shadow-sm" data-bs-toggle="modal" data-bs-target="#modalInscribirDesdeSolicitudes">
                     <i class="bi bi-person-plus-fill me-2"></i>Inscribir Alumno por Búsqueda
                 </button>
             @endif
@@ -89,7 +89,7 @@
                     </div>
 
                     <div class="col-md-2 d-flex gap-2">
-                        <button type="submit" class="btn btn-dark w-100 rounded-3">
+                        <button type="submit" class="btn btn-institucional w-100 rounded-3">
                             <i class="bi bi-funnel-fill me-1"></i>Filtrar
                         </button>
                         <a href="{{ route('profesor.solicitudes') }}" class="btn btn-outline-secondary rounded-3" title="Limpiar filtros">
@@ -103,7 +103,7 @@
         <div class="card rounded-4 overflow-hidden bg-white">
             <div class="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
                 <h5 class="fw-bold mb-0">Listado de Solicitudes e Inscripciones</h5>
-                <span class="badge bg-secondary rounded-pill">{{ $solicitudes->total() }} registros</span>
+                <span class="badge badge-estado badge-permiso rounded-pill">{{ $solicitudes->total() }} registros</span>
             </div>
             <div class="table-responsive">
                     <table class="table table-moderna table-hover align-middle mb-0">
@@ -130,7 +130,7 @@
                                 <tr>
                                     <td class="ps-4">
                                         <div class="fw-bold text-dark">{{ $sol->alumno->name ?? 'Alumno' }}</div>
-                                        <small class="texto-slate font-monospace">{{ $sol->alumno->matricula_codigo ?? 'Sin matrícula' }}</small>
+                                        <small class="texto-slate font-monospace">{{ $sol->alumno->matricula_codigo ?: ($sol->alumno->email ?? '—') }}</small>
                                     </td>
                                     <td class="texto-slate">{{ $sol->alumno->email ?? '—' }}</td>
                                     <td>
@@ -146,11 +146,11 @@
                                     </td>
                                     <td class="text-center">
                                         @if($sol->estado === 'pendiente')
-                                            <span class="badge badge-estado badge-retardo">Pendiente</span>
+                                            <span class="badge badge-estado ambar-limpio">Pendiente</span>
                                         @elseif($sol->estado === 'aceptado')
-                                            <span class="badge badge-estado badge-asistencia">Aceptado</span>
+                                            <span class="badge badge-estado neutra-slate">Aceptado</span>
                                         @else
-                                            <span class="badge badge-estado badge-falta">Rechazado</span>
+                                            <span class="badge badge-estado rojo-limpio">Rechazado</span>
                                         @endif
                                     </td>
                                     <td class="text-center pe-4">
@@ -195,7 +195,24 @@
             </div>
             @if ($solicitudes->hasPages())
                 <div class="card-footer bg-white border-0 py-3 px-4">
-                    {{ $solicitudes->links() }}
+                    <nav aria-label="Paginacion de solicitudes">
+                        <ul class="pagination pagination-sm justify-content-center mb-1">
+                            <li class="page-item {{ $solicitudes->onFirstPage() ? 'disabled' : '' }}">
+                                <a class="page-link" href="{{ $solicitudes->previousPageUrl() ?? '#' }}" aria-label="Anterior">&laquo;</a>
+                            </li>
+                            @foreach ($solicitudes->getUrlRange(1, $solicitudes->lastPage()) as $pagina)
+                                <li class="page-item {{ $solicitudes->currentPage() === $pagina ? 'active' : '' }}">
+                                    <a class="page-link" href="{{ $solicitudes->url($pagina) }}">{{ $pagina }}</a>
+                                </li>
+                            @endforeach
+                            <li class="page-item {{ $solicitudes->hasMorePages() ? '' : 'disabled' }}">
+                                <a class="page-link" href="{{ $solicitudes->nextPageUrl() ?? '#' }}" aria-label="Siguiente">&raquo;</a>
+                            </li>
+                        </ul>
+                    </nav>
+                    <div class="text-center texto-slate small">
+                        Mostrando {{ $solicitudes->firstItem() ?? 0 }} a {{ $solicitudes->lastItem() ?? 0 }} de {{ $solicitudes->total() }} resultados
+                    </div>
                 </div>
             @endif
         </div>
@@ -206,7 +223,7 @@
         <div class="modal fade" id="modalInscribirDesdeSolicitudes" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content rounded-4 border-0 shadow">
-                    <div class="modal-header bg-primary text-white border-0">
+                    <div class="modal-header franja-institucional text-white border-0">
                         <h5 class="modal-title fw-bold">
                             Inscribir Alumno por Búsqueda
                         </h5>
@@ -355,7 +372,7 @@
 
                                 const subSpan = document.createElement('div');
                                 subSpan.className = 'texto-slate';
-                                subSpan.textContent = 'Matrícula: ' + al.matricula_codigo + ' | ' + al.email;
+                                subSpan.textContent = (al.matricula_codigo ? 'Matrícula: ' + al.matricula_codigo + ' | ' : '') + al.email;
 
                                 infoDiv.appendChild(nameStrong);
                                 infoDiv.appendChild(subSpan);
@@ -376,7 +393,7 @@
                                     btn.addEventListener('click', function () {
                                         inputUserId.value = al.id;
                                         nombreSelEl.textContent = al.name;
-                                        detalleSelEl.textContent = 'Matrícula: ' + al.matricula_codigo + ' (' + al.email + ')';
+                                        detalleSelEl.textContent = (al.matricula_codigo ? 'Matrícula: ' + al.matricula_codigo + ' — ' : '') + al.email;
                                         seleccionadoEl.classList.remove('d-none');
                                         seleccionadoEl.classList.add('d-flex');
                                         resultadosEl.classList.add('d-none');

@@ -1,6 +1,6 @@
 {{-- Campana de notificaciones: botón + panel desplegable autónomo (no requiere JS de Bootstrap) --}}
 <div class="position-relative" id="jsCampanaWrap">
-    <button class="btn btn-outline-light btn-sm rounded-3 position-relative" id="jsCampanaBtn" type="button" aria-label="Notificaciones">
+    <button class="btn btn-outline-secondary btn-sm rounded-3 position-relative" id="jsCampanaBtn" type="button" aria-label="Notificaciones">
         <i class="bi bi-bell"></i>
         <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger d-none" id="jsCampanaBadge" style="font-size: .6rem;">0</span>
     </button>

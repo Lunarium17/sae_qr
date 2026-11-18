@@ -23,10 +23,10 @@
                 SAE QR | Grupo {{ $grupo->nombre_grupo }}
             </a>
             <div class="d-flex align-items-center gap-2">
-                <a href="{{ route('grupos.index') }}" class="btn btn-outline-secondary btn-sm fw-semibold">
+                <a href="{{ route('grupos.index') }}" class="btn btn-outline-secondary btn-sm fw-semibold rounded-3">
                     <i class="bi bi-arrow-left me-1"></i>Volver a Mis Grupos
                 </a>
-                <a href="{{ route('profesor.dashboard') }}" class="btn btn-outline-secondary btn-sm text-light">
+                <a href="{{ route('profesor.dashboard') }}" class="btn btn-outline-secondary btn-sm fw-semibold rounded-3">
                     <i class="bi bi-house-door me-1"></i>Panel Principal
                 </a>
                 @include('partials.campana')
@@ -68,7 +68,7 @@
                     <div class="d-flex align-items-center gap-2 mb-1">
                         <span class="badge bg-primary fs-6 px-3 py-2 rounded-pill">{{ $grupo->nombre_grupo }}</span>
                         <h3 class="fw-bold text-dark mb-0">Información y Estadísticas del Grupo</h3>
-                        <a href="{{ route('grupos.edit', $grupo->id) }}" class="btn btn-sm btn-outline-warning text-dark rounded-3 ms-2">
+                        <a href="{{ route('grupos.edit', $grupo->id) }}" class="btn btn-sm btn-outline-secondary rounded-3 ms-2">
                             <i class="bi bi-pencil-square me-1"></i>Editar Grupo
                         </a>
                     </div>
@@ -82,21 +82,21 @@
                     </p>
                 </div>
                 <div class="d-flex flex-wrap gap-2 text-center">
-                    <div class="px-3 py-2 bg-light rounded-3 border">
-                        <div class="fs-4 fw-bold text-primary">{{ $grupo->materias->count() }}</div>
-                        <div class="small texto-slate">Materias</div>
+                    <div class="kpi-mini">
+                        <div class="num">{{ $grupo->materias->count() }}</div>
+                        <div class="lbl">Materias</div>
                     </div>
-                    <div class="px-3 py-2 bg-light rounded-3 border">
-                        <div class="fs-4 fw-bold text-success">{{ $grupo->matriculas->where('estado', 'aceptado')->count() }}</div>
-                        <div class="small texto-slate">Inscritos</div>
+                    <div class="kpi-mini">
+                        <div class="num">{{ $grupo->matriculas->where('estado', 'aceptado')->count() }}</div>
+                        <div class="lbl">Inscritos</div>
                     </div>
-                    <div class="px-3 py-2 bg-light rounded-3 border">
-                        <div class="fs-4 fw-bold text-dark">{{ $statsGrupo['total_sesiones'] }}</div>
-                        <div class="small texto-slate">Sesiones</div>
+                    <div class="kpi-mini">
+                        <div class="num">{{ $statsGrupo['total_sesiones'] }}</div>
+                        <div class="lbl">Sesiones</div>
                     </div>
-                    <div class="px-3 py-2 bg-light rounded-3 border">
-                        <div class="fs-4 fw-bold text-{{ $colorGrupoSemaforo }}">{{ $statsGrupo['porcentaje'] }}%</div>
-                        <div class="small texto-slate">Asistencia</div>
+                    <div class="kpi-mini">
+                        <div class="num text-{{ $colorGrupoSemaforo }}">{{ $statsGrupo['porcentaje'] }}%</div>
+                        <div class="lbl">Asistencia</div>
                     </div>
                 </div>
             </div>
@@ -108,17 +108,19 @@
                 <div class="card rounded-4 p-4 bg-white h-100">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h6 class="fw-bold text-dark mb-0">Incidencias en {{ $grupo->nombre_grupo }}</h6>
-                        <span class="badge bg-dark rounded-pill">{{ $statsGrupo['total_registros'] }} registros</span>
+                        <span class="badge badge-estado badge-permiso rounded-pill">{{ $statsGrupo['total_registros'] }} registros</span>
                     </div>
                     @if ($statsGrupo['total_registros'] > 0)
                         <div class="mx-auto" style="max-width: 220px;">
                             <canvas id="chartIncidenciasGrupo"></canvas>
                         </div>
-                        <div class="row text-center mt-3 g-2">
-                            <div class="col-3"><span class="badge badge-estado badge-asistencia w-100 py-1">A: {{ $statsGrupo['asistencias'] }}</span></div>
-                            <div class="col-3"><span class="badge badge-estado badge-retardo w-100 py-1">R: {{ $statsGrupo['retardos'] }}</span></div>
-                            <div class="col-3"><span class="badge badge-estado badge-permiso w-100 py-1">P: {{ $statsGrupo['permisos'] }}</span></div>
-                            <div class="col-3"><span class="badge badge-estado badge-falta w-100 py-1">F: {{ $statsGrupo['faltas'] }}</span></div>
+                        <div class="text-center mt-3">
+                            <div class="incidencias-box mx-auto">
+                                <span class="inc-item inc-a {{ $statsGrupo['asistencias'] > 0 ? 'inc-on' : '' }}"><span class="dot"></span>A: <strong class="val">{{ $statsGrupo['asistencias'] }}</strong></span>
+                                <span class="inc-item inc-r {{ $statsGrupo['retardos'] > 0 ? 'inc-on' : '' }}"><span class="dot"></span>R: <strong class="val">{{ $statsGrupo['retardos'] }}</strong></span>
+                                <span class="inc-item inc-p {{ $statsGrupo['permisos'] > 0 ? 'inc-on' : '' }}"><span class="dot"></span>P: <strong class="val">{{ $statsGrupo['permisos'] }}</strong></span>
+                                <span class="inc-item inc-f {{ $statsGrupo['faltas'] > 0 ? 'inc-on' : '' }}"><span class="dot"></span>F: <strong class="val">{{ $statsGrupo['faltas'] }}</strong></span>
+                            </div>
                         </div>
                     @else
                         <div class="text-center texto-slate my-auto py-4">
@@ -189,7 +191,7 @@
                         <h5 class="fw-bold text-dark mb-0">
                             Materias Impartidas en {{ $grupo->nombre_grupo }}
                         </h5>
-                        <span class="badge bg-dark rounded-pill">{{ $grupo->materias->count() }} Registradas</span>
+                        <span class="badge badge-estado badge-permiso rounded-pill">{{ $grupo->materias->count() }} Registradas</span>
                     </div>
 
                     <div class="table-responsive">
@@ -212,14 +214,14 @@
                                     @endphp
                                     <tr>
                                         <td>
-                                            <span class="badge bg-dark rounded-pill px-3 py-2">{{ $materia->codigo_materia }}</span>
+                                            <span class="badge badge-estado neutra-slate rounded-pill px-3 py-2 font-monospace">{{ $materia->codigo_materia }}</span>
                                         </td>
                                         <td>
                                             @if ($esMiMateria)
                                                 <a href="{{ route('materias.show', $materia->id) }}" class="fw-semibold text-dark text-decoration-none">
                                                     {{ $materia->nombre_materia }}
                                                 </a>
-                                                <div><span class="badge badge-estado badge-asistencia bg-opacity-10 text-success border border-success-subtle small">Mi asignatura</span></div>
+                                                <div><span class="badge badge-estado azul-suave small">Mi asignatura</span></div>
                                             @else
                                                 <span class="fw-semibold text-secondary">{{ $materia->nombre_materia }}</span>
                                                 <div class="small texto-slate"><i class="bi bi-person-workspace me-1"></i>Prof. {{ $materia->profesor->name ?? 'Otro docente' }}</div>
@@ -231,7 +233,7 @@
                                                     <i class="bi bi-people-fill me-1"></i>{{ $materia->matriculas->count() }}
                                                 </a>
                                             @else
-                                                <span class="badge badge-estado rounded-pill px-3 py-2" style="background: #F1F5F9; color: #334155; border: 1px solid #E2E8F0;">
+                                                <span class="badge badge-estado neutra-slate rounded-pill px-3 py-2">
                                                     <i class="bi bi-people-fill me-1"></i>{{ $materia->matriculas->count() }}
                                                 </span>
                                             @endif
@@ -264,7 +266,7 @@
                                                         <i class="bi bi-file-earmark-arrow-up me-1"></i>Importar
                                                     </a>
 
-                                                    <button type="button" class="btn btn-sm btn-outline-warning text-dark rounded-3" data-bs-toggle="modal" data-bs-target="#modalEditarMateria-{{ $materia->id }}" title="Editar Materia">
+                                                    <button type="button" class="btn btn-sm btn-outline-secondary rounded-3" data-bs-toggle="modal" data-bs-target="#modalEditarMateria-{{ $materia->id }}" title="Editar Materia">
                                                         <i class="bi bi-pencil-square"></i>
                                                     </button>
 
@@ -281,11 +283,11 @@
                                                 <div class="modal fade text-start" id="modalEditarMateria-{{ $materia->id }}" tabindex="-1" aria-hidden="true">
                                                     <div class="modal-dialog modal-dialog-centered">
                                                         <div class="modal-content rounded-4 border-0 shadow">
-                                                            <div class="modal-header bg-warning text-dark border-0">
+                                                            <div class="modal-header franja-institucional text-white border-0">
                                                                 <h5 class="modal-title fw-bold">
                                                                     <i class="bi bi-pencil-square me-2"></i>Editar Materia
                                                                 </h5>
-                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                                                             </div>
                                                             <form action="{{ route('materias.update', $materia->id) }}" method="POST">
                                                                 @csrf
@@ -303,7 +305,7 @@
                                                                 </div>
                                                                 <div class="modal-footer border-0 pt-0 px-4 pb-4">
                                                                     <button type="button" class="btn btn-light rounded-3" data-bs-dismiss="modal">Cancelar</button>
-                                                                    <button type="submit" class="btn btn-warning fw-semibold rounded-3">
+                                                                    <button type="submit" class="btn btn-institucional fw-semibold rounded-3">
                                                                         <i class="bi bi-check2-circle me-1"></i>Guardar Cambios
                                                                     </button>
                                                                 </div>
@@ -312,7 +314,7 @@
                                                     </div>
                                                 </div>
                                             @else
-                                                <span class="badge bg-light texto-slate border">Impartida por otro docente</span>
+                                                <span class="badge badge-estado neutra-slate">Impartida por otro docente</span>
                                             @endif
                                         </td>
                                     </tr>
@@ -348,7 +350,7 @@
                             <i class="bi bi-person-plus-fill me-1"></i>Inscribir Alumno en mi Asignatura
                         </button>
                     @endif
-                    <span class="badge bg-secondary rounded-pill">{{ $grupo->matriculas->count() }} Registros</span>
+                    <span class="badge badge-estado badge-permiso rounded-pill">{{ $grupo->matriculas->count() }} Registros</span>
                 </div>
             </div>
 
@@ -381,7 +383,7 @@
                                 <td>
                                     @if ($matricula->materia)
                                         <a href="{{ route('materias.show', $matricula->materia->id) }}" class="text-decoration-none text-dark">
-                                            <span class="badge bg-secondary me-1">{{ $matricula->materia->codigo_materia }}</span>
+                                            <span class="badge badge-estado neutra-slate me-1 font-monospace">{{ $matricula->materia->codigo_materia }}</span>
                                             {{ $matricula->materia->nombre_materia }}
                                         </a>
                                     @else
@@ -389,7 +391,7 @@
                                     @endif
                                 </td>
                                 <td class="text-center">
-                                    <div class="fw-bold {{ $faltasAlumno >= 3 ? 'text-danger' : ($faltasAlumno === 2 ? 'text-warning text-dark' : 'text-success') }}">
+                                    <div class="fw-bold" style="{{ $faltasAlumno >= 3 ? 'color: #B91C1C;' : ($faltasAlumno === 2 ? 'color: #B45309;' : 'color: #047857;') }}">
                                         {{ $faltasAlumno }} / 3 faltas
                                     </div>
                                     <div class="texto-slate" style="font-size: 0.75rem;">
@@ -398,26 +400,26 @@
                                 </td>
                                 <td class="text-center">
                                     @if ($faltasAlumno >= 3)
-                                        <span class="badge badge-estado badge-falta">
+                                        <span class="badge badge-estado rojo-limpio">
                                             Sin Derecho a Examen (SD)
                                         </span>
                                     @elseif ($faltasAlumno === 2)
-                                        <span class="badge badge-estado badge-retardo">
+                                        <span class="badge badge-estado ambar-limpio">
                                             En Riesgo / Preventivo (2/3)
                                         </span>
                                     @else
-                                        <span class="badge badge-estado badge-asistencia bg-opacity-10 text-success border border-success">
+                                        <span class="badge badge-estado verde-limpio">
                                             Con Derecho a Ordinario
                                         </span>
                                     @endif
                                 </td>
                                 <td class="text-center">
                                     @if ($matricula->estado === 'aceptado')
-                                        <span class="badge badge-estado badge-asistencia">Aceptado</span>
+                                        <span class="badge badge-estado neutra-slate">Aceptado</span>
                                     @elseif ($matricula->estado === 'pendiente')
-                                        <span class="badge badge-estado badge-retardo">Pendiente</span>
+                                        <span class="badge badge-estado ambar-limpio">Pendiente</span>
                                     @else
-                                        <span class="badge badge-estado badge-falta">Rechazado</span>
+                                        <span class="badge badge-estado rojo-limpio">Rechazado</span>
                                     @endif
                                 </td>
                                 <td class="text-end">
@@ -470,7 +472,7 @@
         <div class="modal fade" id="modalInscribirAlumnoGrupo" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content rounded-4 border-0 shadow">
-                    <div class="modal-header bg-primary text-white border-0">
+                    <div class="modal-header franja-institucional text-white border-0">
                         <h5 class="modal-title fw-bold">
                             <i class="bi bi-person-plus-fill me-2"></i>Inscribir Alumno en {{ $grupo->nombre_grupo }}
                         </h5>
@@ -681,7 +683,7 @@
 
                                     const subSpan = document.createElement('div');
                                     subSpan.className = 'texto-slate';
-                                    subSpan.textContent = 'Matrícula: ' + al.matricula_codigo + ' | ' + al.email;
+                                    subSpan.textContent = (al.matricula_codigo ? 'Matrícula: ' + al.matricula_codigo + ' | ' : '') + al.email;
 
                                     infoDiv.appendChild(nameStrong);
                                     infoDiv.appendChild(subSpan);
@@ -702,7 +704,7 @@
                                         btn.addEventListener('click', function () {
                                             inputUserId.value = al.id;
                                             nombreSelEl.textContent = al.name;
-                                            detalleSelEl.textContent = 'Matrícula: ' + al.matricula_codigo + ' (' + al.email + ')';
+                                            detalleSelEl.textContent = (al.matricula_codigo ? 'Matrícula: ' + al.matricula_codigo + ' — ' : '') + al.email;
                                             seleccionadoEl.classList.remove('d-none');
                                             seleccionadoEl.classList.add('d-flex');
                                             resultadosEl.classList.add('d-none');

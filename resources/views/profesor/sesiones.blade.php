@@ -420,7 +420,7 @@
                                 </td>
                                 <td>
                                     @if($sesHist->materia)
-                                        <span class="badge bg-secondary me-1">{{ $sesHist->materia->codigo_materia }}</span>
+                                        <span class="badge badge-estado neutra-slate me-1 font-monospace">{{ $sesHist->materia->codigo_materia }}</span>
                                         <span class="fw-semibold text-dark">{{ $sesHist->materia->nombre_materia }}</span>
                                     @else
                                         <span class="texto-slate">Asignatura eliminada</span>
@@ -442,16 +442,18 @@
                                     @endif
                                 </td>
                                 <td class="text-center">
-                                    <span class="badge badge-estado badge-asistencia me-1" title="Asistencias">A: {{ $asistH }}</span>
-                                    <span class="badge badge-estado badge-retardo me-1" title="Retardos">R: {{ $retH }}</span>
-                                    <span class="badge badge-estado badge-permiso me-1" title="Permisos">P: {{ $permH }}</span>
-                                    <span class="badge badge-estado badge-falta" title="Faltas">F: {{ $faltH }}</span>
+                                    <div class="incidencias-box mx-auto">
+                                        <span class="inc-item inc-a {{ $asistH > 0 ? 'inc-on' : '' }}" title="Asistencias"><span class="dot"></span>A: <strong class="val">{{ $asistH }}</strong></span>
+                                        <span class="inc-item inc-r {{ $retH > 0 ? 'inc-on' : '' }}" title="Retardos"><span class="dot"></span>R: <strong class="val">{{ $retH }}</strong></span>
+                                        <span class="inc-item inc-p {{ $permH > 0 ? 'inc-on' : '' }}" title="Permisos"><span class="dot"></span>P: <strong class="val">{{ $permH }}</strong></span>
+                                        <span class="inc-item inc-f {{ $faltH > 0 ? 'inc-on' : '' }}" title="Faltas"><span class="dot"></span>F: <strong class="val">{{ $faltH }}</strong></span>
+                                    </div>
                                 </td>
                                 <td class="text-center">
                                     @if($sesHist->estado === 'activa')
                                         <span class="badge badge-suave-verde"><i class="bi bi-broadcast me-1"></i>Activa</span>
                                     @else
-                                        <span class="badge bg-secondary">Finalizada</span>
+                                        <span class="badge badge-estado neutra-slate">Finalizada</span>
                                     @endif
                                 </td>
                                 <td class="text-end">
@@ -462,13 +464,13 @@
                                     <!-- Modal con el Pase de Lista de la Sesión Anterior -->
                                     <div class="modal fade text-start" id="modalDetalleSesion-{{ $sesHist->id }}" tabindex="-1" aria-hidden="true">
                                         <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-                                            <div class="modal-content rounded-4 border-0 shadow">
-                                                <div class="modal-header bg-dark text-white border-0">
+                                                <div class="modal-content rounded-4 border-0 shadow">
+                                                <div class="modal-header franja-institucional text-white border-0">
                                                     <div>
                                                         <h5 class="modal-title fw-bold mb-0">
-                                                            <i class="bi bi-card-checklist me-2 text-info"></i>Pase de Lista — {{ $sesHist->materia->nombre_materia ?? 'Sesión' }}
+                                                            <i class="bi bi-card-checklist me-2"></i>Pase de Lista — {{ $sesHist->materia->nombre_materia ?? 'Sesión' }}
                                                         </h5>
-                                                        <small class="text-light opacity-75">
+                                                        <small class="opacity-75">
                                                             Fecha: {{ $sesHist->fecha }} | Inicio: {{ $sesHist->hora_inicio }} | Grupo: {{ $grupoHist->nombre_grupo ?? '-' }}
                                                         </small>
                                                     </div>
@@ -490,7 +492,7 @@
                                                                     <tr>
                                                                         <td>
                                                                             <div class="fw-semibold">{{ $regHist->alumno->name ?? 'Alumno' }}</div>
-                                                                            <div class="texto-slate small">{{ $regHist->alumno->matricula_codigo ?? $regHist->alumno->email ?? '' }}</div>
+                                                                            <div class="texto-slate small">{{ $regHist->alumno->matricula_codigo ?: ($regHist->alumno->email ?? '') }}</div>
                                                                         </td>
                                                                         <td class="texto-slate small">{{ $regHist->timestamp_escaneo ?? 'Sin escaneo QR' }}</td>
                                                                         <td>

@@ -135,4 +135,45 @@
     .info-icon { position: relative; display: inline-flex; align-items: center; color: #0d6efd; cursor: help; vertical-align: middle; font-size: .8em; margin-left: .15rem; padding: .1rem; }
     .info-icon .info-icon-text { position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); min-width: 240px; max-width: 320px; background: #212529; color: #fff; font-size: .75rem; font-weight: 400; line-height: 1.35; padding: .5rem .65rem; border-radius: .4rem; box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .2); opacity: 0; visibility: hidden; transition: opacity .15s; z-index: 10; text-align: left; }
     .info-icon:hover .info-icon-text, .info-icon:focus .info-icon-text, .info-icon:focus-within .info-icon-text { opacity: 1; visibility: visible; }
+
+    /* Pildoras semanticas limpias (semáforo solo en derecho a examen / estados criticos) */
+    .verde-limpio { background: #ECFDF5; color: #047857; border: 1px solid #A7F3D0; }
+    .ambar-limpio { background: #FFFBEB; color: #B45309; border: 1px solid #FDE68A; }
+    .rojo-limpio  { background: #FEF2F2; color: #B91C1C; border: 1px solid #FECACA; }
+    .azul-suave   { background: #EFF6FF; color: #1D4ED8; border: 1px solid #BFDBFE; }
+    .neutra-slate { background: #F1F5F9; color: #334155; border: 1px solid #E2E8F0; }
+
+    /* Bloque de incidencias A/R/P/F: contenedor neutro con puntos indicadores (0 en gris suave) */
+    .incidencias-box { display: inline-flex; flex-wrap: wrap; justify-content: center; gap: .5rem; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: .875rem; padding: .45rem .75rem; }
+    .inc-item { display: inline-flex; align-items: center; gap: .3rem; color: #94A3B8; font-size: .78rem; font-weight: 600; line-height: 1.4; white-space: nowrap; }
+    .inc-item .dot { width: 7px; height: 7px; border-radius: 50%; background: #CBD5E1; opacity: .4; }
+    .inc-item.inc-on { color: #334155; }
+    .inc-item.inc-on .dot { opacity: 1; }
+    .inc-item .val { font-weight: 700; }
+    .inc-a .dot { background: #059669; }
+    .inc-r .dot { background: #D97706; }
+    .inc-p .dot { background: #2563EB; }
+    .inc-f .dot { background: #DC2626; }
+    .inc-a.inc-on .val { color: #047857; }
+    .inc-r.inc-on .val { color: #B45309; }
+    .inc-p.inc-on .val { color: #1D4ED8; }
+    .inc-f.inc-on .val { color: #B91C1C; }
+
+    /* Franja institucional azul para headers de tarjetas y modales */
+    .franja-institucional { background: linear-gradient(135deg, #0B2447 0%, #19376D 60%, #2F5BD7 100%); }
+
+    /* Boton de accion principal con el azul institucional del sistema */
+    .btn-institucional { background: #2563EB; border-color: #2563EB; color: #FFFFFF; }
+    .btn-institucional:hover, .btn-institucional:focus, .btn-institucional:active { background: #1D4ED8; border-color: #1D4ED8; color: #FFFFFF; }
+
+    /* Aire extra en filas de tablas de padron */
+    .tabla-padron tbody td { padding-top: 1.05rem; padding-bottom: 1.05rem; }
+
+    /* Separacion reforzada de paneles destacados */
+    .panel-definido { box-shadow: 0 4px 12px -6px rgba(15,23,42,.12); }
+
+    /* Mini KPI compacto con numero claro */
+    .kpi-mini { background: #FFFFFF; border: 1px solid rgba(203, 213, 225, .9); border-radius: 1rem; padding: .6rem 1.05rem; min-width: 104px; text-align: center; box-shadow: 0 2px 6px -2px rgba(15,23,42,.08); }
+    .kpi-mini .num { font-size: 1.35rem; font-weight: 800; line-height: 1.1; color: #0F172A; }
+    .kpi-mini .lbl { font-size: .72rem; color: #64748B; font-weight: 600; }
 </style>

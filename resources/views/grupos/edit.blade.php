@@ -17,10 +17,10 @@
                 SAE QR | Editar Grupo
             </a>
             <div class="d-flex align-items-center gap-2">
-                <a href="{{ route('grupos.show', $grupo->id) }}" class="btn btn-outline-info btn-sm">
+                <a href="{{ route('grupos.show', $grupo->id) }}" class="btn btn-outline-secondary btn-sm fw-semibold rounded-3">
                     <i class="bi bi-journal-bookmark-fill me-1"></i>Ver Materias del Grupo
                 </a>
-                <a href="{{ route('grupos.index') }}" class="btn btn-outline-light btn-sm">
+                <a href="{{ route('grupos.index') }}" class="btn btn-outline-secondary btn-sm fw-semibold rounded-3">
                     <i class="bi bi-arrow-left me-1"></i>Volver a Mis Grupos
                 </a>
                 @include('partials.campana')
@@ -43,8 +43,8 @@
                 @endif
 
                 <div class="card rounded-4 bg-white overflow-hidden">
-                    <div class="card-header bg-warning text-dark p-4 border-0">
-                        <h4 class="mb-0 fw-bold">Editar Grupo Académico: {{ $grupo->nombre_grupo }}</h4>
+                    <div class="card-header franja-institucional text-white p-4 border-0">
+                        <h4 class="mb-0 fw-bold"><i class="bi bi-pencil-square me-2"></i>Editar Grupo Académico: {{ $grupo->nombre_grupo }}</h4>
                     </div>
                     <div class="card-body p-5">
                         <form action="{{ route('grupos.update', $grupo->id) }}" method="POST">
@@ -107,7 +107,7 @@
                             
                             <div class="d-flex justify-content-end gap-2">
                                 <a href="{{ route('grupos.index') }}" class="btn btn-light rounded-3 px-4 py-2">Cancelar</a>
-                                <button type="submit" class="btn btn-warning fw-semibold rounded-3 px-4 py-2">
+                                <button type="submit" class="btn btn-institucional fw-semibold rounded-3 px-4 py-2">
                                     <i class="bi bi-check2-circle me-2"></i>Guardar Cambios
                                 </button>
                             </div>

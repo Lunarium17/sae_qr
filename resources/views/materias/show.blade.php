@@ -432,7 +432,7 @@
 
                                 const subSpan = document.createElement('div');
                                 subSpan.className = 'texto-slate';
-                                subSpan.textContent = 'Matrícula: ' + al.matricula_codigo + ' | ' + al.email;
+                                subSpan.textContent = (al.matricula_codigo ? 'Matrícula: ' + al.matricula_codigo + ' | ' : '') + al.email;
 
                                 infoDiv.appendChild(nameStrong);
                                 infoDiv.appendChild(subSpan);
@@ -453,7 +453,7 @@
                                     btn.addEventListener('click', function () {
                                         inputUserId.value = al.id;
                                         nombreSelEl.textContent = al.name;
-                                        detalleSelEl.textContent = 'Matrícula: ' + al.matricula_codigo + ' (' + al.email + ')';
+                                        detalleSelEl.textContent = (al.matricula_codigo ? 'Matrícula: ' + al.matricula_codigo + ' — ' : '') + al.email;
                                         seleccionadoEl.classList.remove('d-none');
                                         seleccionadoEl.classList.add('d-flex');
                                         resultadosEl.classList.add('d-none');
