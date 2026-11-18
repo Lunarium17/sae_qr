@@ -12,7 +12,7 @@
     <nav class="navbar navbar-expand-lg navbar-light navbar-editorial shadow-sm">
         <div class="container">
             <a class="navbar-brand fw-bold text-dark" href="{{ route('profesor.dashboard') }}">SAE QR | Justificantes</a>
-            <div class="d-flex align-items-center gap-2">
+            <div class="d-flex align-items-center gap-3">
                 <a class="btn btn-outline-secondary btn-sm fw-semibold rounded-3" href="{{ route('profesor.dashboard') }}">
                     <i class="bi bi-arrow-left me-1"></i>Volver al Panel
                 </a>
@@ -83,10 +83,10 @@
                                                 <input type="text" name="comentario_profesor" class="form-control form-control-sm rounded-3" maxlength="500">
                                             </div>
                                             <div class="d-flex gap-2">
-                                                <button type="submit" name="estado_aprobacion" value="aceptado" class="btn btn-sm btn-success rounded-3 flex-fill">
+                                                <button type="submit" name="estado_aprobacion" value="aceptado" class="btn btn-sm btn-institucional rounded-3 flex-fill">
                                                     <i class="bi bi-check-lg me-1"></i>Aprobar
                                                 </button>
-                                                <button type="submit" name="estado_aprobacion" value="rechazado" class="btn btn-sm btn-outline-danger rounded-3 flex-fill">
+                                                <button type="submit" name="estado_aprobacion" value="rechazado" class="btn btn-sm btn-outline-secondary rounded-3 flex-fill">
                                                     <i class="bi bi-x-lg me-1"></i>Rechazar
                                                 </button>
                                             </div>

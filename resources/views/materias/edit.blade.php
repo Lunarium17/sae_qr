@@ -37,7 +37,7 @@
                 @endif
 
                 <div class="card rounded-4 bg-white overflow-hidden">
-                    <div class="card-header bg-warning text-dark p-4 border-0">
+                    <div class="card-header franja-institucional text-white p-4 border-0">
                         <h5 class="mb-0 fw-bold">Editar Materia: {{ $materia->nombre_materia }}</h5>
                     </div>
                     <div class="card-body p-4">

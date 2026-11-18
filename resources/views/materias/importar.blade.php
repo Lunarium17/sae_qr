@@ -12,19 +12,13 @@
 
     @php
         $usuario = \Illuminate\Support\Facades\Auth::user();
-        $avHue = abs(crc32($usuario->name ?? 'U')) % 360;
         $esPreview = isset($filas);
     @endphp
 
     <nav class="navbar navbar-expand-lg navbar-light navbar-editorial shadow-sm">
         <div class="container">
             <a class="navbar-brand fw-bold text-dark" href="#">SAE QR | Importar Alumnos</a>
-            <div class="d-flex align-items-center gap-2">
-                @if ($usuario->foto_perfil)
-                    <img src="{{ asset('storage/' . $usuario->foto_perfil) }}" alt="Foto de perfil" class="rounded-circle" style="width: 34px; height: 34px; object-fit: cover; border: 2px solid rgba(255,255,255,.5);">
-                @else
-                    <span class="d-inline-flex align-items-center justify-content-center rounded-circle fw-bold text-white" style="width: 34px; height: 34px; background: hsl({{ $avHue }}, 65%, 45%); font-size: .85rem;">{{ mb_strtoupper(mb_substr($usuario->name ?? 'U', 0, 1)) }}</span>
-                @endif
+            <div class="d-flex align-items-center gap-3">
                 @php
                     $grupoOrigen = request('grupo_id') ? \App\Models\Grupo::find(request('grupo_id')) : null;
                 @endphp
@@ -32,7 +26,7 @@
                     <a href="{{ route('grupos.show', $grupoOrigen->id) }}" class="btn btn-outline-secondary btn-sm fw-semibold rounded-3">
                         <i class="bi bi-arrow-left me-1"></i>Volver al Grupo {{ $grupoOrigen->nombre_grupo }}
                     </a>
-                    <a href="{{ route('profesor.dashboard') }}" class="btn btn-outline-secondary btn-sm text-light">
+                    <a href="{{ route('profesor.dashboard') }}" class="btn btn-outline-secondary btn-sm fw-semibold rounded-3">
                         <i class="bi bi-house-door me-1"></i>Panel Principal
                     </a>
                 @else
@@ -193,7 +187,14 @@
                             </span>
                             <span class="text-danger">*</span>
                         </label>
-                        <input type="file" name="archivo_csv" class="form-control rounded-3" accept=".csv,text/csv" required>
+                        <div class="custom-upload-csv">
+                            <label class="btn btn-outline-primary rounded-3 mb-0" for="archivoCsv" style="cursor: pointer;">
+                                <i class="bi bi-file-earmark-arrow-up me-2"></i>Subir archivo CSV
+                                <input type="file" name="archivo_csv" id="archivoCsv" accept=".csv,text/csv" required class="visually-hidden"
+                                       onchange="document.getElementById('nombreArchivoCsv').textContent = this.files.length > 0 ? this.files[0].name : 'Ningún archivo seleccionado';">
+                            </label>
+                            <span id="nombreArchivoCsv" class="texto-slate small">Ningún archivo seleccionado</span>
+                        </div>
                         <div class="d-flex flex-wrap align-items-center gap-2 mt-2">
                             <a href="{{ route('profesor.materias.plantilla') }}" class="btn btn-outline-primary btn-sm rounded-3">
                                 <i class="bi bi-file-earmark-arrow-down me-1"></i>Descargar plantilla

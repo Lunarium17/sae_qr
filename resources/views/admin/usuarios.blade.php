@@ -46,7 +46,7 @@
                 </h3>
             </div>
             <div class="d-flex gap-2">
-                <button type="button" class="btn btn-primary rounded-3" data-bs-toggle="modal" data-bs-target="#modalCrearUsuario">
+                <button type="button" class="btn btn-institucional rounded-3" data-bs-toggle="modal" data-bs-target="#modalCrearUsuario">
                     <i class="bi bi-person-plus-fill me-1"></i>Nuevo Usuario
                 </button>
                 <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary rounded-3">
@@ -91,7 +91,7 @@
                         <input type="text" name="buscar" id="buscar" value="{{ $buscar }}" class="form-control rounded-3" placeholder="Buscar por nombre, correo o matrícula">
                     </div>
                     <div class="col-md-3 d-flex gap-2">
-                        <button type="submit" class="btn btn-dark w-100 rounded-3">
+                        <button type="submit" class="btn btn-institucional w-100 rounded-3">
                             <i class="bi bi-search me-1"></i>Filtrar
                         </button>
                         <a href="{{ route('admin.usuarios') }}" class="btn btn-outline-secondary rounded-3" title="Limpiar filtros">
@@ -106,7 +106,7 @@
         <div class="card rounded-4">
             <div class="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
                 <h5 class="fw-bold mb-0">Usuarios Registrados</h5>
-                <span class="badge bg-secondary rounded-pill">{{ $usuarios->total() }} usuario(s)</span>
+                <span class="badge badge-estado neutra-slate rounded-pill">{{ $usuarios->total() }} usuario(s)</span>
             </div>
             <div class="card-body p-4">
                 <div class="table-responsive">
@@ -127,7 +127,7 @@
                                     <td class="fw-semibold">
                                         {{ $usr->name }}
                                         @if ($usr->id === \Illuminate\Support\Facades\Auth::id())
-                                            <span class="badge bg-secondary ms-1">Tú</span>
+                                            <span class="badge badge-estado neutra-slate ms-1">Tú</span>
                                         @endif
                                     </td>
                                     <td>{{ $usr->email }}</td>
@@ -137,7 +137,7 @@
                                         @elseif ($usr->rol === 'profesor')
                                             <span class="badge badge-estado badge-asistencia px-3 py-2 rounded-pill">Profesor</span>
                                         @else
-                                            <span class="badge bg-primary px-3 py-2 rounded-pill">Alumno</span>
+                                            <span class="badge badge-estado azul-suave px-3 py-2 rounded-pill">Alumno</span>
                                         @endif
                                     </td>
                                     <td>
@@ -237,7 +237,7 @@
                     </div>
                     <div class="modal-footer border-0 pt-0">
                         <button type="button" class="btn btn-light rounded-3" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary rounded-3 px-4">Crear Cuenta</button>
+                        <button type="submit" class="btn btn-institucional rounded-3 px-4">Crear Cuenta</button>
                     </div>
                 </form>
             </div>
@@ -289,7 +289,7 @@
                     </div>
                     <div class="modal-footer border-0 pt-0">
                         <button type="button" class="btn btn-light rounded-3" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary rounded-3 px-4">Guardar Cambios</button>
+                        <button type="submit" class="btn btn-institucional rounded-3 px-4">Guardar Cambios</button>
                     </div>
                 </form>
             </div>

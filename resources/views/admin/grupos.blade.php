@@ -102,7 +102,7 @@
                                     </td>
                                     <td>
                                         @forelse ($grupo->materias as $mat)
-                                            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary-subtle me-1 mb-1">
+                                            <span class="badge badge-estado azul-suave me-1 mb-1">
                                                 {{ $mat->nombre_materia }} ({{ $mat->codigo_materia }})
                                             </span>
                                         @empty
@@ -111,7 +111,7 @@
                                     </td>
                                     <td class="text-end">
                                         <div class="d-inline-flex gap-1">
-                                            <button type="button" class="btn btn-outline-warning text-dark btn-sm py-0 px-2" data-bs-toggle="modal" data-bs-target="#modalEditarGrupoAdmin-{{ $grupo->id }}" title="Editar Grupo Oficial">
+                                            <button type="button" class="btn btn-outline-secondary btn-sm py-0 px-2" data-bs-toggle="modal" data-bs-target="#modalEditarGrupoAdmin-{{ $grupo->id }}" title="Editar Grupo Oficial">
                                                 <i class="bi bi-pencil-square"></i>
                                             </button>
                                             <form action="{{ route('admin.grupos.destroy', $grupo->id) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Seguro que deseas eliminar este grupo oficial?');">
@@ -127,11 +127,11 @@
                                         <div class="modal fade text-start" id="modalEditarGrupoAdmin-{{ $grupo->id }}" tabindex="-1" aria-hidden="true">
                                             <div class="modal-dialog modal-dialog-centered">
                                                 <div class="modal-content rounded-4 border-0 shadow">
-                                                    <div class="modal-header bg-warning text-dark border-0">
+                                                    <div class="modal-header franja-institucional text-white border-0">
                                                         <h5 class="modal-title fw-bold">
                                                             Editar Grupo Oficial: {{ $grupo->nombre_grupo }}
                                                         </h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                                                     </div>
                                                     <form action="{{ route('admin.grupos.update', $grupo->id) }}" method="POST">
                                                         @csrf
@@ -172,7 +172,7 @@
                                                         </div>
                                                         <div class="modal-footer border-0 pt-0 px-4 pb-4">
                                                             <button type="button" class="btn btn-light rounded-3" data-bs-dismiss="modal">Cancelar</button>
-                                                            <button type="submit" class="btn btn-warning fw-semibold rounded-3">
+                                                            <button type="submit" class="btn btn-institucional fw-semibold rounded-3">
                                                                 <i class="bi bi-check2-circle me-1"></i>Guardar Cambios
                                                             </button>
                                                         </div>
@@ -199,7 +199,7 @@
         <div class="modal fade" id="modalCrearGrupoAdmin" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content rounded-4 border-0 shadow">
-                    <div class="modal-header bg-primary text-white border-0">
+                    <div class="modal-header franja-institucional text-white border-0">
                         <h5 class="modal-title fw-bold">
                             Crear Grupo Oficial Universitario
                         </h5>
@@ -243,7 +243,7 @@
                         </div>
                         <div class="modal-footer border-0 pt-0 px-4 pb-4">
                             <button type="button" class="btn btn-light rounded-3" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-primary fw-semibold rounded-3">
+                            <button type="submit" class="btn btn-institucional fw-semibold rounded-3">
                                 <i class="bi bi-save me-1"></i>Guardar Grupo Oficial
                             </button>
                         </div>

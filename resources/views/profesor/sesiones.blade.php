@@ -8,6 +8,42 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     @include('partials.panel-css')
+    <style>
+        .acordeon-sae .accordion-item,
+        .acordeon-sae-interno .accordion-item {
+            border: 1px solid #E2E8F0;
+            border-radius: 1rem;
+            margin-bottom: .75rem;
+            background: #FFFFFF;
+            box-shadow: 0 2px 6px -2px rgba(15, 23, 42, .06);
+            overflow: hidden;
+        }
+        .acordeon-sae .accordion-button,
+        .acordeon-sae-interno .accordion-button {
+            background: #FFFFFF;
+            color: #0F172A;
+            font-size: .92rem;
+            padding: .8rem 1.1rem;
+            box-shadow: none;
+            gap: .5rem;
+        }
+        .acordeon-sae .accordion-button:not(.collapsed),
+        .acordeon-sae-interno .accordion-button:not(.collapsed) {
+            background: #F8FAFC;
+            color: #0F172A;
+            box-shadow: none;
+        }
+        .acordeon-sae .accordion-button:focus,
+        .acordeon-sae-interno .accordion-button:focus {
+            box-shadow: none;
+            border-color: transparent;
+            z-index: 0;
+        }
+        .acordeon-sae .accordion-body,
+        .acordeon-sae-interno .accordion-body {
+            padding: 1rem;
+        }
+    </style>
 </head>
 <body>
 
@@ -71,7 +107,7 @@
                         <input type="number" name="tolerancia_minutos" class="form-control rounded-3" value="15" min="0" max="60" required>
                     </div>
                     <div class="col-md-3">
-                        <button type="submit" class="btn btn-primary w-100 rounded-3 py-2 fw-semibold">
+                        <button type="submit" class="btn btn-institucional w-100 rounded-3 py-2 fw-semibold">
                             <i class="bi bi-play-circle-fill me-2"></i>Iniciar Clase
                         </button>
                     </div>
@@ -101,7 +137,7 @@
                         <div id="alerta-escaneo" class="alert d-none rounded-3 small py-2 mt-2 mb-2" role="alert"></div>
 
                         <div class="d-flex gap-2 justify-content-center mt-2">
-                            <button id="btn-camara" type="button" onclick="iniciarCamara()" class="btn btn-primary rounded-3 px-3">
+                            <button id="btn-camara" type="button" onclick="iniciarCamara()" class="btn btn-institucional rounded-3 px-3">
                                 <i class="bi bi-camera-fill me-1"></i>Encender Cámara
                             </button>
                             <form action="{{ route('sesiones.finalizar', $sesionActiva->id) }}" method="POST" id="formCerrarSesion">
@@ -392,161 +428,197 @@
                 <span class="badge badge-estado badge-permiso rounded-pill px-3 py-2">{{ $historialSesiones->count() }} Sesiones Registradas</span>
             </div>
 
-            <div class="table-responsive">
-                <table class="table table-moderna table-hover align-middle mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Fecha / Horario</th>
-                            <th>Asignatura</th>
-                            <th>Grupo / Semestre</th>
-                            <th class="text-center">Resumen (A / R / P / F)</th>
-                            <th class="text-center">Estado</th>
-                            <th class="text-end">Detalle / Ajuste</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($historialSesiones as $sesHist)
-                            @php
-                                $grupoHist = $sesHist->grupo ?? optional($sesHist->materia)->grupo;
-                                $asistH = $sesHist->asistencias->where('estado_incidencia', 'asistencia')->count();
-                                $retH   = $sesHist->asistencias->where('estado_incidencia', 'retardo')->count();
-                                $permH  = $sesHist->asistencias->where('estado_incidencia', 'permiso')->count();
-                                $faltH  = $sesHist->asistencias->where('estado_incidencia', 'falta')->count();
-                            @endphp
-                            <tr>
-                                <td>
-                                    <div class="fw-semibold text-dark"><i class="bi bi-calendar3 me-1 text-secondary"></i>{{ $sesHist->fecha }}</div>
-                                    <div class="texto-slate small">{{ $sesHist->hora_inicio }} — {{ $sesHist->hora_fin ?? 'En curso' }} (Tol: {{ $sesHist->tolerancia_minutos }}m)</div>
-                                </td>
-                                <td>
-                                    @if($sesHist->materia)
-                                        <span class="badge badge-estado neutra-slate me-1 font-monospace">{{ $sesHist->materia->codigo_materia }}</span>
-                                        <span class="fw-semibold text-dark">{{ $sesHist->materia->nombre_materia }}</span>
-                                    @else
-                                        <span class="texto-slate">Asignatura eliminada</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    @if($grupoHist)
-                                        <span class="badge rounded-pill" style="{{ \App\Support\CarreraColor::suave($grupoHist->carrera ?? '') }}">
-                                            {{ $grupoHist->nombre_grupo }} ({{ $grupoHist->grado }})
-                                        </span>
-                                        @if($grupoHist->carrera)
-                                            <div class="small mt-1 d-flex align-items-start gap-1">
-                                                <span class="d-inline-block rounded-circle flex-shrink-0 mt-1" style="width: 8px; height: 8px; background: {{ \App\Support\CarreraColor::color($grupoHist->carrera) }};"></span>
-                                                <span class="fw-semibold" style="color: {{ \App\Support\CarreraColor::color($grupoHist->carrera) }}; font-size: .75rem; line-height: 1.25;">{{ $grupoHist->carrera }}</span>
-                                            </div>
-                                        @endif
-                                    @else
-                                        <span class="texto-slate">-</span>
-                                    @endif
-                                </td>
-                                <td class="text-center">
-                                    <div class="incidencias-box mx-auto">
-                                        <span class="inc-item inc-a {{ $asistH > 0 ? 'inc-on' : '' }}" title="Asistencias"><span class="dot"></span>A: <strong class="val">{{ $asistH }}</strong></span>
-                                        <span class="inc-item inc-r {{ $retH > 0 ? 'inc-on' : '' }}" title="Retardos"><span class="dot"></span>R: <strong class="val">{{ $retH }}</strong></span>
-                                        <span class="inc-item inc-p {{ $permH > 0 ? 'inc-on' : '' }}" title="Permisos"><span class="dot"></span>P: <strong class="val">{{ $permH }}</strong></span>
-                                        <span class="inc-item inc-f {{ $faltH > 0 ? 'inc-on' : '' }}" title="Faltas"><span class="dot"></span>F: <strong class="val">{{ $faltH }}</strong></span>
-                                    </div>
-                                </td>
-                                <td class="text-center">
-                                    @if($sesHist->estado === 'activa')
-                                        <span class="badge badge-suave-verde"><i class="bi bi-broadcast me-1"></i>Activa</span>
-                                    @else
-                                        <span class="badge badge-estado neutra-slate">Finalizada</span>
-                                    @endif
-                                </td>
-                                <td class="text-end">
-                                    <button type="button" class="btn btn-sm btn-outline-primary rounded-3" data-bs-toggle="modal" data-bs-target="#modalDetalleSesion-{{ $sesHist->id }}">
-                                        <i class="bi bi-list-check me-1"></i>Ver Pase de Lista ({{ $sesHist->asistencias->count() }})
-                                    </button>
-
-                                    <!-- Modal con el Pase de Lista de la Sesión Anterior -->
-                                    <div class="modal fade text-start" id="modalDetalleSesion-{{ $sesHist->id }}" tabindex="-1" aria-hidden="true">
-                                        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-                                                <div class="modal-content rounded-4 border-0 shadow">
-                                                <div class="modal-header franja-institucional text-white border-0">
-                                                    <div>
-                                                        <h5 class="modal-title fw-bold mb-0">
-                                                            <i class="bi bi-card-checklist me-2"></i>Pase de Lista — {{ $sesHist->materia->nombre_materia ?? 'Sesión' }}
-                                                        </h5>
-                                                        <small class="opacity-75">
-                                                            Fecha: {{ $sesHist->fecha }} | Inicio: {{ $sesHist->hora_inicio }} | Grupo: {{ $grupoHist->nombre_grupo ?? '-' }}
-                                                        </small>
+            @php
+                $sesionesPorCarrera = $historialSesiones->groupBy(function ($sesHist) {
+                    $grupoHist = $sesHist->grupo ?? optional($sesHist->materia)->grupo;
+                    return ($grupoHist && $grupoHist->carrera) ? $grupoHist->carrera : 'Carrera general';
+                });
+            @endphp
+            <div class="accordion acordeon-sae" id="accCarreras">
+                @forelse($sesionesPorCarrera as $nombreCarrera => $sesionesCarrera)
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button {{ !$loop->first ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#accCarrera-{{ $loop->index }}" aria-expanded="{{ $loop->first ? 'true' : 'false' }}">
+                                <i class="bi bi-mortarboard-fill me-2 text-secondary"></i>
+                                <span class="fw-bold">{{ $nombreCarrera }}</span>
+                                <span class="badge badge-estado neutra-slate ms-2">{{ $sesionesCarrera->count() }} sesiones</span>
+                            </button>
+                        </h2>
+                        <div id="accCarrera-{{ $loop->index }}" class="accordion-collapse collapse {{ $loop->first ? 'show' : '' }}" data-bs-parent="#accCarreras">
+                            <div class="accordion-body">
+                                @php
+                                    $sesionesPorMateria = $sesionesCarrera->groupBy(function ($sesHist) {
+                                        $grupoHist = $sesHist->grupo ?? optional($sesHist->materia)->grupo;
+                                        $claveMateria = $sesHist->materia
+                                            ? $sesHist->materia->codigo_materia . ' · ' . $sesHist->materia->nombre_materia
+                                            : 'Asignatura eliminada';
+                                        return $claveMateria . ' — Grupo ' . ($grupoHist ? $grupoHist->nombre_grupo : '-');
+                                    });
+                                @endphp
+                                <div class="accordion acordeon-sae-interno" id="accMaterias-{{ $loop->index }}">
+                                    @foreach($sesionesPorMateria as $claveMateria => $sesionesMateria)
+                                        @php
+                                            $totalA = $sesionesMateria->sum(fn ($s) => $s->asistencias->where('estado_incidencia', 'asistencia')->count());
+                                            $totalR = $sesionesMateria->sum(fn ($s) => $s->asistencias->where('estado_incidencia', 'retardo')->count());
+                                            $totalP = $sesionesMateria->sum(fn ($s) => $s->asistencias->where('estado_incidencia', 'permiso')->count());
+                                            $totalF = $sesionesMateria->sum(fn ($s) => $s->asistencias->where('estado_incidencia', 'falta')->count());
+                                        @endphp
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header">
+                                                <button class="accordion-button {{ !$loop->first ? 'collapsed' : '' }}" type="button" data-bs-toggle="collapse" data-bs-target="#accMat-{{ $loop->parent->index }}-{{ $loop->index }}" aria-expanded="{{ $loop->first ? 'true' : 'false' }}">
+                                                    <i class="bi bi-journal-bookmark-fill me-2 text-secondary"></i>
+                                                    <span class="fw-semibold">{{ $claveMateria }}</span>
+                                                    <span class="badge badge-estado neutra-slate ms-2">{{ $sesionesMateria->count() }} sesiones</span>
+                                                    <div class="incidencias-box ms-auto d-none d-lg-flex py-1">
+                                                        <span class="inc-item inc-a {{ $totalA > 0 ? 'inc-on' : '' }}" title="Asistencias"><span class="dot"></span>A: <strong class="val">{{ $totalA }}</strong></span>
+                                                        <span class="inc-item inc-r {{ $totalR > 0 ? 'inc-on' : '' }}" title="Retardos"><span class="dot"></span>R: <strong class="val">{{ $totalR }}</strong></span>
+                                                        <span class="inc-item inc-p {{ $totalP > 0 ? 'inc-on' : '' }}" title="Permisos"><span class="dot"></span>P: <strong class="val">{{ $totalP }}</strong></span>
+                                                        <span class="inc-item inc-f {{ $totalF > 0 ? 'inc-on' : '' }}" title="Faltas"><span class="dot"></span>F: <strong class="val">{{ $totalF }}</strong></span>
                                                     </div>
-                                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                                                </div>
-                                                <div class="modal-body p-4">
+                                                </button>
+                                            </h2>
+                                            <div id="accMat-{{ $loop->parent->index }}-{{ $loop->index }}" class="accordion-collapse collapse {{ $loop->first ? 'show' : '' }}" data-bs-parent="#accMaterias-{{ $loop->parent->index }}">
+                                                <div class="accordion-body p-2">
                                                     <div class="table-responsive">
-                                                        <table class="table table-sm table-moderna table-hover align-middle mb-0">
+                                                        <table class="table table-moderna align-middle mb-0">
                                                             <thead class="table-light">
                                                                 <tr>
-                                                                    <th>Alumno</th>
-                                                                    <th>Hora Escaneo</th>
-                                                                    <th>Estado Actual</th>
-                                                                    <th class="text-end">Cambiar Estado</th>
+                                                                    <th>Fecha / Horario</th>
+                                                                    <th class="text-center">Resumen (A / R / P / F)</th>
+                                                                    <th class="text-center">Estado</th>
+                                                                    <th class="text-end">Detalle / Ajuste</th>
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
-                                                                @forelse($sesHist->asistencias as $regHist)
+                                                                @foreach($sesionesMateria as $sesHist)
+                                                                    @php
+                                                                        $grupoHist = $sesHist->grupo ?? optional($sesHist->materia)->grupo;
+                                                                        $asistH = $sesHist->asistencias->where('estado_incidencia', 'asistencia')->count();
+                                                                        $retH   = $sesHist->asistencias->where('estado_incidencia', 'retardo')->count();
+                                                                        $permH  = $sesHist->asistencias->where('estado_incidencia', 'permiso')->count();
+                                                                        $faltH  = $sesHist->asistencias->where('estado_incidencia', 'falta')->count();
+                                                                    @endphp
                                                                     <tr>
                                                                         <td>
-                                                                            <div class="fw-semibold">{{ $regHist->alumno->name ?? 'Alumno' }}</div>
-                                                                            <div class="texto-slate small">{{ $regHist->alumno->matricula_codigo ?: ($regHist->alumno->email ?? '') }}</div>
+                                                                            <div class="fw-semibold text-dark"><i class="bi bi-calendar3 me-1 text-secondary"></i>{{ $sesHist->fecha }}</div>
+                                                                            <div class="texto-slate small">{{ $sesHist->hora_inicio }} — {{ $sesHist->hora_fin ?? 'En curso' }} (Tol: {{ $sesHist->tolerancia_minutos }}m)</div>
                                                                         </td>
-                                                                        <td class="texto-slate small">{{ $regHist->timestamp_escaneo ?? 'Sin escaneo QR' }}</td>
-                                                                        <td>
-                                                                            @if($regHist->estado_incidencia === 'asistencia')
-                                                                                <span class="badge badge-estado badge-asistencia">Asistencia</span>
-                                                                            @elseif($regHist->estado_incidencia === 'retardo')
-                                                                                <span class="badge badge-estado badge-retardo">Retardo</span>
-                                                                            @elseif($regHist->estado_incidencia === 'permiso')
-                                                                                <span class="badge badge-estado badge-permiso">Permiso</span>
+                                                                        <td class="text-center">
+                                                                            <div class="incidencias-box mx-auto">
+                                                                                <span class="inc-item inc-a {{ $asistH > 0 ? 'inc-on' : '' }}" title="Asistencias"><span class="dot"></span>A: <strong class="val">{{ $asistH }}</strong></span>
+                                                                                <span class="inc-item inc-r {{ $retH > 0 ? 'inc-on' : '' }}" title="Retardos"><span class="dot"></span>R: <strong class="val">{{ $retH }}</strong></span>
+                                                                                <span class="inc-item inc-p {{ $permH > 0 ? 'inc-on' : '' }}" title="Permisos"><span class="dot"></span>P: <strong class="val">{{ $permH }}</strong></span>
+                                                                                <span class="inc-item inc-f {{ $faltH > 0 ? 'inc-on' : '' }}" title="Faltas"><span class="dot"></span>F: <strong class="val">{{ $faltH }}</strong></span>
+                                                                            </div>
+                                                                        </td>
+                                                                        <td class="text-center">
+                                                                            @if($sesHist->estado === 'activa')
+                                                                                <span class="badge badge-suave-verde"><i class="bi bi-broadcast me-1"></i>Activa</span>
                                                                             @else
-                                                                                <span class="badge badge-estado badge-falta">Falta</span>
+                                                                                <span class="badge badge-estado neutra-slate">Finalizada</span>
                                                                             @endif
                                                                         </td>
                                                                         <td class="text-end">
-                                                                            <form action="{{ route('asistencias.manual', $regHist->id) }}" method="POST" class="d-inline-flex">
-                                                                                @csrf
-                                                                                @method('PATCH')
-                                                                                <select name="estado_incidencia" class="form-select form-select-sm" onchange="this.form.submit()">
-                                                                                    <option value="asistencia" {{ $regHist->estado_incidencia === 'asistencia' ? 'selected' : '' }}>Asistencia</option>
-                                                                                    <option value="retardo" {{ $regHist->estado_incidencia === 'retardo' ? 'selected' : '' }}>Retardo</option>
-                                                                                    <option value="permiso" {{ $regHist->estado_incidencia === 'permiso' ? 'selected' : '' }}>Permiso</option>
-                                                                                    <option value="falta" {{ $regHist->estado_incidencia === 'falta' ? 'selected' : '' }}>Falta</option>
-                                                                                </select>
-                                                                            </form>
+                                                                            <button type="button" class="btn btn-sm btn-outline-primary rounded-3" data-bs-toggle="modal" data-bs-target="#modalDetalleSesion-{{ $sesHist->id }}">
+                                                                                <i class="bi bi-list-check me-1"></i>Ver Pase de Lista ({{ $sesHist->asistencias->count() }})
+                                                                            </button>
+
+                                                                            <!-- Modal con el Pase de Lista de la Sesión Anterior -->
+                                                                            <div class="modal fade text-start" id="modalDetalleSesion-{{ $sesHist->id }}" tabindex="-1" aria-hidden="true">
+                                                                                <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                                                                                        <div class="modal-content rounded-4 border-0 shadow">
+                                                                                        <div class="modal-header franja-institucional text-white border-0">
+                                                                                            <div>
+                                                                                                <h5 class="modal-title fw-bold mb-0">
+                                                                                                    <i class="bi bi-card-checklist me-2"></i>Pase de Lista — {{ $sesHist->materia->nombre_materia ?? 'Sesión' }}
+                                                                                                </h5>
+                                                                                                <small class="opacity-75">
+                                                                                                    Fecha: {{ $sesHist->fecha }} | Inicio: {{ $sesHist->hora_inicio }} | Grupo: {{ $grupoHist->nombre_grupo ?? '-' }}
+                                                                                                </small>
+                                                                                            </div>
+                                                                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                                                                        </div>
+                                                                                        <div class="modal-body p-4">
+                                                                                            <div class="table-responsive">
+                                                                                                <table class="table table-sm table-moderna table-hover align-middle mb-0">
+                                                                                                    <thead class="table-light">
+                                                                                                        <tr>
+                                                                                                            <th>Alumno</th>
+                                                                                                            <th>Hora Escaneo</th>
+                                                                                                            <th>Estado Actual</th>
+                                                                                                            <th class="text-end">Cambiar Estado</th>
+                                                                                                        </tr>
+                                                                                                    </thead>
+                                                                                                    <tbody>
+                                                                                                        @forelse($sesHist->asistencias as $regHist)
+                                                                                                            <tr>
+                                                                                                                <td>
+                                                                                                                    <div class="fw-semibold">{{ $regHist->alumno->name ?? 'Alumno' }}</div>
+                                                                                                                    <div class="texto-slate small">{{ $regHist->alumno->matricula_codigo ?: ($regHist->alumno->email ?? '') }}</div>
+                                                                                                                </td>
+                                                                                                                <td class="texto-slate small">{{ $regHist->timestamp_escaneo ?? 'Sin escaneo QR' }}</td>
+                                                                                                                <td>
+                                                                                                                    @if($regHist->estado_incidencia === 'asistencia')
+                                                                                                                        <span class="badge badge-estado badge-asistencia">Asistencia</span>
+                                                                                                                    @elseif($regHist->estado_incidencia === 'retardo')
+                                                                                                                        <span class="badge badge-estado badge-retardo">Retardo</span>
+                                                                                                                    @elseif($regHist->estado_incidencia === 'permiso')
+                                                                                                                        <span class="badge badge-estado badge-permiso">Permiso</span>
+                                                                                                                    @else
+                                                                                                                        <span class="badge badge-estado badge-falta">Falta</span>
+                                                                                                                    @endif
+                                                                                                                </td>
+                                                                                                                <td class="text-end">
+                                                                                                                    <form action="{{ route('asistencias.manual', $regHist->id) }}" method="POST" class="d-inline-flex">
+                                                                                                                        @csrf
+                                                                                                                        @method('PATCH')
+                                                                                                                        <select name="estado_incidencia" class="form-select form-select-sm" onchange="this.form.submit()">
+                                                                                                                            <option value="asistencia" {{ $regHist->estado_incidencia === 'asistencia' ? 'selected' : '' }}>Asistencia</option>
+                                                                                                                            <option value="retardo" {{ $regHist->estado_incidencia === 'retardo' ? 'selected' : '' }}>Retardo</option>
+                                                                                                                            <option value="permiso" {{ $regHist->estado_incidencia === 'permiso' ? 'selected' : '' }}>Permiso</option>
+                                                                                                                            <option value="falta" {{ $regHist->estado_incidencia === 'falta' ? 'selected' : '' }}>Falta</option>
+                                                                                                                        </select>
+                                                                                                                    </form>
+                                                                                                                </td>
+                                                                                                            </tr>
+                                                                                                        @empty
+                                                                                                            <tr>
+                                                                                                                <td colspan="4" class="text-center texto-slate py-3">
+                                                                                                                    No hay registros de asistencia en esta sesión.
+                                                                                                                </td>
+                                                                                                            </tr>
+                                                                                                        @endforelse
+                                                                                                    </tbody>
+                                                                                                </table>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                        <div class="modal-footer border-0 pt-0 px-4 pb-4">
+                                                                                            <button type="button" class="btn btn-secondary rounded-3" data-bs-dismiss="modal">Cerrar</button>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
                                                                         </td>
                                                                     </tr>
-                                                                @empty
-                                                                    <tr>
-                                                                        <td colspan="4" class="text-center texto-slate py-3">
-                                                                            No hay registros de asistencia en esta sesión.
-                                                                        </td>
-                                                                    </tr>
-                                                                @endforelse
+                                                                @endforeach
                                                             </tbody>
                                                         </table>
                                                     </div>
                                                 </div>
-                                                <div class="modal-footer border-0 pt-0 px-4 pb-4">
-                                                    <button type="button" class="btn btn-secondary rounded-3" data-bs-dismiss="modal">Cerrar</button>
-                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="6" class="text-center texto-slate py-4">
-                                    Aún no has impartido sesiones de clase registradas en el historial.
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <div class="accordion-item">
+                        <div class="accordion-body text-center texto-slate py-4">
+                            Aún no has impartido sesiones de clase registradas en el historial.
+                        </div>
+                    </div>
+                @endforelse
             </div>
         </div>
     </div>

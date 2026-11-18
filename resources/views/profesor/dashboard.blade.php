@@ -242,7 +242,7 @@
                             <i class="bi bi-file-earmark-text fs-3"></i>
                         </div>
                         @if ($justificantesPendientes > 0)
-                            <span class="badge bg-warning text-dark rounded-pill">{{ $justificantesPendientes }} pendientes</span>
+                            <span class="badge badge-estado badge-retardo rounded-pill">{{ $justificantesPendientes }} pendientes</span>
                         @endif
                     </div>
                     <h5 class="fw-bold text-dark">Justificantes</h5>
@@ -270,7 +270,7 @@
                         <div class="bg-secondary bg-opacity-10 text-secondary rounded-4 p-3">
                             <i class="bi bi-graph-up-arrow fs-3"></i>
                         </div>
-                        <span class="badge bg-{{ $colorSemaforoGlobal }} {{ $colorSemaforoGlobal === 'warning' ? 'text-dark' : '' }} rounded-pill">
+                        <span class="badge badge-estado rounded-pill {{ ['success' => 'badge-suave-verde', 'warning' => 'badge-retardo', 'danger' => 'badge-falta'][$colorSemaforoGlobal] ?? 'neutra-slate' }}">
                             {{ $porcentajeAsistencia }}% asistencia
                         </span>
                     </div>

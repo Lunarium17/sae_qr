@@ -76,7 +76,7 @@
                             @forelse ($semestresVigentes as $sem)
                                 <tr>
                                     <td>
-                                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary rounded-pill px-3 py-2">
+                                        <span class="badge badge-estado azul-suave rounded-pill px-3 py-2">
                                             <i class="bi bi-calendar-range me-1"></i>{{ $sem->periodo }}
                                         </span>
                                     </td>
@@ -92,7 +92,7 @@
                                         @if ($sem->activas > 0)
                                             <span class="badge badge-estado badge-asistencia">{{ $sem->activas }} activa(s)</span>
                                         @else
-                                            <span class="badge bg-secondary">0</span>
+                                            <span class="badge badge-estado neutra-slate">0</span>
                                         @endif
                                     </td>
                                     <td class="text-end">
@@ -140,7 +140,7 @@
                             @forelse ($semestresArchivados as $sem)
                                 <tr>
                                     <td>
-                                        <span class="badge bg-dark rounded-pill px-3 py-2">
+                                        <span class="badge badge-estado neutra-slate rounded-pill px-3 py-2">
                                             <i class="bi bi-archive me-1"></i>{{ $sem->periodo }}
                                         </span>
                                     </td>

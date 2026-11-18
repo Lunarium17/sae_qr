@@ -82,7 +82,7 @@
                             @foreach($materias as $materia)
                                 <tr>
                                     <td class="ps-4 fw-bold text-secondary">{{ $materia->id }}</td>
-                                    <td><span class="badge bg-dark rounded-pill px-3 py-2">{{ $materia->codigo_materia }}</span></td>
+                                    <td><span class="badge badge-estado neutra-slate font-monospace rounded-pill px-3 py-2">{{ $materia->codigo_materia }}</span></td>
                                     <td class="fw-semibold text-dark">{{ $materia->nombre_materia }}</td>
                                     <td class="text-center pe-4">
                                         <form action="{{ route('materias.destroy', $materia->id) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Seguro que deseas eliminar esta materia?');">

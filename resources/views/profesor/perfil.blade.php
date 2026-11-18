@@ -41,7 +41,7 @@
                 @endif
 
                 <div class="card rounded-4 bg-white overflow-hidden">
-                    <div class="card-header bg-dark text-white p-4 border-0">
+                    <div class="card-header franja-institucional text-white p-4 border-0">
                         <div class="d-flex align-items-center gap-3">
                             @if ($profesor->foto_perfil)
                                 <img src="{{ asset('storage/' . $profesor->foto_perfil) }}" alt="Foto de perfil" class="rounded-circle" style="width: 52px; height: 52px; object-fit: cover; border: 2px solid rgba(255,255,255,.6);">
@@ -135,8 +135,8 @@
                             </div>
 
                             <div class="d-flex justify-content-end gap-2 mt-4">
-                                <a href="{{ route('profesor.dashboard') }}" class="btn btn-light rounded-3 px-4 py-2">Cancelar</a>
-                                <button type="submit" class="btn btn-dark rounded-3 px-4 py-2 fw-semibold">
+                                <a href="{{ route('profesor.dashboard') }}" class="btn btn-outline-secondary rounded-3 px-4 py-2">Cancelar</a>
+                                <button type="submit" class="btn btn-institucional rounded-3 px-4 py-2 fw-semibold">
                                     <i class="bi bi-check2-circle me-1"></i>Guardar Cambios
                                 </button>
                             </div>

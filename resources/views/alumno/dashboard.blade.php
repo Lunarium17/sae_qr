@@ -148,7 +148,7 @@
                     <a href="{{ route('alumno.solicitar') }}" class="btn btn-banner-translucido rounded-3 px-4 py-2 fw-semibold">
                         <i class="bi bi-search me-2"></i>Buscar y Solicitar Grupo
                         @if ($pendientesCount > 0)
-                            <span class="badge bg-warning text-dark ms-1">{{ $pendientesCount }}</span>
+                            <span class="badge badge-estado badge-retardo ms-1">{{ $pendientesCount }}</span>
                         @endif
                     </a>
                 </div>
@@ -272,7 +272,7 @@
                                 <h6 class="fw-bold text-dark mb-1" style="color: #0F172A;">Mis Materias</h6>
                                 <p class="texto-slate small mb-0">Consulta tu registro de asistencia y derecho a examen ordinario.</p>
                             </div>
-                            <span class="badge bg-primary rounded-pill px-3 py-2 fs-6 flex-shrink-0">{{ $matriculasAceptadas->count() }}</span>
+                            <span class="badge badge-estado badge-permiso rounded-pill px-3 py-2 fs-6 flex-shrink-0">{{ $matriculasAceptadas->count() }}</span>
                         </div>
                         <div class="d-flex flex-wrap gap-2 mt-4">
                             @forelse ($siglasMaterias as $i => $materiaBento)

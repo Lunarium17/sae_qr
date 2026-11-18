@@ -135,7 +135,7 @@
                     <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
                         <span class="clave-materia"><i class="bi bi-journal-bookmark-fill"></i>{{ $materia->codigo_materia }}</span>
                         <h3 class="fw-bold text-dark mb-0">{{ $materia->nombre_materia }}</h3>
-                        <a href="{{ route('materias.edit', $materia->id) }}" class="btn btn-sm btn-outline-warning text-dark rounded-3 ms-1">
+                        <a href="{{ route('materias.edit', $materia->id) }}" class="btn btn-sm btn-outline-secondary rounded-3 ms-1">
                             <i class="bi bi-pencil-square me-1"></i>Editar Materia
                         </a>
                     </div>
@@ -317,7 +317,7 @@
                                                     @csrf
                                                     @method('PATCH')
                                                     <input type="hidden" name="estado" value="aceptado">
-                                                    <button type="submit" class="btn btn-sm btn-success rounded-3 me-1" title="Aceptar en la materia">
+                                                    <button type="submit" class="btn btn-sm btn-institucional rounded-3 me-1" title="Aceptar en la materia">
                                                         <i class="bi bi-check-lg"></i> Aceptar
                                                     </button>
                                                 </form>
@@ -328,7 +328,7 @@
                                                     @csrf
                                                     @method('PATCH')
                                                     <input type="hidden" name="estado" value="rechazado">
-                                                    <button type="submit" class="btn btn-sm btn-outline-warning text-dark rounded-3 me-1" title="Rechazar solicitud">
+                                                    <button type="submit" class="btn btn-sm btn-outline-secondary rounded-3 me-1" title="Rechazar solicitud">
                                                         <i class="bi bi-x-lg"></i> Rechazar
                                                     </button>
                                                 </form>
@@ -446,7 +446,7 @@
                                     btn.disabled = true;
                                 } else {
                                     const badge = document.createElement('span');
-                                    badge.className = 'badge bg-primary ms-2';
+                                    badge.className = 'badge badge-estado azul-suave ms-2';
                                     badge.textContent = 'Elegir';
                                     btn.appendChild(badge);
 

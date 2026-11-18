@@ -12,7 +12,6 @@
 
     @php
         $profesor = \Illuminate\Support\Facades\Auth::user();
-        $avHue = abs(crc32($profesor->name ?? 'U')) % 360;
         $profesorId = \Illuminate\Support\Facades\Auth::id();
 
         // Filtros de vista: general (todo) | materia (una asignatura) | carrera (comparativa)
@@ -181,14 +180,9 @@
     <nav class="navbar navbar-expand-lg navbar-light navbar-editorial shadow-sm">
         <div class="container">
             <a class="navbar-brand fw-bold text-dark" href="#">SAE QR | Estadísticas</a>
-            <div class="d-flex align-items-center gap-2">
-                @if ($profesor->foto_perfil)
-                    <img src="{{ asset('storage/' . $profesor->foto_perfil) }}" alt="Foto de perfil" class="rounded-circle" style="width: 34px; height: 34px; object-fit: cover; border: 2px solid rgba(255,255,255,.5);">
-                @else
-                    <span class="d-inline-flex align-items-center justify-content-center rounded-circle fw-bold text-white" style="width: 34px; height: 34px; background: hsl({{ $avHue }}, 65%, 45%); font-size: .85rem;">{{ mb_strtoupper(mb_substr($profesor->name ?? 'U', 0, 1)) }}</span>
-                @endif
+            <div class="d-flex align-items-center gap-3">
                 <a href="{{ route('profesor.dashboard') }}" class="btn btn-outline-secondary btn-sm fw-semibold rounded-3">
-                    <i class="bi bi-arrow-left me-1"></i>Volver al Inicio
+                    <i class="bi bi-arrow-left me-1"></i>Volver al Panel
                 </a>
                 @include('partials.campana')
                 <form action="{{ route('logout') }}" method="POST" class="d-inline">
@@ -203,13 +197,13 @@
 
         <!-- Filtros de vista: General / Por Materia / Por Carrera -->
         <div class="d-flex flex-wrap align-items-center gap-2 mb-4">
-            <a class="btn btn-sm rounded-pill px-3 py-2 {{ $vista === 'general' ? 'btn-dark' : 'btn-outline-dark' }}" href="{{ url()->current() }}?vista=general">
+            <a class="btn btn-sm rounded-pill px-3 py-2 {{ $vista === 'general' ? 'btn-institucional' : 'btn-outline-secondary' }}" href="{{ url()->current() }}?vista=general">
                 <i class="bi bi-grid-1x2 me-1"></i>General
             </a>
-            <a class="btn btn-sm rounded-pill px-3 py-2 {{ $vista === 'materia' ? 'btn-dark' : 'btn-outline-dark' }}" href="{{ url()->current() }}?vista=materia">
+            <a class="btn btn-sm rounded-pill px-3 py-2 {{ $vista === 'materia' ? 'btn-institucional' : 'btn-outline-secondary' }}" href="{{ url()->current() }}?vista=materia">
                 <i class="bi bi-book me-1"></i>Por Materia
             </a>
-            <a class="btn btn-sm rounded-pill px-3 py-2 {{ $vista === 'carrera' ? 'btn-dark' : 'btn-outline-dark' }}" href="{{ url()->current() }}?vista=carrera">
+            <a class="btn btn-sm rounded-pill px-3 py-2 {{ $vista === 'carrera' ? 'btn-institucional' : 'btn-outline-secondary' }}" href="{{ url()->current() }}?vista=carrera">
                 <i class="bi bi-mortarboard me-1"></i>Por Carrera
             </a>
         </div>
@@ -249,20 +243,6 @@
                     @if ($totalRegistros > 0)
                         <div class="mx-auto" style="max-width: 260px;">
                             <canvas id="chartIncidenciasGlobal"></canvas>
-                        </div>
-                        <div class="row text-center mt-3 g-2">
-                            <div class="col-3">
-                                <span class="badge badge-estado badge-asistencia w-100 py-2">Asist: {{ $asistenciasCount }}</span>
-                            </div>
-                            <div class="col-3">
-                                <span class="badge badge-estado badge-retardo w-100 py-2">Ret: {{ $retardosCount }}</span>
-                            </div>
-                            <div class="col-3">
-                                <span class="badge badge-estado badge-permiso w-100 py-2">Perm: {{ $permisosCount }}</span>
-                            </div>
-                            <div class="col-3">
-                                <span class="badge badge-estado badge-falta w-100 py-2">Faltas: {{ $faltasCount }}</span>
-                            </div>
                         </div>
                     @else
                         <div class="text-center texto-slate my-auto py-5">
@@ -313,7 +293,7 @@
             <!-- Chips de filtro por carrera (vista Por Carrera) -->
             @if ($vista === 'carrera')
                 <div class="d-flex flex-wrap gap-2 mb-3">
-                    <a class="badge rounded-pill px-3 py-2 text-decoration-none {{ !$carreraFiltro ? 'badge-estado badge-permiso' : 'badge-estado' }}" style="{{ !$carreraFiltro ? '' : 'background: #F1F5F9; color: #334155; border: 1px solid #E2E8F0;' }}" href="{{ url()->current() }}?vista=carrera">Todas las carreras</a>
+                    <a class="badge rounded-pill px-3 py-2 text-decoration-none {{ !$carreraFiltro ? 'badge-estado badge-permiso' : 'badge-estado neutra-slate' }}" href="{{ url()->current() }}?vista=carrera">Todas las carreras</a>
                     @foreach ($carrerasDocente as $c)
                         <a class="badge rounded-pill px-3 py-2 text-decoration-none" style="{{ $carreraFiltro === $c ? \App\Support\CarreraColor::badge($c) : \App\Support\CarreraColor::suave($c) }}" href="{{ url()->current() }}?vista=carrera&carrera={{ urlencode($c) }}">
                             {{ $c }}
@@ -373,7 +353,7 @@
                                     @endif
                                 </td>
                                 <td class="text-end">
-                                    <a href="{{ route('materias.show', $caso['materia']->id) }}" class="btn btn-sm btn-outline-dark rounded-3">
+                                    <a href="{{ route('materias.show', $caso['materia']->id) }}" class="btn btn-sm btn-outline-secondary rounded-3">
                                         <i class="bi bi-eye me-1"></i>Ver en Materia
                                     </a>
                                 </td>
@@ -437,7 +417,7 @@
                 const labels = JSON.parse(datosEl.dataset.gruposLabels || '[]');
                 const valores = JSON.parse(datosEl.dataset.gruposValores || '[]');
                 const coloresCustom = JSON.parse(datosEl.dataset.coloresCustom || 'null');
-                const colores = coloresCustom || valores.map(v => v >= 85 ? '#198754' : (v >= 70 ? '#ffc107' : '#dc3545'));
+                const colores = coloresCustom || valores.map(v => v >= 85 ? '#198754' : (v >= 70 ? '#2563EB' : '#dc3545'));
 
                 new Chart(canvasBarras, {
                     type: 'bar',

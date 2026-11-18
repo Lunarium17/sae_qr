@@ -12,7 +12,7 @@
     <nav class="navbar navbar-expand-lg navbar-light navbar-editorial shadow-sm">
         <div class="container">
             <a class="navbar-brand fw-bold text-dark" href="{{ route('profesor.dashboard') }}">SAE QR | Reportes</a>
-            <div class="d-flex align-items-center gap-2">
+            <div class="d-flex align-items-center gap-3">
                 <a class="btn btn-outline-secondary btn-sm fw-semibold rounded-3" href="{{ route('profesor.dashboard') }}">
                     <i class="bi bi-arrow-left me-1"></i>Volver al Panel
                 </a>
@@ -31,10 +31,10 @@
             <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
                 <h5 class="fw-bold mb-0">Filtros y Descarga de Reportes</h5>
                 <div class="d-flex flex-wrap gap-2">
-                    <a href="{{ route('profesor.reportes.csv', ['materia_id' => $materiaId, 'mes' => $mes]) }}" class="btn btn-success rounded-3 fw-semibold">
+                    <a href="{{ route('profesor.reportes.csv', ['materia_id' => $materiaId, 'mes' => $mes]) }}" class="btn btn-institucional rounded-3 fw-semibold">
                         <i class="bi bi-file-earmark-spreadsheet me-1"></i>Descargar CSV (Excel)
                     </a>
-                    <a href="{{ route('profesor.reportes.pdf', ['materia_id' => $materiaId, 'mes' => $mes]) }}" class="btn btn-danger rounded-3 fw-semibold">
+                    <a href="{{ route('profesor.reportes.pdf', ['materia_id' => $materiaId, 'mes' => $mes]) }}" class="btn btn-outline-primary rounded-3 fw-semibold">
                         <i class="bi bi-file-earmark-pdf me-1"></i>Descargar Reporte PDF
                     </a>
                 </div>
@@ -60,7 +60,7 @@
                     <input type="month" name="mes" value="{{ $mes }}" class="form-control">
                 </div>
                 <div class="col-md-3 d-flex gap-2">
-                    <button type="submit" class="btn btn-primary w-100 rounded-3 py-2 fw-semibold">
+                    <button type="submit" class="btn btn-institucional w-100 rounded-3 py-2 fw-semibold">
                         <i class="bi bi-search me-1"></i>Aplicar Filtro
                     </button>
                     @if($materiaId || $mes)
@@ -86,12 +86,14 @@
                     <h4 class="fw-bold mb-0" style="color: #0F172A;">Reporte Consolidado de Asistencia Escolar</h4>
                     <p class="texto-slate small mb-0">Docente: {{ Auth::user()->name }} | Fecha de consulta: {{ date('Y-m-d H:i') }}</p>
                 </div>
-                <div class="d-flex flex-wrap gap-2">
+                <div class="d-flex flex-wrap align-items-center gap-2">
                     <span class="badge badge-estado badge-permiso fs-6">{{ $registros->count() }} Registros</span>
-                    <span class="badge badge-estado badge-asistencia fs-6">Asistencias: {{ $cntAsistencia }}</span>
-                    <span class="badge badge-estado badge-retardo fs-6">Retardos: {{ $cntRetardo }}</span>
-                    <span class="badge badge-estado badge-permiso fs-6">Permisos: {{ $cntPermiso }}</span>
-                    <span class="badge badge-estado badge-falta fs-6">Faltas: {{ $cntFalta }}</span>
+                    <div class="incidencias-box">
+                        <span class="inc-item inc-a {{ $cntAsistencia > 0 ? 'inc-on' : '' }}"><span class="dot"></span>Asistencias: <strong class="val">{{ $cntAsistencia }}</strong></span>
+                        <span class="inc-item inc-r {{ $cntRetardo > 0 ? 'inc-on' : '' }}"><span class="dot"></span>Retardos: <strong class="val">{{ $cntRetardo }}</strong></span>
+                        <span class="inc-item inc-p {{ $cntPermiso > 0 ? 'inc-on' : '' }}"><span class="dot"></span>Permisos: <strong class="val">{{ $cntPermiso }}</strong></span>
+                        <span class="inc-item inc-f {{ $cntFalta > 0 ? 'inc-on' : '' }}"><span class="dot"></span>Faltas: <strong class="val">{{ $cntFalta }}</strong></span>
+                    </div>
                 </div>
             </div>
 
@@ -128,7 +130,7 @@
                                 <td class="text-nowrap">{{ $reg->sesion->fecha ?? '-' }}</td>
                                 <td class="fw-semibold text-nowrap">{{ $nombreGrupo }}</td>
                                 <td class="text-nowrap">
-                                    <span class="badge rounded-pill bg-secondary bg-opacity-10 text-secondary">{{ $reg->sesion->materia->codigo_materia ?? '-' }}</span>
+                                    <span class="badge badge-estado neutra-slate rounded-pill">{{ $reg->sesion->materia->codigo_materia ?? '-' }}</span>
                                 </td>
                                 <td>{{ $reg->sesion->materia->nombre_materia ?? '-' }}</td>
                                 <td class="text-nowrap">{{ $reg->alumno->matricula_codigo ?? 'S/M' }}</td>

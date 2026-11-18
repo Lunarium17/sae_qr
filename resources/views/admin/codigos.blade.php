@@ -83,7 +83,7 @@
                         <input type="text" class="form-control rounded-3 text-uppercase font-monospace" id="codigo_personalizado" name="codigo_personalizado" value="{{ old('codigo_personalizado') }}" maxlength="30" placeholder="Dejar vacío para autogenerar">
                     </div>
                     <div class="col-md-3">
-                        <button type="submit" class="btn btn-primary w-100 rounded-3 py-2 fw-semibold">
+                        <button type="submit" class="btn btn-institucional w-100 rounded-3 py-2 fw-semibold">
                             <i class="bi bi-key me-1"></i>Generar Código Único
                         </button>
                     </div>
@@ -96,7 +96,7 @@
             <div class="card-header bg-white border-bottom pt-4 px-4">
                 <div class="d-flex justify-content-between align-items-center">
                     <h5 class="fw-bold mb-0">Historial de Códigos</h5>
-                    <span class="badge bg-dark rounded-pill">Total de códigos: {{ $codigos->count() }}</span>
+                    <span class="badge badge-estado badge-permiso rounded-pill">Total de códigos: {{ $codigos->count() }}</span>
                 </div>
             </div>
             <div class="card-body p-4">
@@ -123,7 +123,7 @@
                                     </td>
                                     <td>
                                         @if ($cod->usado)
-                                            <span class="badge bg-secondary px-3 py-2 rounded-pill">
+                                            <span class="badge badge-estado neutra-slate px-3 py-2 rounded-pill">
                                                 Canjeado
                                             </span>
                                         @else

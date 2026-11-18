@@ -80,7 +80,7 @@
                     <h5 class="fw-bold text-dark mb-1">Mis Materias Inscritas y Derecho a Examen Ordinario</h5>
                     <div class="texto-slate small">3 retardos = 1 falta · máx. 3 faltas.</div>
                 </div>
-                <span class="badge bg-primary rounded-pill">{{ $matriculasAceptadas->count() }} Materias Aceptadas</span>
+                <span class="badge badge-estado badge-permiso rounded-pill">{{ $matriculasAceptadas->count() }} Materias Aceptadas</span>
             </div>
 
             <div class="table-responsive">
@@ -120,7 +120,7 @@
                                 </td>
                                 <td>
                                     @if ($mat->materia)
-                                        <span class="badge bg-dark me-1">{{ $mat->materia->codigo_materia }}</span>
+                                        <span class="badge badge-estado neutra-slate font-monospace me-1">{{ $mat->materia->codigo_materia }}</span>
                                         <span class="fw-semibold text-dark">{{ $mat->materia->nombre_materia }}</span>
                                     @else
                                         <span class="texto-slate">Sin materia</span>

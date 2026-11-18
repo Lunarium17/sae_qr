@@ -219,7 +219,7 @@
                         <div class="bg-warning bg-opacity-10 text-warning rounded-4 p-3">
                             <i class="bi bi-key-fill fs-3"></i>
                         </div>
-                        <span class="badge bg-success rounded-pill">{{ $codigosDisponiblesCount }} disponibles</span>
+                        <span class="badge badge-estado badge-suave-verde rounded-pill">{{ $codigosDisponiblesCount }} disponibles</span>
                     </div>
                     <h5 class="fw-bold text-dark">Códigos de Acceso Docente</h5>
                     <p class="texto-slate small mb-2">Genera y administra códigos de un solo uso para registrar profesores.</p>
@@ -233,7 +233,7 @@
                         <div class="bg-info bg-opacity-10 text-info rounded-4 p-3">
                             <i class="bi bi-collection-fill fs-3"></i>
                         </div>
-                        <span class="badge bg-dark rounded-pill">{{ $totalGrupos }} grupos</span>
+                        <span class="badge badge-estado badge-permiso rounded-pill">{{ $totalGrupos }} grupos</span>
                     </div>
                     <h5 class="fw-bold text-dark">Catálogo de Grupos Oficiales</h5>
                     <p class="texto-slate small mb-2">Crea, edita o elimina los grupos oficiales por carrera, semestre y turno.</p>
@@ -247,7 +247,7 @@
                         <div class="bg-dark bg-opacity-10 text-dark rounded-4 p-3">
                             <i class="bi bi-people-fill fs-3"></i>
                         </div>
-                        <span class="badge bg-secondary rounded-pill">{{ $totalUsuarios }} cuentas</span>
+                        <span class="badge badge-estado neutra-slate rounded-pill">{{ $totalUsuarios }} cuentas</span>
                     </div>
                     <h5 class="fw-bold text-dark">Directorio de Usuarios</h5>
                     <p class="texto-slate small mb-2">Gestiona alumnos, profesores y administradores, y restablece contraseñas.</p>

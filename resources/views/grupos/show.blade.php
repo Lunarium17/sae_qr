@@ -66,7 +66,7 @@
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
                 <div>
                     <div class="d-flex align-items-center gap-2 mb-1">
-                        <span class="badge bg-primary fs-6 px-3 py-2 rounded-pill">{{ $grupo->nombre_grupo }}</span>
+                        <span class="badge badge-estado azul-suave fs-6 px-3 py-2 rounded-pill">{{ $grupo->nombre_grupo }}</span>
                         <h3 class="fw-bold text-dark mb-0">Información y Estadísticas del Grupo</h3>
                         <a href="{{ route('grupos.edit', $grupo->id) }}" class="btn btn-sm btn-outline-secondary rounded-3 ms-2">
                             <i class="bi bi-pencil-square me-1"></i>Editar Grupo
@@ -428,7 +428,7 @@
                                             @csrf
                                             @method('PATCH')
                                             <input type="hidden" name="estado" value="aceptado">
-                                            <button type="submit" class="btn btn-sm btn-success rounded-3 me-1">
+                                            <button type="submit" class="btn btn-sm btn-institucional rounded-3 me-1">
                                                 <i class="bi bi-check-lg"></i> Aceptar
                                             </button>
                                         </form>
@@ -439,7 +439,7 @@
                                             @csrf
                                             @method('PATCH')
                                             <input type="hidden" name="estado" value="rechazado">
-                                            <button type="submit" class="btn btn-sm btn-outline-warning text-dark rounded-3 me-1">
+                                            <button type="submit" class="btn btn-sm btn-outline-secondary rounded-3 me-1">
                                                 <i class="bi bi-x-lg"></i> Rechazar
                                             </button>
                                         </form>
@@ -697,7 +697,7 @@
                                         btn.disabled = true;
                                     } else {
                                         const badge = document.createElement('span');
-                                        badge.className = 'badge bg-primary ms-2';
+                                        badge.className = 'badge badge-estado azul-suave ms-2';
                                         badge.textContent = 'Elegir';
                                         btn.appendChild(badge);
 

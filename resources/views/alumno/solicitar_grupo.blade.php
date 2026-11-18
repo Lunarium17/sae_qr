@@ -109,7 +109,7 @@
                                     @foreach($misMatriculas as $mat)
                                         <tr>
                                             <td>
-                                                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary">
+                                                <span class="badge badge-estado azul-suave">
                                                     {{ $mat->grupo->nombre_grupo ?? 'N/A' }} ({{ $mat->grupo->turno ?? '' }})
                                                 </span>
                                                 @if (!empty($mat->grupo->carrera))

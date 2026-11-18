@@ -15,10 +15,16 @@
             <a class="navbar-brand fw-bold text-dark" href="{{ route('profesor.dashboard') }}">
                 SAE QR | Solicitudes e Inscripciones
             </a>
-            <a href="{{ url('/profesor/dashboard') }}" class="btn btn-outline-secondary btn-sm fw-semibold">
-                <i class="bi bi-arrow-left me-1"></i>Volver al Panel
-            </a>
-            @include('partials.campana')
+            <div class="d-flex align-items-center gap-3">
+                <a href="{{ url('/profesor/dashboard') }}" class="btn btn-outline-secondary btn-sm fw-semibold rounded-3">
+                    <i class="bi bi-arrow-left me-1"></i>Volver al Panel
+                </a>
+                @include('partials.campana')
+                <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                    @csrf
+                    <button type="submit" class="btn btn-danger btn-sm rounded-3">Cerrar Sesión</button>
+                </form>
+            </div>
         </div>
     </nav>
 
@@ -160,7 +166,7 @@
                                                 @csrf
                                                 @method('PATCH')
                                                 <input type="hidden" name="estado" value="aceptado">
-                                                <button type="submit" class="btn btn-sm btn-success rounded-3 me-1">
+                                                <button type="submit" class="btn btn-sm btn-institucional rounded-3 me-1">
                                                     <i class="bi bi-check-lg me-1"></i>Aceptar
                                                 </button>
                                             </form>
@@ -172,7 +178,7 @@
                                                 @csrf
                                                 @method('PATCH')
                                                 <input type="hidden" name="estado" value="rechazado">
-                                                <button type="submit" class="btn btn-sm btn-outline-warning text-dark rounded-3 me-1">
+                                                <button type="submit" class="btn btn-sm btn-outline-secondary rounded-3 me-1">
                                                     <i class="bi bi-x-lg me-1"></i>Rechazar
                                                 </button>
                                             </form>
@@ -200,9 +206,9 @@
                             <li class="page-item {{ $solicitudes->onFirstPage() ? 'disabled' : '' }}">
                                 <a class="page-link" href="{{ $solicitudes->previousPageUrl() ?? '#' }}" aria-label="Anterior">&laquo;</a>
                             </li>
-                            @foreach ($solicitudes->getUrlRange(1, $solicitudes->lastPage()) as $pagina)
+                            @foreach ($solicitudes->getUrlRange(1, $solicitudes->lastPage()) as $pagina => $urlPagina)
                                 <li class="page-item {{ $solicitudes->currentPage() === $pagina ? 'active' : '' }}">
-                                    <a class="page-link" href="{{ $solicitudes->url($pagina) }}">{{ $pagina }}</a>
+                                    <a class="page-link" href="{{ $urlPagina }}">{{ $pagina }}</a>
                                 </li>
                             @endforeach
                             <li class="page-item {{ $solicitudes->hasMorePages() ? '' : 'disabled' }}">
@@ -270,7 +276,7 @@
                         </div>
                         <div class="modal-footer border-0 pt-0 px-4 pb-4">
                             <button type="button" class="btn btn-light rounded-3" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" id="btnSubmitInscribirSol" class="btn btn-primary fw-semibold rounded-3" disabled>
+                            <button type="submit" id="btnSubmitInscribirSol" class="btn btn-institucional fw-semibold rounded-3" disabled>
                                 <i class="bi bi-check2-circle me-1"></i>Inscribir Alumno
                             </button>
                         </div>
@@ -386,7 +392,7 @@
                                     btn.disabled = true;
                                 } else {
                                     const badge = document.createElement('span');
-                                    badge.className = 'badge bg-primary ms-2';
+                                    badge.className = 'badge badge-estado azul-suave ms-2';
                                     badge.textContent = 'Elegir';
                                     btn.appendChild(badge);
 
