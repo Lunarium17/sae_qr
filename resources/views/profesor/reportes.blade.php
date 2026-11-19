@@ -25,12 +25,14 @@
     </style>
 </head>
 <body class="bg-light">
+    @include('partials.ui_helpers')
+
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ route('profesor.dashboard') }}">
-                <i class="bi bi-arrow-left-circle me-2"></i>Volver al Panel
+            <a class="navbar-brand fw-bold" href="{{ route('profesor.dashboard') }}"><i class="bi bi-bar-chart-line me-2"></i>SAE QR | Módulo Analítico de Reportes</a>
+            <a href="{{ route('profesor.dashboard') }}" class="btn btn-light text-dark fw-semibold btn-sm rounded-3">
+                <i class="bi bi-arrow-left me-1"></i>Volver al Panel
             </a>
-            <span class="navbar-text text-white fw-bold">Módulo Analítico de Reportes (PDF / Excel CSV)</span>
         </div>
     </nav>
 
@@ -52,10 +54,14 @@
             <form method="GET" action="{{ route('profesor.reportes') }}" class="row g-3 align-items-end">
                 <div class="col-md-5">
                     <label class="form-label fw-semibold">Materia y Grupo</label>
-                    <select name="materia_id" class="form-select">
-                        <option value="">-- Todas mis materias --</option>
+                    <select name="materia_id" class="form-select js-sae-select" data-search-placeholder="Buscar materia o grupo...">
+                        <option value="" data-title="Todas mis materias">Todas mis materias</option>
                         @foreach($materias as $mat)
-                            <option value="{{ $mat->id }}" {{ $materiaId == $mat->id ? 'selected' : '' }}>
+                            <option value="{{ $mat->id }}"
+                                    data-title="{{ $mat->nombre_materia }}"
+                                    data-badge="{{ $mat->codigo_materia }}"
+                                    data-sub="{{ optional($mat->grupo)->nombre_grupo ? 'Grupo ' . $mat->grupo->nombre_grupo : '' }}"
+                                    {{ $materiaId == $mat->id ? 'selected' : '' }}>
                                 {{ $mat->nombre_materia }} ({{ $mat->codigo_materia }})
                                 @if(optional($mat->grupo)->nombre_grupo)
                                     — Grupo {{ $mat->grupo->nombre_grupo }}
@@ -66,7 +72,28 @@
                 </div>
                 <div class="col-md-4">
                     <label class="form-label fw-semibold">Mes</label>
-                    <input type="month" name="mes" value="{{ $mes }}" class="form-control">
+                    @php
+                        $mesesNombres = [
+                            '01' => 'Enero', '02' => 'Febrero', '03' => 'Marzo', '04' => 'Abril',
+                            '05' => 'Mayo', '06' => 'Junio', '07' => 'Julio', '08' => 'Agosto',
+                            '09' => 'Septiembre', '10' => 'Octubre', '11' => 'Noviembre', '12' => 'Diciembre',
+                        ];
+                        $anioActual = (int) date('Y');
+                        $opcionesMeses = [];
+                        for ($a = $anioActual; $a >= $anioActual - 1; $a--) {
+                            foreach ($mesesNombres as $numM => $nomM) {
+                                $opcionesMeses[$a . '-' . $numM] = $nomM . ' de ' . $a;
+                            }
+                        }
+                    @endphp
+                    <select name="mes" class="form-select js-sae-select" data-search-placeholder="Buscar mes...">
+                        <option value="" data-title="Todos los meses">Todos los meses</option>
+                        @foreach($opcionesMeses as $valMes => $etiquetaMes)
+                            <option value="{{ $valMes }}" data-title="{{ $etiquetaMes }}" {{ $mes === $valMes ? 'selected' : '' }}>
+                                {{ $etiquetaMes }}
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
                 <div class="col-md-3 d-flex gap-2">
                     <button type="submit" class="btn btn-primary w-100 rounded-3 py-2 fw-semibold">
@@ -82,21 +109,22 @@
         </div>
 
         @php
-            $cntAsistencia = $registros->where('estado_incidencia', 'asistencia')->count();
-            $cntRetardo    = $registros->where('estado_incidencia', 'retardo')->count();
-            $cntPermiso    = $registros->where('estado_incidencia', 'permiso')->count();
-            $cntFalta      = $registros->where('estado_incidencia', 'falta')->count();
+            $cntTotal      = $totales['total'] ?? $registros->total();
+            $cntAsistencia = $totales['asistencia'] ?? 0;
+            $cntRetardo    = $totales['retardo'] ?? 0;
+            $cntPermiso    = $totales['permiso'] ?? 0;
+            $cntFalta      = $totales['falta'] ?? 0;
         @endphp
 
         <!-- Tabla de resultados homologada con el reporte de Excel y el PDF descargable -->
         <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
             <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
                 <div>
-                    <h4 class="fw-bold text-dark mb-0">Reporte Consolidado de Asistencia Escolar (SAE QR)</h4>
+                    <h4 class="fw-bold text-dark mb-0">Reporte Consolidado de Asistencia Escolar</h4>
                     <p class="text-muted small mb-0">Docente: {{ Auth::user()->name }} | Fecha de consulta: {{ date('Y-m-d H:i') }}</p>
                 </div>
                 <div class="d-flex flex-wrap gap-2">
-                    <span class="badge bg-dark fs-6">{{ $registros->count() }} Registros</span>
+                    <span class="badge bg-dark fs-6">{{ $cntTotal }} Registros</span>
                     <span class="badge bg-success fs-6">Asistencias: {{ $cntAsistencia }}</span>
                     <span class="badge bg-warning text-dark fs-6">Retardos: {{ $cntRetardo }}</span>
                     <span class="badge bg-info text-dark fs-6">Permisos: {{ $cntPermiso }}</span>
@@ -157,7 +185,14 @@
                     </tbody>
                 </table>
             </div>
+            @if ($registros->hasPages())
+                <div class="pt-3 mt-3 border-top d-flex justify-content-center">
+                    {{ $registros->links() }}
+                </div>
+            @endif
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

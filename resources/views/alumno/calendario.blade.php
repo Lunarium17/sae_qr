@@ -8,17 +8,19 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
 <body class="bg-light">
+    @include('partials.ui_helpers')
+
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ route('alumno.dashboard') }}">
-                <i class="bi bi-arrow-left-circle me-2"></i>Volver al Panel
+            <a class="navbar-brand fw-bold" href="{{ route('alumno.dashboard') }}"><i class="bi bi-calendar3 me-2"></i>SAE QR | Calendario e Historial Mensual</a>
+            <a href="{{ route('alumno.dashboard') }}" class="btn btn-light text-primary fw-semibold btn-sm rounded-3">
+                <i class="bi bi-arrow-left me-1"></i>Volver al Panel
             </a>
-            <span class="navbar-text text-white fw-bold">Calendario e Historial Mensual</span>
         </div>
     </nav>
 
     <div class="container my-5">
-        <!-- Alerta de límite crítico de faltas y Derecho a Examen Ordinario (RF-14 + Regla Universitaria: 3 retardos = 1 falta) -->
+        <!-- Alerta de límite crítico de faltas y Derecho a Examen Ordinario -->
         @if($alertaCritica)
             <div class="alert alert-danger d-flex align-items-center rounded-4 shadow-sm mb-4" role="alert">
                 <i class="bi bi-exclamation-triangle-fill fs-3 me-3"></i>
@@ -50,10 +52,13 @@
                 </div>
                 <div class="col-md-5">
                     <label class="form-label fw-semibold">Filtrar por Materia</label>
-                    <select name="materia_id" class="form-select">
-                        <option value="">-- Todas mis materias --</option>
+                    <select name="materia_id" class="form-select js-sae-select" data-search-placeholder="Buscar materia...">
+                        <option value="" data-title="Todas mis Materias">Todas mis Materias</option>
                         @foreach($misMaterias as $mat)
-                            <option value="{{ $mat->materia->id }}" {{ $materiaFiltro == $mat->materia->id ? 'selected' : '' }}>
+                            <option value="{{ $mat->materia->id }}"
+                                    data-title="{{ $mat->materia->nombre_materia }}"
+                                    data-badge="{{ $mat->materia->codigo_materia }}"
+                                    {{ $materiaFiltro == $mat->materia->id ? 'selected' : '' }}>
                                 {{ $mat->materia->nombre_materia }} ({{ $mat->materia->codigo_materia }})
                             </option>
                         @endforeach
@@ -72,25 +77,25 @@
             <div class="col-6 col-md-3">
                 <div class="card border-0 shadow-sm rounded-4 p-3 bg-success bg-opacity-10 border-start border-success border-4">
                     <h3 class="fw-bold text-success mb-0">{{ $asistencias }}</h3>
-                    <small class="text-muted fw-semibold">Asistencias (Verde)</small>
+                    <small class="text-muted fw-semibold">Asistencias</small>
                 </div>
             </div>
             <div class="col-6 col-md-3">
                 <div class="card border-0 shadow-sm rounded-4 p-3 bg-warning bg-opacity-10 border-start border-warning border-4">
                     <h3 class="fw-bold text-warning mb-0">{{ $retardos }}</h3>
-                    <small class="text-muted fw-semibold">Retardos (3 Ret. = +{{ $faltasPorRetardos }} Falta)</small>
+                    <small class="text-muted fw-semibold">Retardos</small>
                 </div>
             </div>
             <div class="col-6 col-md-3">
                 <div class="card border-0 shadow-sm rounded-4 p-3 bg-info bg-opacity-10 border-start border-info border-4">
                     <h3 class="fw-bold text-info mb-0">{{ $permisos }}</h3>
-                    <small class="text-muted fw-semibold">Permisos (Azul)</small>
+                    <small class="text-muted fw-semibold">Permisos</small>
                 </div>
             </div>
             <div class="col-6 col-md-3">
                 <div class="card border-0 shadow-sm rounded-4 p-3 bg-danger bg-opacity-10 border-start border-danger border-4">
                     <h3 class="fw-bold text-danger mb-0">{{ $faltasTotales }}</h3>
-                    <small class="text-muted fw-semibold">Faltas Computadas ({{ $faltas }} dir. + {{ $faltasPorRetardos }} por ret.)</small>
+                    <small class="text-muted fw-semibold">Faltas Computadas</small>
                 </div>
             </div>
         </div>
@@ -136,7 +141,14 @@
                     </div>
                 @endforelse
             </div>
+            @if ($registros->hasPages())
+                <div class="pt-3 mt-4 border-top d-flex justify-content-center">
+                    {{ $registros->links() }}
+                </div>
+            @endif
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

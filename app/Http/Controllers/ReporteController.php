@@ -10,12 +10,23 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ReporteController extends Controller
 {
-    // Vista principal de reportes con filtros por Asignatura+Grupo del docente
+    // Vista principal de reportes con filtros por Asignatura+Grupo del docente (paginada 20 en 20)
     public function index(Request $request)
     {
-        [$registros, $materias, $materiaId, $mes] = $this->obtenerDatosReporte($request);
+        [$queryRegistros, $materias, $materiaId, $mes] = $this->construirConsultaReporte($request);
 
-        return view('profesor.reportes', compact('registros', 'materias', 'materiaId', 'mes'));
+        // Totales globales reales de todo el filtro (no solo de la página actual)
+        $totales = [
+            'total'      => (clone $queryRegistros)->count(),
+            'asistencia' => (clone $queryRegistros)->where('estado_incidencia', 'asistencia')->count(),
+            'retardo'    => (clone $queryRegistros)->where('estado_incidencia', 'retardo')->count(),
+            'permiso'    => (clone $queryRegistros)->where('estado_incidencia', 'permiso')->count(),
+            'falta'      => (clone $queryRegistros)->where('estado_incidencia', 'falta')->count(),
+        ];
+
+        $registros = $queryRegistros->paginate(20)->withQueryString();
+
+        return view('profesor.reportes', compact('registros', 'materias', 'materiaId', 'mes', 'totales'));
     }
 
     // Descarga directa en formato CSV (Excel) con protección contra CSV Formula Injection
@@ -96,8 +107,8 @@ class ReporteController extends Controller
         ]);
     }
 
-    // Consulta reutilizable para la vista, el CSV y el PDF
-    private function obtenerDatosReporte(Request $request): array
+    // Consulta base reutilizable para paginación en pantalla, CSV y PDF
+    private function construirConsultaReporte(Request $request): array
     {
         $profesorId = Auth::id();
 
@@ -115,7 +126,7 @@ class ReporteController extends Controller
             ->orderBy('grupo_id')
             ->get();
 
-        $registros = RegistroAsistencia::with(['alumno', 'sesion.grupo', 'sesion.materia.grupo'])
+        $query = RegistroAsistencia::with(['alumno', 'sesion.grupo', 'sesion.materia.grupo'])
             ->whereHas('sesion', function ($q) use ($profesorId, $materiaId, $mes) {
                 $q->where('profesor_id', $profesorId);
                 if ($materiaId) {
@@ -125,10 +136,17 @@ class ReporteController extends Controller
                     $q->where('fecha', 'like', $mes . '%');
                 }
             })
-            ->orderBy('created_at', 'desc')
-            ->get();
+            ->orderBy('created_at', 'desc');
 
-        return [$registros, $materias, $materiaId, $mes];
+        return [$query, $materias, $materiaId, $mes];
+    }
+
+    // Devuelve el 100% de los registros filtrados para las exportaciones CSV y PDF
+    private function obtenerDatosReporte(Request $request): array
+    {
+        [$query, $materias, $materiaId, $mes] = $this->construirConsultaReporte($request);
+
+        return [$query->get(), $materias, $materiaId, $mes];
     }
 
     // Evita que Excel ejecute fórmulas si una celda inicia con =, +, -, @, tab o retorno de carro

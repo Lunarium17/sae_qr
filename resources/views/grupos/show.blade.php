@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
 <body class="bg-light">
+    @include('partials.ui_helpers')
 
     @php
         $nombresMateriasChart = $grupo->materias->pluck('nombre_materia')->toArray();
@@ -22,10 +23,10 @@
                 <i class="bi bi-collection me-2"></i>SAE QR | Grupo {{ $grupo->nombre_grupo }}
             </a>
             <div class="d-flex align-items-center gap-2">
-                <a href="{{ route('grupos.index') }}" class="btn btn-outline-light btn-sm">
+                <a href="{{ route('grupos.index') }}" class="btn btn-light text-dark fw-semibold btn-sm rounded-3">
                     <i class="bi bi-arrow-left me-1"></i>Volver a Mis Grupos
                 </a>
-                <a href="{{ route('profesor.dashboard') }}" class="btn btn-outline-secondary btn-sm text-light">
+                <a href="{{ route('profesor.dashboard') }}" class="btn btn-primary fw-semibold btn-sm rounded-3">
                     <i class="bi bi-house-door me-1"></i>Panel Principal
                 </a>
             </div>
@@ -33,40 +34,14 @@
     </nav>
 
     <div class="container my-5">
-        <!-- Alertas de retroalimentación -->
-        @if (session('success'))
-            <div class="alert alert-success alert-dismissible fade show rounded-3 shadow-sm" role="alert">
-                <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
-
-        @if (session('error'))
-            <div class="alert alert-danger alert-dismissible fade show rounded-3 shadow-sm" role="alert">
-                <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ session('error') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
-
-        @if ($errors->any())
-            <div class="alert alert-danger alert-dismissible fade show rounded-3 shadow-sm" role="alert">
-                <ul class="mb-0">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
-
         <!-- 1. Datos del Grupo y KPIs Superiores -->
         <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
-            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
                 <div>
                     <div class="d-flex align-items-center gap-2 mb-1">
                         <span class="badge bg-primary fs-6 px-3 py-2 rounded-pill">{{ $grupo->nombre_grupo }}</span>
                         <h3 class="fw-bold text-dark mb-0">Información y Estadísticas del Grupo</h3>
-                        <a href="{{ route('grupos.edit', $grupo->id) }}" class="btn btn-sm btn-outline-warning text-dark rounded-3 ms-2">
+                        <a href="{{ route('grupos.edit', [$grupo->id, 'from' => 'show']) }}" class="btn btn-sm btn-warning text-dark fw-semibold rounded-3 ms-2">
                             <i class="bi bi-pencil-square me-1"></i>Editar Grupo
                         </a>
                     </div>
@@ -79,22 +54,30 @@
                         <span><i class="bi bi-calendar-range-fill me-1 text-secondary"></i><strong>Periodo Semestral:</strong> {{ $grupo->periodo_lectivo }}</span>
                     </p>
                 </div>
-                <div class="d-flex flex-wrap gap-2 text-center">
-                    <div class="px-3 py-2 bg-light rounded-3 border">
-                        <div class="fs-4 fw-bold text-primary">{{ $grupo->materias->count() }}</div>
-                        <div class="small text-muted">Materias</div>
+            </div>
+            <div class="row g-3 text-center">
+                <div class="col-6 col-md-3">
+                    <div class="p-3 bg-light rounded-4 border h-100">
+                        <div class="fs-3 fw-bold text-primary">{{ $grupo->materias->count() }}</div>
+                        <div class="small text-muted fw-semibold">Materias</div>
                     </div>
-                    <div class="px-3 py-2 bg-light rounded-3 border">
-                        <div class="fs-4 fw-bold text-success">{{ $grupo->matriculas->where('estado', 'aceptado')->count() }}</div>
-                        <div class="small text-muted">Inscritos</div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="p-3 bg-light rounded-4 border h-100">
+                        <div class="fs-3 fw-bold text-success">{{ $grupo->matriculas->where('estado', 'aceptado')->count() }}</div>
+                        <div class="small text-muted fw-semibold">Inscritos</div>
                     </div>
-                    <div class="px-3 py-2 bg-light rounded-3 border">
-                        <div class="fs-4 fw-bold text-dark">{{ $statsGrupo['total_sesiones'] }}</div>
-                        <div class="small text-muted">Sesiones</div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="p-3 bg-light rounded-4 border h-100">
+                        <div class="fs-3 fw-bold text-dark">{{ $statsGrupo['total_sesiones'] }}</div>
+                        <div class="small text-muted fw-semibold">Sesiones</div>
                     </div>
-                    <div class="px-3 py-2 bg-light rounded-3 border">
-                        <div class="fs-4 fw-bold text-{{ $colorGrupoSemaforo }}">{{ $statsGrupo['porcentaje'] }}%</div>
-                        <div class="small text-muted">Asistencia</div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="p-3 bg-light rounded-4 border h-100">
+                        <div class="fs-3 fw-bold text-{{ $colorGrupoSemaforo }}">{{ $statsGrupo['porcentaje'] }}%</div>
+                        <div class="small text-muted fw-semibold">Asistencia</div>
                     </div>
                 </div>
             </div>
@@ -152,25 +135,25 @@
             <!-- Formulario lateral para agregar materias al grupo -->
             <div class="col-lg-4">
                 <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
-                    <h5 class="fw-bold text-dark mb-1">
-                        <i class="bi bi-plus-circle-fill me-2 text-primary"></i>Agregar Materia al Grupo
-                    </h5>
-                    <p class="text-muted small mb-4">
-                        Registra una nueva asignatura que impartes dentro del grupo <strong>{{ $grupo->nombre_grupo }} ({{ $grupo->turno }})</strong>.
-                    </p>
+                    <div class="d-flex align-items-center mb-3">
+                        <h5 class="fw-bold text-dark mb-0">
+                            <i class="bi bi-plus-circle-fill me-2 text-primary"></i>Agregar Materia al Grupo
+                        </h5>
+                        <span class="info-circle-help" tabindex="0" data-bs-toggle="tooltip" data-bs-placement="right" title="Registra una nueva asignatura que impartes dentro del grupo {{ $grupo->nombre_grupo }} ({{ $grupo->turno }}).">!</span>
+                    </div>
 
                     <form action="{{ route('materias.store') }}" method="POST">
                         @csrf
                         <input type="hidden" name="grupo_id" value="{{ $grupo->id }}">
 
                         <div class="mb-3">
-                            <label class="form-label fw-semibold">Código / Clave de la Materia</label>
-                            <input type="text" name="codigo" value="{{ old('codigo') }}" class="form-control rounded-3" placeholder="Ej. ING-301" maxlength="30" required>
+                            <label class="form-label fw-semibold">Código / Clave de la Materia <span class="text-danger">*</span></label>
+                            <input type="text" name="codigo" value="{{ old('codigo') }}" class="form-control rounded-3" maxlength="30" required>
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label fw-semibold">Nombre de la Materia</label>
-                            <input type="text" name="nombre_materia" value="{{ old('nombre_materia') }}" class="form-control rounded-3" placeholder="Ej. Fundamentos de Ciberseguridad" maxlength="100" required>
+                            <label class="form-label fw-semibold">Nombre de la Materia <span class="text-danger">*</span></label>
+                            <input type="text" name="nombre_materia" value="{{ old('nombre_materia') }}" class="form-control rounded-3" maxlength="100" required>
                         </div>
 
                         <button type="submit" class="btn btn-primary w-100 rounded-3 py-2 fw-semibold">
@@ -214,9 +197,9 @@
                                         </td>
                                         <td>
                                             @if ($esMiMateria)
-                                                <a href="{{ route('materias.show', $materia->id) }}" class="fw-semibold text-dark text-decoration-none">
+                                                <span class="fw-semibold text-dark">
                                                     {{ $materia->nombre_materia }}
-                                                </a>
+                                                </span>
                                                 <div><span class="badge bg-success bg-opacity-10 text-success border border-success-subtle small">Mi asignatura</span></div>
                                             @else
                                                 <span class="fw-semibold text-secondary">{{ $materia->nombre_materia }}</span>
@@ -225,9 +208,9 @@
                                         </td>
                                         <td class="text-center">
                                             @if ($esMiMateria)
-                                                <a href="{{ route('materias.show', $materia->id) }}" class="badge bg-info text-dark text-decoration-none rounded-pill px-3 py-2" title="Ver y gestionar alumnos de esta materia">
+                                                <span class="badge bg-info text-dark rounded-pill px-3 py-2">
                                                     <i class="bi bi-people-fill me-1"></i>{{ $materia->matriculas->count() }}
-                                                </a>
+                                                </span>
                                             @else
                                                 <span class="badge bg-light text-secondary border rounded-pill px-3 py-2">
                                                     <i class="bi bi-people-fill me-1"></i>{{ $materia->matriculas->count() }}
@@ -328,20 +311,13 @@
         <!-- 4. Alumnos Inscritos / Solicitudes en este Grupo con Regla Universitaria (3 Retardos = 1 Falta) y Derecho a Examen -->
         <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-                <div>
+                <div class="d-flex align-items-center">
                     <h5 class="fw-bold text-dark mb-0">
                         <i class="bi bi-people-fill me-2 text-primary"></i>Alumnos Inscritos, Solicitudes y Derecho a Examen Ordinario
                     </h5>
-                    <p class="text-muted small mb-0">
-                        Regla universitaria activa: <strong>cada 3 retardos acumulados en una misma asignatura equivalen a 1 falta</strong> (Límite para Derecho a Examen: máx. 2 faltas; con 3 faltas pasa a <strong>SD - Sin Derecho</strong>).
-                    </p>
+                    <span class="info-circle-help" tabindex="0" data-bs-toggle="tooltip" data-bs-placement="right" title="Regla universitaria activa: cada 3 retardos acumulados en una misma asignatura equivalen a 1 falta (Límite para Derecho a Examen: máx. 2 faltas; con 3 faltas pasa a SD - Sin Derecho).">!</span>
                 </div>
                 <div class="d-flex align-items-center gap-2">
-                    @if ($misMateriasGrupo->isNotEmpty())
-                        <button type="button" class="btn btn-sm btn-primary rounded-3" data-bs-toggle="modal" data-bs-target="#modalInscribirAlumnoGrupo">
-                            <i class="bi bi-person-plus-fill me-1"></i>Inscribir Alumno en mi Asignatura
-                        </button>
-                    @endif
                     <span class="badge bg-secondary rounded-pill">{{ $grupo->matriculas->count() }} Registros</span>
                 </div>
             </div>
@@ -352,7 +328,7 @@
                         <tr>
                             <th>Alumno</th>
                             <th>Materia</th>
-                            <th class="text-center">Faltas Acumuladas (3 Ret. = 1 Falta)</th>
+                            <th class="text-center">Faltas Acumuladas</th>
                             <th class="text-center">Derecho a Examen</th>
                             <th class="text-center">Estado Inscripción</th>
                             <th class="text-end">Gestión</th>
@@ -374,10 +350,10 @@
                                 </td>
                                 <td>
                                     @if ($matricula->materia)
-                                        <a href="{{ route('materias.show', $matricula->materia->id) }}" class="text-decoration-none text-dark">
+                                        <span class="text-dark">
                                             <span class="badge bg-secondary me-1">{{ $matricula->materia->codigo_materia }}</span>
                                             {{ $matricula->materia->nombre_materia }}
-                                        </a>
+                                        </span>
                                     @else
                                         <span class="text-muted">Sin materia</span>
                                     @endif
@@ -477,10 +453,10 @@
                         <div class="modal-body p-4" id="buscadorAlumnosGrupoContainer" data-search-url="{{ route('profesor.alumnos.buscar') }}">
                             <div class="mb-3">
                                 <label class="form-label fw-semibold">1. Tu Asignatura en este Grupo</label>
-                                <select name="materia_id" id="selectMateriaModalGrupo" class="form-select rounded-3" required>
-                                    <option value="" selected disabled>-- Selecciona una asignatura que impartes --</option>
+                                <select name="materia_id" id="selectMateriaModalGrupo" class="form-select rounded-3 js-sae-select" data-search-placeholder="Buscar asignatura..." required>
+                                    <option value="" selected disabled>Selecciona una asignatura que impartes</option>
                                     @foreach ($misMateriasGrupo as $mat)
-                                        <option value="{{ $mat->id }}">[{{ $mat->codigo_materia }}] {{ $mat->nombre_materia }}</option>
+                                        <option value="{{ $mat->id }}" data-title="{{ $mat->nombre_materia }}" data-badge="{{ $mat->codigo_materia }}">[{{ $mat->codigo_materia }}] {{ $mat->nombre_materia }}</option>
                                     @endforeach
                                 </select>
                             </div>

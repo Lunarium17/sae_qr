@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
 <body class="bg-light">
+    @include('partials.ui_helpers')
 
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
@@ -17,15 +18,15 @@
             </a>
             <div class="d-flex align-items-center gap-2">
                 @if ($materia->grupo_id)
-                    <a href="{{ route('grupos.show', $materia->grupo_id) }}" class="btn btn-outline-light btn-sm">
+                    <a href="{{ route('grupos.show', $materia->grupo_id) }}" class="btn btn-light text-dark fw-semibold btn-sm rounded-3">
                         <i class="bi bi-arrow-left me-1"></i>Volver al Grupo {{ $materia->grupo->nombre_grupo }}
                     </a>
                 @else
-                    <a href="{{ route('grupos.index') }}" class="btn btn-outline-light btn-sm">
+                    <a href="{{ route('grupos.index') }}" class="btn btn-light text-dark fw-semibold btn-sm rounded-3">
                         <i class="bi bi-arrow-left me-1"></i>Volver a Grupos
                     </a>
                 @endif
-                <a href="{{ route('profesor.dashboard') }}" class="btn btn-outline-secondary btn-sm text-light">
+                <a href="{{ route('profesor.dashboard') }}" class="btn btn-primary fw-semibold btn-sm rounded-3">
                     <i class="bi bi-house-door me-1"></i>Panel Principal
                 </a>
             </div>
@@ -33,31 +34,6 @@
     </nav>
 
     <div class="container my-5">
-        @if (session('success'))
-            <div class="alert alert-success alert-dismissible fade show rounded-3 shadow-sm" role="alert">
-                <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
-
-        @if (session('error'))
-            <div class="alert alert-danger alert-dismissible fade show rounded-3 shadow-sm" role="alert">
-                <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ session('error') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
-
-        @if ($errors->any())
-            <div class="alert alert-danger alert-dismissible fade show rounded-3 shadow-sm" role="alert">
-                <ul class="mb-0">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
-
         <!-- 1. Encabezado de la Materia y Acciones Rápidas -->
         <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
@@ -65,7 +41,7 @@
                     <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
                         <span class="badge bg-dark fs-6 px-3 py-2 rounded-pill">{{ $materia->codigo_materia }}</span>
                         <h3 class="fw-bold text-dark mb-0">{{ $materia->nombre_materia }}</h3>
-                        <a href="{{ route('materias.edit', $materia->id) }}" class="btn btn-sm btn-outline-warning text-dark rounded-3 ms-1">
+                        <a href="{{ route('materias.edit', [$materia->id, 'from' => 'show']) }}" class="btn btn-sm btn-warning text-dark fw-semibold rounded-3 ms-1">
                             <i class="bi bi-pencil-square me-1"></i>Editar Materia
                         </a>
                     </div>
@@ -102,12 +78,12 @@
             <!-- 2. Formulario Lateral: Inscribir Alumno Manualmente por Búsqueda Dinámica -->
             <div class="col-lg-4">
                 <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
-                    <h5 class="fw-bold text-dark mb-1">
-                        <i class="bi bi-person-plus-fill me-2 text-primary"></i>Inscribir Alumno Manualmente
-                    </h5>
-                    <p class="text-muted small mb-3">
-                        Busca al estudiante por <strong>nombre, matrícula o correo</strong> para inscribirlo en <strong>{{ $materia->nombre_materia }}</strong>.
-                    </p>
+                    <div class="d-flex align-items-center mb-3">
+                        <h5 class="fw-bold text-dark mb-0">
+                            <i class="bi bi-person-plus-fill me-2 text-primary"></i>Inscribir Alumno Manualmente
+                        </h5>
+                        <span class="info-circle-help" tabindex="0" data-bs-toggle="tooltip" data-bs-placement="right" title="Busca al estudiante por nombre, matrícula o correo para inscribirlo en {{ $materia->nombre_materia }}.">!</span>
+                    </div>
 
                     <form action="{{ route('profesor.matriculas.manual') }}" method="POST" id="formInscribirMateria">
                         @csrf

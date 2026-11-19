@@ -5,20 +5,43 @@ namespace App\Http\Controllers;
 use App\Models\Grupo;
 use App\Models\RegistroAsistencia;
 use App\Models\SesionClase;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
 
 class GrupoController extends Controller
 {
+    private function asegurarColumnaProfesorEnGrupos(): void
+    {
+        if (Schema::hasTable('grupos') && !Schema::hasColumn('grupos', 'profesor_id')) {
+            Schema::table('grupos', function (Blueprint $table) {
+                $table->foreignId('profesor_id')
+                    ->nullable()
+                    ->after('periodo_lectivo')
+                    ->constrained('users')
+                    ->nullOnDelete();
+            });
+        }
+    }
+
     /**
      * Mostrar la lista de grupos académicos universitarios con estadísticas modulares del docente.
      */
     public function index()
     {
+        $this->asegurarColumnaProfesorEnGrupos();
         $profesorId = Auth::id();
 
-        $grupos = Grupo::with(['materias.profesor'])
+        $grupos = Grupo::with(['materias.profesor', 'profesor'])
+            ->where(function ($q) use ($profesorId) {
+                $q->where('profesor_id', $profesorId)
+                  ->orWhereNull('profesor_id')
+                  ->orWhereHas('materias', function ($sub) use ($profesorId) {
+                      $sub->where('profesor_id', $profesorId);
+                  });
+            })
             ->withCount([
                 'materias',
                 'materias as mis_materias_count' => function ($q) use ($profesorId) {
@@ -105,12 +128,15 @@ class GrupoController extends Controller
             'periodo_lectivo.required' => 'El periodo lectivo es obligatorio.',
         ]);
 
+        $this->asegurarColumnaProfesorEnGrupos();
+
         Grupo::create([
             'nombre_grupo'    => $request->nombre_grupo,
             'carrera'         => $request->carrera,
             'grado'           => $request->grado,
             'turno'           => $request->turno,
             'periodo_lectivo' => $request->periodo_lectivo,
+            'profesor_id'     => Auth::id(),
         ]);
 
         return redirect()->route('grupos.index')->with('success', 'Grupo académico creado exitosamente.');
@@ -217,10 +243,14 @@ class GrupoController extends Controller
     /**
      * Mostrar el formulario para editar un grupo existente.
      */
-    public function edit(string $id)
+    public function edit(Request $request, string $id)
     {
         $grupo = Grupo::findOrFail($id);
-        return view('grupos.edit', compact('grupo'));
+        $origen = $request->query('from') === 'show'
+            ? 'show'
+            : (str_contains((string) url()->previous(), '/profesor/grupos/' . $grupo->id) ? 'show' : 'index');
+
+        return view('grupos.edit', compact('grupo', 'origen'));
     }
 
     /**
@@ -265,6 +295,10 @@ class GrupoController extends Controller
             'turno'           => $request->turno,
             'periodo_lectivo' => $request->periodo_lectivo,
         ]);
+
+        if ($request->input('origen') === 'show') {
+            return redirect()->route('grupos.show', $grupo->id)->with('success', 'Grupo actualizado correctamente.');
+        }
 
         return redirect()->route('grupos.index')->with('success', 'Grupo actualizado correctamente.');
     }

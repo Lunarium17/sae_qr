@@ -47,6 +47,10 @@ Route::middleware(['auth', \App\Http\Middleware\CheckRol::class . ':admin'])->gr
     Route::post('/admin/grupos', [AdminController::class, 'storeGrupo'])->name('admin.grupos.store');
     Route::put('/admin/grupos/{id}', [AdminController::class, 'updateGrupo'])->name('admin.grupos.update');
     Route::delete('/admin/grupos/{id}', [AdminController::class, 'destroyGrupo'])->name('admin.grupos.destroy');
+
+    // Rutas para ver y editar perfil / datos personales del administrador
+    Route::get('/admin/perfil', [PerfilAlumnoController::class, 'editAdmin'])->name('admin.perfil');
+    Route::put('/admin/perfil', [PerfilAlumnoController::class, 'updateAdmin'])->name('admin.perfil.update');
 });
 
 // Panel protegido exclusivamente para PROFESORES

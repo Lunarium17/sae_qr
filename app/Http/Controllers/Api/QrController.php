@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\SesionClaseController;
 use App\Models\User;
 use App\Models\SesionClase;
 use App\Models\Matricula;
@@ -96,14 +97,27 @@ class QrController extends Controller
                 return response()->json(['status' => 'error', 'message' => 'Alumno no válido.'], 404);
             }
 
-            // Regla 2: Verificar que la sesión de clase esté activa y pertenezca al docente autenticado
+            // Regla 2: Verificar que la sesión de clase esté activa, no haya vencido y pertenezca al docente autenticado
             $sesion = SesionClase::with(['grupo', 'materia.grupo'])->find($request->sesion_clase_id);
             if (!$sesion || $sesion->estado !== 'activa') {
-                return response()->json(['status' => 'error', 'message' => 'La sesión de clase ya fue cerrada.'], 400);
+                return response()->json(['status' => 'error', 'message' => 'La sesión de clase ya fue cerrada.', 'sesion_cerrada' => true], 400);
             }
 
             if ((int) $sesion->profesor_id !== (int) Auth::id()) {
                 return response()->json(['status' => 'error', 'message' => 'Esta sesión pertenece a otro docente.'], 403);
+            }
+
+            // Candado estricto: si la hora actual ya alcanzó o superó hora_fin, cerrar sesión automáticamente y rechazar escaneo
+            if ($sesion->hora_fin) {
+                $limiteFin = SesionClaseController::obtenerTimestampFin($sesion);
+                if (Carbon::now()->greaterThanOrEqualTo($limiteFin)) {
+                    SesionClaseController::procesarCierreSesion($sesion, true);
+                    return response()->json([
+                        'status'         => 'error',
+                        'sesion_cerrada' => true,
+                        'message'        => 'El tiempo de la sesión ya finalizó (' . $sesion->hora_fin . '). La clase se ha cerrado automáticamente y se asignó falta a los alumnos no escaneados.'
+                    ], 400);
+                }
             }
 
             // Regla 3: Verificar que el alumno esté inscrito y ACEPTADO en la combinación exacta (MateriaID + GrupoID)
@@ -160,6 +174,9 @@ class QrController extends Controller
                 'message'     => '¡Registrado! ' . $alumno->name . ' (' . strtoupper($estadoIncidencia) . ')',
                 'registro_id' => $nuevoRegistro->id,
                 'alumno'      => $alumno->name,
+                'matricula'   => $alumno->matricula_codigo ?? 'Sin matrícula',
+                'foto_url'    => $alumno->foto_perfil ? asset('storage/' . $alumno->foto_perfil) : null,
+                'inicial'     => mb_strtoupper(mb_substr($alumno->name, 0, 1)),
                 'estado'      => $estadoIncidencia,
                 'hora'        => $ahora->format('Y-m-d H:i:s'),
                 'url_manual'  => route('asistencias.manual', $nuevoRegistro->id),

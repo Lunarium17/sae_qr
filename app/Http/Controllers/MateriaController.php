@@ -112,7 +112,7 @@ class MateriaController extends Controller
     /**
      * Mostrar el formulario para editar una asignatura propia.
      */
-    public function edit(string $id)
+    public function edit(Request $request, string $id)
     {
         $materia = Materia::with('grupo')->findOrFail($id);
 
@@ -121,7 +121,11 @@ class MateriaController extends Controller
                 ->with('error', 'No tienes permiso para editar una asignatura impartida por otro docente.');
         }
 
-        return view('materias.edit', compact('materia'));
+        $origen = $request->query('from') === 'show'
+            ? 'show'
+            : (str_contains((string) url()->previous(), '/profesor/materias/' . $materia->id) ? 'show' : 'grupo');
+
+        return view('materias.edit', compact('materia', 'origen'));
     }
 
     /**
@@ -171,6 +175,11 @@ class MateriaController extends Controller
             'nombre_materia' => $request->nombre_materia,
             'codigo_materia' => $request->codigo,
         ]);
+
+        if ($request->input('origen') === 'show') {
+            return redirect()->route('materias.show', $materia->id)
+                             ->with('success', 'Materia actualizada correctamente.');
+        }
 
         if ($materia->grupo_id) {
             return redirect()->route('grupos.show', $materia->grupo_id)

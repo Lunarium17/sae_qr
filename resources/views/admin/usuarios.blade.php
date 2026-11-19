@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
 <body class="bg-light">
+    @include('partials.ui_helpers')
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container">
@@ -15,15 +16,15 @@
                 <i class="bi bi-shield-lock-fill text-info me-2"></i>SAE QR | Panel de Administrador
             </a>
             <div class="d-flex align-items-center gap-2">
-                <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-light btn-sm rounded-3">
+                <a href="{{ route('admin.dashboard') }}" class="btn btn-light text-dark fw-semibold btn-sm rounded-3">
                     <i class="bi bi-speedometer2 me-1"></i>Dashboard
                 </a>
-                <a href="{{ route('admin.codigos') }}" class="btn btn-outline-info btn-sm rounded-3">
+                <a href="{{ route('admin.codigos') }}" class="btn btn-info text-dark fw-semibold btn-sm rounded-3">
                     <i class="bi bi-key-fill me-1"></i>Códigos Docentes
                 </a>
                 <form action="{{ route('logout') }}" method="POST" class="d-inline">
                     @csrf
-                    <button type="submit" class="btn btn-danger btn-sm rounded-3">Cerrar Sesión</button>
+                    <button type="submit" class="btn btn-danger fw-semibold btn-sm rounded-3">Cerrar Sesión</button>
                 </form>
             </div>
         </div>
@@ -32,37 +33,19 @@
     <div class="container my-5">
 
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
-            <div>
+            <div class="d-flex align-items-center">
                 <h3 class="fw-bold mb-0"><i class="bi bi-people-fill text-primary me-2"></i>Directorio y Gestión de Usuarios</h3>
-                <p class="text-muted mb-0">Administra cuentas de profesores y alumnos, edita sus datos o restablece contraseñas olvidadas.</p>
+                <span class="info-circle-help" tabindex="0" data-bs-toggle="tooltip" data-bs-placement="right" title="Administra cuentas de profesores y alumnos, edita sus datos o restablece contraseñas olvidadas.">!</span>
             </div>
             <div class="d-flex gap-2">
-                <button type="button" class="btn btn-primary rounded-3" data-bs-toggle="modal" data-bs-target="#modalCrearUsuario">
+                <button type="button" class="btn btn-primary fw-semibold rounded-3" data-bs-toggle="modal" data-bs-target="#modalCrearUsuario">
                     <i class="bi bi-person-plus-fill me-1"></i>Nuevo Usuario
                 </button>
-                <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary rounded-3">
+                <a href="{{ route('admin.dashboard') }}" class="btn btn-dark fw-semibold rounded-3">
                     <i class="bi bi-arrow-left me-1"></i>Volver al Panel
                 </a>
             </div>
         </div>
-
-        @if (session('success'))
-            <div class="alert alert-success alert-dismissible fade show shadow-sm rounded-4" role="alert">
-                <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-            </div>
-        @endif
-
-        @if ($errors->any())
-            <div class="alert alert-danger alert-dismissible fade show shadow-sm rounded-4" role="alert">
-                <ul class="mb-0 small">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-            </div>
-        @endif
 
         <!-- Barra de búsqueda y filtro por rol -->
         <div class="card border-0 shadow-sm rounded-4 mb-4">
@@ -79,7 +62,7 @@
                     </div>
                     <div class="col-md-5">
                         <label for="buscar" class="form-label fw-semibold small">Buscar por Nombre, Correo o Matrícula</label>
-                        <input type="text" name="buscar" id="buscar" value="{{ $buscar }}" class="form-control rounded-3" placeholder="Ej. Juan Pérez, correo@saeqr.com o matrícula...">
+                        <input type="text" name="buscar" id="buscar" value="{{ $buscar }}" class="form-control rounded-3">
                     </div>
                     <div class="col-md-3 d-flex gap-2">
                         <button type="submit" class="btn btn-dark w-100 rounded-3">
@@ -145,7 +128,7 @@
                                         <div class="d-inline-flex gap-2">
                                             <button
                                                 type="button"
-                                                class="btn btn-outline-primary btn-sm rounded-3 js-btn-editar-usuario"
+                                                class="btn btn-primary btn-sm rounded-3 fw-semibold js-btn-editar-usuario"
                                                 data-bs-toggle="modal"
                                                 data-bs-target="#modalEditarUsuario"
                                                 data-action="{{ route('admin.usuarios.update', $usr->id) }}"
@@ -161,7 +144,7 @@
                                                 <form action="{{ route('admin.usuarios.destroy', $usr->id) }}" method="POST" class="d-inline js-form-eliminar-usuario">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-outline-danger btn-sm rounded-3" title="Eliminar cuenta">
+                                                    <button type="submit" class="btn btn-danger btn-sm rounded-3" title="Eliminar cuenta">
                                                         <i class="bi bi-trash"></i>
                                                     </button>
                                                 </form>
@@ -203,22 +186,22 @@
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Rol del Usuario <span class="text-danger">*</span></label>
                             <select name="rol" class="form-select rounded-3" required>
-                                <option value="alumno">Alumno (Estudiante)</option>
-                                <option value="profesor">Profesor (Docente)</option>
+                                <option value="alumno">Estudiante</option>
+                                <option value="profesor">Docente</option>
                                 <option value="admin">Administrador Escolar</option>
                             </select>
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Nombre Completo <span class="text-danger">*</span></label>
-                            <input type="text" name="name" class="form-control rounded-3" required maxlength="100" placeholder="Ej. María López Hernández">
+                            <input type="text" name="name" class="form-control rounded-3" required maxlength="100">
                         </div>
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Correo Electrónico <span class="text-danger">*</span></label>
-                            <input type="email" name="email" class="form-control rounded-3" required maxlength="150" placeholder="usuario@saeqr.com">
+                            <input type="email" name="email" class="form-control rounded-3" required maxlength="150">
                         </div>
                         <div class="mb-3">
-                            <label class="form-label fw-semibold">Matrícula / Clave (Obligatoria para Alumnos)</label>
-                            <input type="text" name="matricula_codigo" class="form-control rounded-3" maxlength="30" placeholder="Ej. 20260001 o DOC-01">
+                            <label class="form-label fw-semibold">Matrícula / Clave</label>
+                            <input type="text" name="matricula_codigo" class="form-control rounded-3" maxlength="30">
                         </div>
                         <div class="mb-2">
                             <label class="form-label fw-semibold">Contraseña Inicial <span class="text-danger">*</span></label>
@@ -249,8 +232,8 @@
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Rol del Usuario <span class="text-danger">*</span></label>
                             <select name="rol" id="editRol" class="form-select rounded-3" required>
-                                <option value="alumno">Alumno (Estudiante)</option>
-                                <option value="profesor">Profesor (Docente)</option>
+                                <option value="alumno">Estudiante</option>
+                                <option value="profesor">Docente</option>
                                 <option value="admin">Administrador Escolar</option>
                             </select>
                         </div>
@@ -269,12 +252,9 @@
                         <hr>
                         <div class="mb-2">
                             <label class="form-label fw-semibold text-primary">
-                                <i class="bi bi-key-fill me-1"></i>Nueva Contraseña (Opcional)
+                                <i class="bi bi-key-fill me-1"></i>Nueva Contraseña
                             </label>
-                            <input type="password" name="password" class="form-control rounded-3 border-primary" minlength="6" placeholder="Dejar en blanco para conservar la actual">
-                            <div class="form-text">
-                                Si el usuario olvidó su contraseña, escribe aquí una nueva clave (mínimo 6 caracteres).
-                            </div>
+                            <input type="password" name="password" class="form-control rounded-3 border-primary" minlength="6" placeholder="Mínimo 6 caracteres">
                         </div>
                     </div>
                     <div class="modal-footer border-0 pt-0">
@@ -316,4 +296,3 @@
     </script>
 </body>
 </html>
-

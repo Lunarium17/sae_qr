@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
 <body class="bg-light">
+    @include('partials.ui_helpers')
 
     @php
         $alumno = \Illuminate\Support\Facades\Auth::user();
@@ -28,15 +29,27 @@
         $materiaIdsAceptadas = $matriculasAceptadas->pluck('materia_id')->filter()->toArray();
 
         // Detectar si existe alguna sesión activa en curso para sus materias donde aún no haya escaneado su QR
+        // Si alguna sesión ya superó su hora_fin programada, se cierra automáticamente para mantener sincronizado el aviso
         $sesionesActivasPendientes = collect();
         if (!empty($materiaIdsAceptadas)) {
-            $sesionesActivasPendientes = \App\Models\SesionClase::with('materia.grupo')
+            $sesionesCandidatas = \App\Models\SesionClase::with('materia.grupo')
                 ->whereIn('materia_id', $materiaIdsAceptadas)
                 ->where('estado', 'activa')
                 ->whereDoesntHave('asistencias', function ($q) use ($userId) {
                     $q->where('user_id', $userId);
                 })
                 ->get();
+
+            $sesionesActivasPendientes = $sesionesCandidatas->filter(function ($ses) {
+                if ($ses->hora_fin) {
+                    $limiteFin = \App\Http\Controllers\SesionClaseController::obtenerTimestampFin($ses);
+                    if (\Carbon\Carbon::now()->greaterThanOrEqualTo($limiteFin)) {
+                        \App\Http\Controllers\SesionClaseController::procesarCierreSesion($ses, true);
+                        return false;
+                    }
+                }
+                return true;
+            })->values();
         }
 
         // Faltas y retardos que aún NO tienen un justificante enviado o cuyo justificante fue rechazado
@@ -94,14 +107,14 @@
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="#"><i class="bi bi-person-badge me-2"></i>SAE QR | Panel de Alumno</a>
+            <a class="navbar-brand fw-bold" href="{{ route('alumno.dashboard') }}"><i class="bi bi-person-badge me-2"></i>SAE QR | Panel de Alumno</a>
             <div class="d-flex align-items-center gap-2">
                 <a href="{{ route('alumno.perfil') }}" class="btn btn-light btn-sm text-primary fw-semibold rounded-3">
                     <i class="bi bi-person-gear me-1"></i>Mi Perfil
                 </a>
                 <form action="{{ route('logout') }}" method="POST" class="d-inline">
                     @csrf
-                    <button type="submit" class="btn btn-outline-light btn-sm rounded-3">Cerrar Sesión</button>
+                    <button type="submit" class="btn btn-danger btn-sm fw-semibold rounded-3">Cerrar Sesión</button>
                 </form>
             </div>
         </div>
@@ -109,28 +122,32 @@
 
     <div class="container my-5">
         <!-- 1. Tarjeta Superior de Bienvenida y Datos del Estudiante -->
-        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
+        <div class="card sae-greeting-banner border-0 shadow-sm rounded-4 p-4 mb-4">
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
-                <div>
-                    <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
-                        <h3 class="fw-bold text-dark mb-0">Hola, {{ $alumno->name }}</h3>
-                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary rounded-pill px-3 py-1">
-                            <i class="bi bi-card-heading me-1"></i>{{ $alumno->matricula_codigo ? 'Matrícula: ' . $alumno->matricula_codigo : 'Sin matrícula registrada' }}
-                        </span>
+                <div class="d-flex align-items-center gap-3">
+                    @if ($alumno->foto_perfil)
+                        <img src="{{ asset('storage/' . $alumno->foto_perfil) }}" alt="Foto de perfil" class="rounded-circle object-fit-cover border border-2 border-white shadow-sm" style="width: 56px; height: 56px;">
+                    @endif
+                    <div>
+                        <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+                            <h3 class="fw-bold sae-greeting-title mb-0"><span class="js-saludo-horario">{{ $saludoHorarioSae ?? 'Hola' }}</span>, {{ $alumno->name }}</h3>
+                            <span class="badge bg-white text-dark rounded-pill px-3 py-1 fw-semibold">
+                                <i class="bi bi-card-heading me-1 text-primary"></i>{{ $alumno->matricula_codigo ? 'Matrícula: ' . $alumno->matricula_codigo : 'Sin matrícula registrada' }}
+                            </span>
+                        </div>
+                        <div class="sae-greeting-meta">
+                            <i class="bi bi-calendar3 me-1"></i>{{ $fechaActualEspanolSae ?? '' }}
+                            <span class="mx-2">&bull;</span>
+                            <i class="bi bi-calendar2-week me-1"></i>{{ $periodoEscolarActualSae ?? '' }}
+                        </div>
                     </div>
-                    <p class="text-muted small mb-0">
-                        <i class="bi bi-envelope me-1"></i>{{ $alumno->email }} — Consulta tus materias inscritas, avisos de asistencia y presenta tu código QR temporal en clase.
-                    </p>
                 </div>
                 <div class="d-flex flex-wrap align-items-center gap-2">
-                    <a href="{{ route('alumno.solicitar') }}" class="btn btn-primary btn-sm rounded-3 px-3 py-2 fw-semibold">
-                        <i class="bi bi-search me-1"></i>Buscar y Solicitar Grupo
+                    <a href="{{ route('alumno.solicitar') }}" class="btn btn-light text-dark btn-sm rounded-3 px-3 py-2 fw-semibold shadow-sm">
+                        <i class="bi bi-search me-1 text-primary"></i>Buscar y Solicitar Grupo
                         @if ($pendientesCount > 0)
                             <span class="badge bg-warning text-dark ms-1">{{ $pendientesCount }}</span>
                         @endif
-                    </a>
-                    <a href="{{ route('alumno.perfil') }}" class="btn btn-outline-secondary btn-sm rounded-3 px-3 py-2">
-                        <i class="bi bi-pencil-square me-1"></i>Ver / Editar Mis Datos
                     </a>
                 </div>
             </div>
@@ -140,7 +157,7 @@
         <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h5 class="fw-bold text-dark mb-0">
-                    <i class="bi bi-bell-fill me-2 text-warning"></i>Centro de Avisos y Recordatorios
+                    Centro de Avisos y Recordatorios
                 </h5>
                 @php
                     $totalAvisos = $sesionesActivasPendientes->count() + count($alertasMateriasFaltas) + $incidenciasPorJustificar->count();
@@ -233,7 +250,15 @@
                         </div>
                     </div>
                     
-                    <div class="p-3 bg-white border rounded-4 d-inline-flex align-items-center justify-content-center mx-auto mb-3 shadow-sm" style="width: 246px; height: 246px;">
+                    <div class="mb-2">
+                        <span class="qr-live-badge shadow-sm">
+                            <span class="qr-live-dot"></span>
+                            <span>EN VIVO:</span>
+                            <span id="qr-live-clock">--:--:--</span>
+                        </span>
+                    </div>
+
+                    <div class="p-3 bg-white rounded-4 d-inline-flex align-items-center justify-content-center mx-auto mb-3 shadow-sm qr-live-frame" style="width: 246px; height: 246px;">
                         <div id="qrcode" data-qr-url="{{ route('qr.generar') }}"></div>
                     </div>
 
@@ -252,7 +277,7 @@
                     </button>
 
                     <div class="mt-3 pt-2 border-top">
-                        <small class="text-muted d-block mb-1">Código de respaldo (para pruebas en la misma PC):</small>
+                        <small class="text-muted d-block mb-1">Código de respaldo:</small>
                         <code id="qr-token-respaldo" class="user-select-all bg-light px-2 py-1 rounded border small text-dark">—</code>
                     </div>
 
@@ -309,10 +334,10 @@
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
                 <div>
                     <h5 class="fw-bold text-dark mb-0">
-                        <i class="bi bi-journal-check me-2 text-primary"></i>Mis Materias Inscritas y Derecho a Examen Ordinario
+                        <i class="bi bi-journal-check me-2 text-primary"></i>Mis Materias y Gestión de Asistencias
                     </h5>
                     <p class="text-muted small mb-0">
-                        Regla universitaria: <strong>cada 3 retardos acumulados en una misma asignatura equivalen a 1 falta</strong> (Máx. permitido: 3 faltas).
+                        Alerta: <strong>cada 3 retardos acumulados en una misma asignatura equivalen a 1 falta</strong> (Max. Permitido: 3 faltas)
                     </p>
                 </div>
                 <span class="badge bg-primary rounded-pill">{{ $matriculasAceptadas->count() }} Materias Aceptadas</span>
@@ -326,7 +351,7 @@
                             <th>Materia</th>
                             <th class="text-center">Registro (A / R / P / F)</th>
                             <th style="min-width: 155px;">% Asistencia</th>
-                            <th class="text-center">Faltas Computadas</th>
+                            <th class="text-center">Faltas</th>
                             <th class="text-center">Derecho a Examen</th>
                         </tr>
                     </thead>
@@ -454,13 +479,25 @@
                 });
         }
 
-        // Contador regresivo de 60 segundos
+        // Contador regresivo de 60 segundos + Reloj digital en vivo (anti-captura)
+        function actualizarRelojEnVivoQR() {
+            const relojEl = document.getElementById('qr-live-clock');
+            if (!relojEl) return;
+            const ahora = new Date();
+            const hh = String(ahora.getHours()).padStart(2, '0');
+            const mm = String(ahora.getMinutes()).padStart(2, '0');
+            const ss = String(ahora.getSeconds()).padStart(2, '0');
+            relojEl.textContent = `${hh}:${mm}:${ss}`;
+        }
+
+        actualizarRelojEnVivoQR();
         setInterval(() => {
             segundosRestantes--;
             if (segundosRestantes <= 0) {
                 generarNuevoQR();
             }
             document.getElementById('qr-timer').innerText = `Expira en ${segundosRestantes}s`;
+            actualizarRelojEnVivoQR();
         }, 1000);
 
         // Confirmación en Tiempo Real cuando el QR del alumno es escaneado por el docente

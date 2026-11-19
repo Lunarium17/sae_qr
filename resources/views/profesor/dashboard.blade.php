@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
 <body class="bg-light">
+    @include('partials.ui_helpers')
 
     @php
         $profesorId = \Illuminate\Support\Facades\Auth::id();
@@ -23,7 +24,15 @@
 
         $grupos = \App\Models\Grupo::with(['materias' => function ($q) use ($profesorId) {
             $q->where('profesor_id', $profesorId)->orWhereNull('profesor_id');
-        }])->get();
+        }])
+        ->where(function ($q) use ($profesorId) {
+            if (\Illuminate\Support\Facades\Schema::hasColumn('grupos', 'profesor_id')) {
+                $q->where('profesor_id', $profesorId)
+                  ->orWhereNull('profesor_id')
+                  ->orWhereHas('materias', fn($sub) => $sub->where('profesor_id', $profesorId));
+            }
+        })
+        ->get();
         $gruposCount = $grupos->count();
 
         $totalSesiones = \App\Models\SesionClase::where('profesor_id', $profesorId)->count();
@@ -112,14 +121,14 @@
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="#"><i class="bi bi-qr-code-scan me-2"></i>SAE QR | Panel de Profesor</a>
+            <a class="navbar-brand fw-bold" href="{{ route('profesor.dashboard') }}"><i class="bi bi-qr-code-scan me-2"></i>SAE QR | Panel de Profesor</a>
             <div class="d-flex align-items-center gap-2">
-                <a href="{{ route('profesor.perfil') }}" class="btn btn-outline-info btn-sm rounded-3">
+                <a href="{{ route('profesor.perfil') }}" class="btn btn-info text-dark fw-semibold btn-sm rounded-3">
                     <i class="bi bi-person-gear me-1"></i>Mi Perfil
                 </a>
                 <form action="{{ route('logout') }}" method="POST" class="d-inline">
                     @csrf
-                    <button type="submit" class="btn btn-outline-light btn-sm rounded-3">Cerrar Sesión</button>
+                    <button type="submit" class="btn btn-danger fw-semibold btn-sm rounded-3">Cerrar Sesión</button>
                 </form>
             </div>
         </div>
@@ -127,30 +136,36 @@
 
     <div class="container my-5">
         <!-- 1. Panel Principal de Bienvenida y Acciones Rápidas (Parte Superior) -->
-        <div class="card border-0 shadow-sm rounded-4 p-4 bg-white text-center mb-4">
-            <h3 class="fw-bold text-dark mb-1">Bienvenido, {{ \Illuminate\Support\Facades\Auth::user()->name }}</h3>
-            <p class="text-muted small mb-1">
-                <i class="bi bi-envelope me-1"></i>{{ \Illuminate\Support\Facades\Auth::user()->email }}
-                | <i class="bi bi-card-heading ms-1 me-1"></i>{{ \Illuminate\Support\Facades\Auth::user()->matricula_codigo ? 'Clave Docente: ' . \Illuminate\Support\Facades\Auth::user()->matricula_codigo : 'Sin clave docente asignada' }}
-            </p>
-            <p class="text-muted mb-3">Gestiona tus grupos y materias, inicia sesiones de clase y <strong>escanea los códigos QR de tus estudiantes</strong>.</p>
-
-            <div class="d-flex flex-wrap justify-content-center gap-3">
-                <a href="{{ route('sesiones.index') }}" class="btn btn-primary rounded-3 px-4 py-2">
-                    <i class="bi bi-camera-video me-2"></i>Iniciar Sesión y Escanear
-                </a>
-                <a href="{{ route('grupos.index') }}" class="btn btn-outline-dark rounded-3 px-4 py-2">
-                    <i class="bi bi-collection me-2"></i>Gestión de Grupos y Materias
-                </a>
-                <a href="{{ route('profesor.solicitudes') }}" class="btn btn-warning rounded-3 px-4 py-2">
-                    <i class="bi bi-person-lines-fill me-2"></i>Solicitudes de Alumnos
-                    @if($solicitudesPendientes > 0)
-                        <span class="badge bg-danger ms-1">{{ $solicitudesPendientes }}</span>
+        <div class="card sae-greeting-banner border-0 shadow-sm rounded-4 p-4 mb-4">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                <div class="d-flex align-items-center gap-3">
+                    @if (\Illuminate\Support\Facades\Auth::user()->foto_perfil)
+                        <img src="{{ asset('storage/' . \Illuminate\Support\Facades\Auth::user()->foto_perfil) }}" alt="Foto de perfil" class="rounded-circle object-fit-cover border border-2 border-white shadow-sm" style="width: 58px; height: 58px;">
                     @endif
-                </a>
-                <a href="{{ route('profesor.perfil') }}" class="btn btn-outline-secondary rounded-3 px-4 py-2">
-                    <i class="bi bi-pencil-square me-2"></i>Ver / Editar Mis Datos
-                </a>
+                    <div>
+                        <h3 class="fw-bold sae-greeting-title mb-1"><span class="js-saludo-horario">{{ $saludoHorarioSae ?? 'Bienvenido' }}</span>, {{ \Illuminate\Support\Facades\Auth::user()->name }}</h3>
+                        <div class="sae-greeting-meta">
+                            <i class="bi bi-calendar3 me-1"></i>{{ $fechaActualEspanolSae ?? '' }}
+                            <span class="mx-2">&bull;</span>
+                            <i class="bi bi-calendar2-week me-1"></i>{{ $periodoEscolarActualSae ?? '' }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                    <a href="{{ route('sesiones.index') }}" class="btn btn-light text-dark fw-semibold rounded-3 px-3 py-2 shadow-sm">
+                        <i class="bi bi-camera-video me-2 text-primary"></i>Iniciar Sesión y Escanear
+                    </a>
+                    <a href="{{ route('grupos.index') }}" class="btn btn-info text-dark fw-semibold rounded-3 px-3 py-2 shadow-sm">
+                        <i class="bi bi-collection me-2"></i>Gestión de Grupos y Materias
+                    </a>
+                    <a href="{{ route('profesor.solicitudes') }}" class="btn btn-warning text-dark fw-semibold rounded-3 px-3 py-2 shadow-sm">
+                        <i class="bi bi-person-lines-fill me-2"></i>Solicitudes de Alumnos
+                        @if($solicitudesPendientes > 0)
+                            <span class="badge bg-danger ms-1">{{ $solicitudesPendientes }}</span>
+                        @endif
+                    </a>
+                </div>
             </div>
         </div>
 
@@ -268,7 +283,6 @@
                 <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="fw-bold text-dark mb-0"><i class="bi bi-bar-chart-steps me-2 text-success"></i>% de Asistencia por Grupo</h5>
-                        <a href="{{ route('grupos.index') }}" class="btn btn-sm btn-outline-secondary rounded-pill">Ver todos los grupos</a>
                     </div>
                     @if ($gruposCount > 0)
                         <div style="height: 280px;">
@@ -284,16 +298,12 @@
             </div>
         </div>
 
-        <!-- 4. Seguimiento de Derecho a Examen Ordinario y Riesgo por Faltas (Regla: 3 Retardos = 1 Falta) -->
+        <!-- 4. Seguimiento de Derecho a Examen Ordinario y Riesgo por Faltas -->
         <div class="card border-0 shadow-sm rounded-4 p-4 bg-white mb-4">
             <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-                <div>
-                    <h5 class="fw-bold text-dark mb-0">
-                        <i class="bi bi-exclamation-triangle-fill me-2 text-danger"></i>Control de Derecho a Examen Ordinario (Regla: 3 Retardos = 1 Falta)
-                    </h5>
-                    <p class="text-muted small mb-0">
-                        Estudiantes con <strong>2 faltas acumuladas (En Riesgo / Preventivo)</strong> o <strong>3+ faltas (SD - Sin Derecho a Examen Ordinario)</strong> considerando faltas directas y retardos acumulados.
-                    </p>
+                <div class="d-flex align-items-center">
+                    <h5 class="fw-bold text-dark mb-0">Control de Derecho a Examen</h5>
+                    <span class="info-circle-help" tabindex="0" data-bs-toggle="tooltip" data-bs-placement="right" title="Estudiantes con 2 faltas acumuladas (En Riesgo / Preventivo) o 3+ faltas (SD - Sin Derecho a Examen Ordinario) considerando faltas directas y retardos acumulados (Regla: 3 Retardos = 1 Falta).">!</span>
                 </div>
                 <span class="badge {{ count($alumnosEnRiesgo) > 0 ? 'bg-danger' : 'bg-success' }} rounded-pill px-3 py-2">
                     {{ count($alumnosEnRiesgo) }} Casos Detectados

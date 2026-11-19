@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
 <body class="bg-light">
+    @include('partials.ui_helpers')
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container">
@@ -15,15 +16,15 @@
                 <i class="bi bi-shield-lock-fill text-info me-2"></i>SAE QR | Panel de Administrador
             </a>
             <div class="d-flex align-items-center gap-2">
-                <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-light btn-sm rounded-3">
+                <a href="{{ route('admin.dashboard') }}" class="btn btn-light text-dark fw-semibold btn-sm rounded-3">
                     <i class="bi bi-speedometer2 me-1"></i>Dashboard
                 </a>
-                <a href="{{ route('admin.usuarios') }}" class="btn btn-outline-light btn-sm rounded-3">
+                <a href="{{ route('admin.usuarios') }}" class="btn btn-info text-dark fw-semibold btn-sm rounded-3">
                     <i class="bi bi-people-fill me-1"></i>Usuarios
                 </a>
                 <form action="{{ route('logout') }}" method="POST" class="d-inline">
                     @csrf
-                    <button type="submit" class="btn btn-danger btn-sm rounded-3">Cerrar Sesión</button>
+                    <button type="submit" class="btn btn-danger fw-semibold btn-sm rounded-3">Cerrar Sesión</button>
                 </form>
             </div>
         </div>
@@ -32,32 +33,14 @@
     <div class="container my-5">
 
         <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
-            <div>
+            <div class="d-flex align-items-center">
                 <h3 class="fw-bold mb-0"><i class="bi bi-key-fill text-primary me-2"></i>Códigos de Acceso Docente</h3>
-                <p class="text-muted mb-0">Genera códigos únicos de un solo uso para autorizar el registro de nuevos profesores.</p>
+                <span class="info-circle-help" tabindex="0" data-bs-toggle="tooltip" data-bs-placement="right" title="Genera códigos únicos de un solo uso para autorizar el registro de nuevos profesores.">!</span>
             </div>
-            <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-secondary rounded-3">
+            <a href="{{ route('admin.dashboard') }}" class="btn btn-dark fw-semibold rounded-3">
                 <i class="bi bi-arrow-left me-1"></i>Volver al Panel
             </a>
         </div>
-
-        @if (session('success'))
-            <div class="alert alert-success alert-dismissible fade show shadow-sm rounded-4" role="alert">
-                <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-            </div>
-        @endif
-
-        @if ($errors->any())
-            <div class="alert alert-danger alert-dismissible fade show shadow-sm rounded-4" role="alert">
-                <ul class="mb-0 small">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-            </div>
-        @endif
 
         <!-- Formulario para generar nuevo código -->
         <div class="card border-0 shadow-sm rounded-4 mb-4">
@@ -66,12 +49,15 @@
                 <form action="{{ route('admin.codigos.generar') }}" method="POST" class="row g-3 align-items-end">
                     @csrf
                     <div class="col-md-5">
-                        <label for="descripcion_nota" class="form-label fw-semibold">Nota / Profesor Destinatario (Opcional)</label>
-                        <input type="text" class="form-control rounded-3" id="descripcion_nota" name="descripcion_nota" value="{{ old('descripcion_nota') }}" maxlength="150" placeholder="Ej. Entregar al Prof. Carlos Méndez (Matemáticas)">
+                        <label for="descripcion_nota" class="form-label fw-semibold">Nota / Profesor Destinatario</label>
+                        <input type="text" class="form-control rounded-3" id="descripcion_nota" name="descripcion_nota" value="{{ old('descripcion_nota') }}" maxlength="150">
                     </div>
                     <div class="col-md-4">
-                        <label for="codigo_personalizado" class="form-label fw-semibold">Código Personalizado (Opcional)</label>
-                        <input type="text" class="form-control rounded-3 text-uppercase font-monospace" id="codigo_personalizado" name="codigo_personalizado" value="{{ old('codigo_personalizado') }}" maxlength="30" placeholder="Dejar vacío para autogenerar">
+                        <label for="codigo_personalizado" class="form-label fw-semibold d-flex align-items-center">
+                            <span>Código Personalizado</span>
+                            <span class="info-circle-help" tabindex="0" data-bs-toggle="tooltip" data-bs-placement="top" title="Déjalo vacío para que el sistema genere automáticamente un código único DOC-XXXX-26.">!</span>
+                        </label>
+                        <input type="text" class="form-control rounded-3 text-uppercase font-monospace" id="codigo_personalizado" name="codigo_personalizado" value="{{ old('codigo_personalizado') }}" maxlength="30">
                     </div>
                     <div class="col-md-3">
                         <button type="submit" class="btn btn-primary w-100 rounded-3 py-2 fw-semibold">
@@ -85,7 +71,7 @@
         <!-- Tabla de códigos generados -->
         <div class="card border-0 shadow-sm rounded-4">
             <div class="card-header bg-white border-0 pt-4 px-4">
-                <h5 class="fw-bold mb-0">Historial de Códigos ({{ $codigos->count() }})</h5>
+                <h5 class="fw-bold mb-0">Historial de Códigos ({{ $codigos->total() }})</h5>
             </div>
             <div class="card-body p-4">
                 <div class="table-responsive">
@@ -141,17 +127,19 @@
                                     <td class="text-end">
                                         <div class="d-inline-flex gap-2">
                                             @if (!$cod->usado)
-                                                <button type="button" class="btn btn-outline-primary btn-sm rounded-3 js-copiar-codigo" data-codigo="{{ $cod->codigo }}">
+                                                <button type="button" class="btn btn-primary btn-sm rounded-3 fw-semibold js-copiar-codigo" data-codigo="{{ $cod->codigo }}">
                                                     <i class="bi bi-clipboard me-1"></i>Copiar
                                                 </button>
                                             @endif
-                                            <form action="{{ route('admin.codigos.eliminar', $cod->id) }}" method="POST" class="d-inline js-form-eliminar">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-outline-danger btn-sm rounded-3" title="Eliminar código">
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
-                                            </form>
+                                            @if (!$cod->usado)
+                                                <form action="{{ route('admin.codigos.eliminar', $cod->id) }}" method="POST" class="d-inline js-form-eliminar">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-danger btn-sm rounded-3" title="Eliminar código">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </form>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>
@@ -165,6 +153,11 @@
                         </tbody>
                     </table>
                 </div>
+                @if ($codigos->hasPages())
+                    <div class="pt-3 mt-3 border-top d-flex justify-content-center">
+                        {{ $codigos->links() }}
+                    </div>
+                @endif
             </div>
         </div>
 
@@ -180,10 +173,13 @@
                         navigator.clipboard.writeText(codigo).then(function () {
                             const original = btn.innerHTML;
                             btn.innerHTML = '<i class="bi bi-check2 me-1"></i>¡Copiado!';
-                            btn.classList.replace('btn-outline-primary', 'btn-success');
+                            btn.classList.replace('btn-primary', 'btn-success');
+                            if (typeof window.mostrarNotificacionSae === 'function') {
+                                window.mostrarNotificacionSae('success', 'Código ' + codigo + ' copiado al portapapeles.', 'Copiado');
+                            }
                             setTimeout(function () {
                                 btn.innerHTML = original;
-                                btn.classList.replace('btn-success', 'btn-outline-primary');
+                                btn.classList.replace('btn-success', 'btn-primary');
                             }, 1600);
                         });
                     }
@@ -201,4 +197,3 @@
     </script>
 </body>
 </html>
-

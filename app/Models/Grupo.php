@@ -20,6 +20,12 @@ class Grupo extends Model
         'profesor_id',
     ];
 
+    // Profesor asignado al grupo
+    public function profesor()
+    {
+        return $this->belongsTo(User::class, 'profesor_id');
+    }
+
     // Relación con las materias que se imparten en este grupo (por distintos docentes)
     public function materias()
     {

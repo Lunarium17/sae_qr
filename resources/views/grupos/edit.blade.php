@@ -8,19 +8,23 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
 <body class="bg-light">
+    @include('partials.ui_helpers')
+
+    @php
+        $esDesdeDetalle = (old('origen', $origen ?? 'index') === 'show');
+        $urlRegreso = $esDesdeDetalle ? route('grupos.show', $grupo->id) : route('grupos.index');
+        $textoRegreso = $esDesdeDetalle ? 'Volver al Grupo ' . $grupo->nombre_grupo : 'Volver a Mis Grupos';
+    @endphp
 
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ route('grupos.index') }}">
+            <a class="navbar-brand fw-bold" href="{{ $urlRegreso }}">
                 <i class="bi bi-pencil-square me-2"></i>SAE QR | Editar Grupo
             </a>
             <div class="d-flex align-items-center gap-2">
-                <a href="{{ route('grupos.show', $grupo->id) }}" class="btn btn-outline-info btn-sm">
-                    <i class="bi bi-journal-bookmark-fill me-1"></i>Ver Materias del Grupo
-                </a>
-                <a href="{{ route('grupos.index') }}" class="btn btn-outline-light btn-sm">
-                    <i class="bi bi-arrow-left me-1"></i>Volver a Mis Grupos
+                <a href="{{ $urlRegreso }}" class="btn btn-light text-dark fw-semibold btn-sm rounded-3">
+                    <i class="bi bi-arrow-left me-1"></i>{{ $textoRegreso }}
                 </a>
             </div>
         </div>
@@ -29,17 +33,6 @@
     <div class="container my-5">
         <div class="row justify-content-center">
             <div class="col-md-8">
-                @if ($errors->any())
-                    <div class="alert alert-danger alert-dismissible fade show rounded-3 shadow-sm mb-4" role="alert">
-                        <ul class="mb-0">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                @endif
-
                 <div class="card border-0 shadow-sm rounded-4 bg-white overflow-hidden">
                     <div class="card-header bg-warning text-dark p-4 border-0">
                         <h4 class="mb-0 fw-bold"><i class="bi bi-pencil-square me-2"></i>Editar Grupo Académico: {{ $grupo->nombre_grupo }}</h4>
@@ -48,6 +41,7 @@
                         <form action="{{ route('grupos.update', $grupo->id) }}" method="POST">
                             @csrf
                             @method('PUT')
+                            <input type="hidden" name="origen" value="{{ old('origen', $origen ?? 'index') }}">
                             
                             <div class="row g-4 mb-4">
                                 <!-- Nombre del Grupo -->
@@ -59,17 +53,7 @@
                                 <!-- Carrera -->
                                 <div class="col-md-8">
                                     <label for="carrera" class="form-label fw-bold text-dark">Carrera / Programa Educativo <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control rounded-3 py-2" id="carrera" name="carrera" list="listaCarrerasEdit" value="{{ old('carrera', $grupo->carrera) }}" placeholder="Ej. Ingeniería en Sistemas Computacionales" maxlength="120" required>
-                                    <datalist id="listaCarrerasEdit">
-                                        <option value="Ingeniería en Sistemas Computacionales"></option>
-                                        <option value="Ingeniería en Tecnologías de la Información"></option>
-                                        <option value="Ingeniería Industrial"></option>
-                                        <option value="Ingeniería Mecatrónica"></option>
-                                        <option value="Licenciatura en Administración"></option>
-                                        <option value="Licenciatura en Contaduría Pública"></option>
-                                        <option value="Licenciatura en Derecho"></option>
-                                        <option value="Arquitectura"></option>
-                                    </datalist>
+                                    <input type="text" class="form-control rounded-3 py-2" id="carrera" name="carrera" value="{{ old('carrera', $grupo->carrera) }}" maxlength="120" required>
                                 </div>
                                 
                                 <!-- Semestre -->
@@ -114,7 +98,7 @@
                             <hr class="my-4">
                             
                             <div class="d-flex justify-content-end gap-2">
-                                <a href="{{ route('grupos.index') }}" class="btn btn-light rounded-3 px-4 py-2">Cancelar</a>
+                                <a href="{{ $urlRegreso }}" class="btn btn-light rounded-3 px-4 py-2">Cancelar</a>
                                 <button type="submit" class="btn btn-warning fw-semibold rounded-3 px-4 py-2">
                                     <i class="bi bi-check2-circle me-2"></i>Guardar Cambios
                                 </button>
@@ -129,4 +113,3 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-

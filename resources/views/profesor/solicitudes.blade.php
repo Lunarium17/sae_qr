@@ -8,37 +8,24 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
 <body class="bg-light">
+    @include('partials.ui_helpers')
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container">
             <a class="navbar-brand fw-bold" href="{{ route('profesor.dashboard') }}">
                 <i class="bi bi-person-lines-fill me-2"></i>SAE QR | Solicitudes e Inscripciones
             </a>
-            <a href="{{ url('/profesor/dashboard') }}" class="btn btn-outline-light btn-sm">
+            <a href="{{ url('/profesor/dashboard') }}" class="btn btn-light text-dark fw-semibold btn-sm rounded-3">
                 <i class="bi bi-arrow-left me-1"></i>Volver al Panel
             </a>
         </div>
     </nav>
 
     <div class="container my-5">
-        @if (session('success'))
-            <div class="alert alert-success alert-dismissible fade show rounded-3 shadow-sm">
-                <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        @endif
-
-        @if (session('error'))
-            <div class="alert alert-danger alert-dismissible fade show rounded-3 shadow-sm">
-                <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ session('error') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        @endif
-
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
-            <div>
+            <div class="d-flex align-items-center">
                 <h2 class="fw-bold text-dark mb-0">Validación y Gestión de Alumnos en mis Asignaturas</h2>
-                <p class="text-muted mt-1 mb-0">Aprueba, rechaza, busca o inscribe estudiantes en las asignaturas y grupos que impartes.</p>
+                <span class="info-circle-help" tabindex="0" data-bs-toggle="tooltip" data-bs-placement="right" title="Aprueba, rechaza, busca o inscribe estudiantes en las asignaturas y grupos que impartes.">!</span>
             </div>
             @if ($misMaterias->isNotEmpty())
                 <button type="button" class="btn btn-primary rounded-3 px-3 py-2 fw-semibold shadow-sm" data-bs-toggle="modal" data-bs-target="#modalInscribirDesdeSolicitudes">
@@ -55,16 +42,20 @@
                         <label for="buscar" class="form-label fw-semibold small">Buscar Alumno (Nombre, Matrícula o Correo)</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
-                            <input type="text" name="buscar" id="buscar" value="{{ $buscar }}" class="form-control" placeholder="Ej. nombre, matrícula o correo...">
+                            <input type="text" name="buscar" id="buscar" value="{{ $buscar }}" class="form-control">
                         </div>
                     </div>
 
                     <div class="col-md-4">
                         <label for="materia_id" class="form-label fw-semibold small">Filtrar por Asignatura y Grupo</label>
-                        <select name="materia_id" id="materia_id" class="form-select rounded-3">
-                            <option value="0">Todas mis asignaturas</option>
+                        <select name="materia_id" id="materia_id" class="form-select rounded-3 js-sae-select" data-search-placeholder="Buscar asignatura o grupo...">
+                            <option value="0" data-title="Todas mis asignaturas">Todas mis asignaturas</option>
                             @foreach ($misMaterias as $mat)
-                                <option value="{{ $mat->id }}" {{ (int) $materiaFiltro === (int) $mat->id ? 'selected' : '' }}>
+                                <option value="{{ $mat->id }}"
+                                        data-title="{{ $mat->nombre_materia }}"
+                                        data-badge="{{ $mat->codigo_materia }}"
+                                        data-sub="Grupo: {{ $mat->grupo->nombre_grupo ?? 'Sin grupo' }}"
+                                        {{ (int) $materiaFiltro === (int) $mat->id ? 'selected' : '' }}>
                                     [{{ $mat->codigo_materia }}] {{ $mat->nombre_materia }} — {{ $mat->grupo->nombre_grupo ?? 'Sin grupo' }}
                                 </option>
                             @endforeach
@@ -127,14 +118,14 @@
                                     </td>
                                     <td class="text-muted">{{ $sol->alumno->email ?? '—' }}</td>
                                     <td>
-                                        <a href="{{ route('grupos.show', $sol->grupo_id) }}" class="badge bg-primary bg-opacity-10 text-primary border border-primary text-decoration-none">
+                                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary">
                                             {{ $sol->grupo->nombre_grupo ?? 'Grupo' }} ({{ $sol->grupo->turno ?? '' }})
-                                        </a>
+                                        </span>
                                     </td>
                                     <td>
-                                        <a href="{{ route('materias.show', $sol->materia_id) }}" class="text-dark fw-semibold text-decoration-none">
+                                        <span class="text-dark fw-semibold">
                                             {{ $sol->materia->nombre_materia ?? 'Asignatura' }}
-                                        </a>
+                                        </span>
                                     </td>
                                     <td class="text-center">
                                         @if($sol->estado === 'pendiente')
@@ -206,10 +197,10 @@
                         <div class="modal-body p-4" id="buscadorAlumnosSolContainer" data-search-url="{{ route('profesor.alumnos.buscar') }}">
                             <div class="mb-3">
                                 <label class="form-label fw-semibold">1. Selecciona tu Asignatura y Grupo</label>
-                                <select name="materia_id" id="selectMateriaModalSol" class="form-select rounded-3" required>
-                                    <option value="" selected disabled>-- Elige una asignatura que impartes --</option>
+                                <select name="materia_id" id="selectMateriaModalSol" class="form-select rounded-3 js-sae-select" data-search-placeholder="Buscar asignatura..." required>
+                                    <option value="" selected disabled>Elige una asignatura que impartes</option>
                                     @foreach ($misMaterias as $mat)
-                                        <option value="{{ $mat->id }}">
+                                        <option value="{{ $mat->id }}" data-title="{{ $mat->nombre_materia }}" data-badge="{{ $mat->codigo_materia }}" data-sub="Grupo: {{ $mat->grupo->nombre_grupo ?? 'Sin grupo' }}">
                                             [{{ $mat->codigo_materia }}] {{ $mat->nombre_materia }} — {{ $mat->grupo->nombre_grupo ?? 'Sin grupo' }}
                                         </option>
                                     @endforeach

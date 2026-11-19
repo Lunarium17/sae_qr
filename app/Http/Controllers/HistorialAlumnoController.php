@@ -38,18 +38,21 @@ class HistorialAlumnoController extends Controller
                 }
             });
 
-        $registros = $query->get()->sortByDesc(function ($reg) {
-            return $reg->sesion->fecha;
-        });
+        // Contadores globales del mes completo (antes de paginar)
+        $todosMes = (clone $query)->get();
 
-        // Contadores para resumen y alerta de inasistencias (RF-14: máximo 3 faltas sin justificar + Regla Universitaria: cada 3 retardos = 1 falta)
-        $totalSesiones     = $registros->count();
-        $asistencias       = $registros->where('estado_incidencia', 'asistencia')->count();
-        $retardos          = $registros->where('estado_incidencia', 'retardo')->count();
-        $permisos          = $registros->where('estado_incidencia', 'permiso')->count();
-        $faltas            = $registros->where('estado_incidencia', 'falta')->count();
+        $totalSesiones     = $todosMes->count();
+        $asistencias       = $todosMes->where('estado_incidencia', 'asistencia')->count();
+        $retardos          = $todosMes->where('estado_incidencia', 'retardo')->count();
+        $permisos          = $todosMes->where('estado_incidencia', 'permiso')->count();
+        $faltas            = $todosMes->where('estado_incidencia', 'falta')->count();
         $faltasPorRetardos = intdiv($retardos, 3);
         $faltasTotales     = $faltas + $faltasPorRetardos;
+
+        $registros = $query
+            ->orderByDesc('created_at')
+            ->paginate(10)
+            ->withQueryString();
 
         $porcentajeFaltas = $totalSesiones > 0 ? round(($faltasTotales / $totalSesiones) * 100, 1) : 0;
         $alertaCritica    = $faltasTotales >= 3; // Alerta crítica si alcanza o supera el límite de 3 faltas acumuladas (sin derecho a ordinario)

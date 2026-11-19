@@ -17,6 +17,20 @@ class SesionClaseController extends Controller
     {
         $profesorId = Auth::id();
 
+        // Cerrar automáticamente las sesiones activas cuyo tiempo de cierre programado ya haya vencido
+        $sesionesPorVencer = SesionClase::where('profesor_id', $profesorId)
+            ->where('estado', 'activa')
+            ->get();
+
+        foreach ($sesionesPorVencer as $sesAct) {
+            if ($sesAct->hora_fin) {
+                $limiteFin = self::obtenerTimestampFin($sesAct);
+                if (Carbon::now()->greaterThanOrEqualTo($limiteFin)) {
+                    self::procesarCierreSesion($sesAct, true);
+                }
+            }
+        }
+
         $materias = Materia::with('grupo')
             ->where(function ($q) use ($profesorId) {
                 $q->where('profesor_id', $profesorId)
@@ -33,11 +47,12 @@ class SesionClaseController extends Controller
             ->where('estado', 'activa')
             ->first();
 
-        // Historial de sesiones anteriores impartidas por este docente (con detalle de alumnos para consulta y ajuste)
+        // Historial de sesiones anteriores impartidas por este docente (paginado de 8 en 8)
         $historialSesiones = SesionClase::with(['grupo', 'materia.grupo', 'asistencias.alumno'])
             ->where('profesor_id', $profesorId)
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->paginate(8, ['*'], 'historial_page')
+            ->withQueryString();
 
         return view('profesor.sesiones', compact('materias', 'sesionActiva', 'historialSesiones', 'materiaSeleccionada'));
     }
@@ -48,6 +63,10 @@ class SesionClaseController extends Controller
         $request->validate([
             'materia_id'         => 'required|exists:materias,id',
             'tolerancia_minutos' => 'required|integer|min:0|max:60',
+            'duracion_minutos'   => 'required|integer|min:1|max:300|gt:tolerancia_minutos',
+        ], [
+            'duracion_minutos.gt' => 'El tiempo de cierre automático debe ser estrictamente mayor al tiempo de tolerancia.',
+            'duracion_minutos.min' => 'El tiempo de cierre automático debe ser de al menos 1 minuto.',
         ]);
 
         $profesorId = Auth::id();
@@ -59,18 +78,24 @@ class SesionClaseController extends Controller
         }
 
         // Cerrar cualquier sesión que haya quedado abierta por error de este docente
-        SesionClase::where('profesor_id', $profesorId)
+        $sesionesPrevias = SesionClase::where('profesor_id', $profesorId)
             ->where('estado', 'activa')
-            ->update(['estado' => 'finalizada', 'hora_fin' => Carbon::now()->toTimeString()]);
+            ->get();
+        foreach ($sesionesPrevias as $sesPrev) {
+            self::procesarCierreSesion($sesPrev);
+        }
+
+        $duracionMinutos = (int) $request->duracion_minutos;
+        $ahora = Carbon::now();
 
         // Crear la nueva sesión activa vinculando ProfesorID + GrupoID + MateriaID simultáneamente
         SesionClase::create([
             'profesor_id'        => $profesorId,
             'grupo_id'           => $materia->grupo_id,
             'materia_id'         => $materia->id,
-            'fecha'              => Carbon::now()->toDateString(),
-            'hora_inicio'        => Carbon::now()->toTimeString(),
-            'hora_fin'           => Carbon::now()->addHours(2)->toTimeString(),
+            'fecha'              => $ahora->toDateString(),
+            'hora_inicio'        => $ahora->toTimeString(),
+            'hora_fin'           => $ahora->copy()->addMinutes($duracionMinutos)->toTimeString(),
             'tolerancia_minutos' => $request->tolerancia_minutos,
             'estado'             => 'activa',
         ]);
@@ -80,15 +105,43 @@ class SesionClaseController extends Controller
     }
 
     // Cerrar la sesión activa y asignar falta a los alumnos inscritos en esa combinación exacta (GrupoID + MateriaID)
-    public function finalizarSesion(SesionClase $sesion)
+    public function finalizarSesion(Request $request, SesionClase $sesion)
     {
         if ((int) $sesion->profesor_id !== (int) Auth::id()) {
             abort(403, 'No tienes permiso para finalizar una sesión de otro docente.');
         }
 
+        $esAutomatico = $request->boolean('automatico');
+        self::procesarCierreSesion($sesion, $esAutomatico);
+
+        $mensaje = $esAutomatico
+            ? 'El tiempo de la sesión ha finalizado automáticamente. Se asignó falta a los alumnos no escaneados.'
+            : 'Sesión finalizada. Se asignó falta automática a los alumnos de este grupo y asignatura no escaneados.';
+
+        return redirect()->route('sesiones.index')->with('success', $mensaje);
+    }
+
+    public static function obtenerTimestampFin(SesionClase $sesion): Carbon
+    {
+        $inicio = Carbon::parse($sesion->fecha . ' ' . $sesion->hora_inicio);
+        $fin = Carbon::parse($sesion->fecha . ' ' . $sesion->hora_fin);
+        if ($fin->lessThanOrEqualTo($inicio)) {
+            $fin->addDay();
+        }
+        return $fin;
+    }
+
+    public static function procesarCierreSesion(SesionClase $sesion, bool $preservarHoraProgramada = false): void
+    {
+        if ($sesion->estado === 'finalizada') {
+            return;
+        }
+
         $sesion->update([
             'estado'   => 'finalizada',
-            'hora_fin' => Carbon::now()->toTimeString(),
+            'hora_fin' => $preservarHoraProgramada && $sesion->hora_fin
+                ? $sesion->hora_fin
+                : Carbon::now()->toTimeString(),
         ]);
 
         $grupoId = $sesion->grupo_id ?? optional($sesion->materia)->grupo_id;
@@ -119,15 +172,12 @@ class SesionClaseController extends Controller
                 ]);
             }
         }
-
-        return redirect()->route('sesiones.index')
-                         ->with('success', 'Sesión finalizada. Se asignó falta automática a los alumnos de este grupo y asignatura no escaneados.');
     }
 
     // Permitir al profesor modificar manualmente el estado de asistencia de su propia sesión
     public function cambiarEstadoManual(Request $request, RegistroAsistencia $registro)
     {
-        $registro->loadMissing('sesion');
+        $registro->loadMissing(['sesion', 'alumno']);
         if (!$registro->sesion || (int) $registro->sesion->profesor_id !== (int) Auth::id()) {
             abort(403, 'No tienes permiso para modificar asistencias de otro docente.');
         }
@@ -140,6 +190,16 @@ class SesionClaseController extends Controller
             'estado_incidencia' => $request->estado_incidencia,
             'observaciones'     => 'Ajustado manualmente por el profesor',
         ]);
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'status'      => 'success',
+                'registro_id' => $registro->id,
+                'alumno'      => optional($registro->alumno)->name ?? 'Alumno',
+                'estado'      => $registro->estado_incidencia,
+                'message'     => 'Estado de ' . (optional($registro->alumno)->name ?? 'alumno') . ' actualizado a ' . strtoupper($registro->estado_incidencia) . '.',
+            ]);
+        }
 
         return back()->with('success', 'Estado de asistencia actualizado manualmente.');
     }

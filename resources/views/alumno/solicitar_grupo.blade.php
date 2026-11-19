@@ -8,48 +8,38 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
 <body class="bg-light">
+    @include('partials.ui_helpers')
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="#"><i class="bi bi-person-badge me-2"></i>SAE QR | Inscripción Modular por Asignatura</a>
-            <a href="{{ url('/alumno/dashboard') }}" class="btn btn-outline-light btn-sm">
+            <a class="navbar-brand fw-bold" href="{{ route('alumno.dashboard') }}"><i class="bi bi-person-badge me-2"></i>SAE QR | Inscripción Modular por Asignatura</a>
+            <a href="{{ url('/alumno/dashboard') }}" class="btn btn-light text-primary fw-semibold btn-sm rounded-3">
                 <i class="bi bi-arrow-left me-1"></i>Volver a mi Panel
             </a>
         </div>
     </nav>
 
     <div class="container my-5">
-        @if (session('success'))
-            <div class="alert alert-success alert-dismissible fade show rounded-3 shadow-sm">
-                <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        @endif
-
-        @if (session('error'))
-            <div class="alert alert-danger alert-dismissible fade show rounded-3 shadow-sm">
-                <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ session('error') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        @endif
-
         <div class="row g-4">
             <!-- Formulario para solicitar inscripción independiente por asignatura y grupo (Carga AJAX) -->
             <div class="col-md-5">
                 <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
                     <h5 class="fw-bold text-dark mb-1">Solicitar Inscripción en Asignatura</h5>
                     <p class="text-muted small mb-4">
-                        Selecciona el grupo y busca la asignatura que deseas cursar. Las asignaturas se cargan dinámicamente para mantener la página rápida.
+                        Selecciona las materias a las que perteneces. Las asignaturas se cargaran dinámicamente para mantener la pagina estable.
                     </p>
 
                     <form action="{{ route('alumno.solicitar.guardar') }}" method="POST" id="formSolicitarAsignatura" data-base-url="{{ url('/alumno/grupos') }}">
                         @csrf
                         <div class="mb-3">
-                            <label class="form-label fw-semibold">1. Selecciona el Grupo Académico</label>
-                            <select id="select-grupo" name="grupo_id" class="form-select rounded-3" required>
-                                <option value="" selected disabled>Elige un grupo académico...</option>
+                            <label class="form-label fw-semibold">1. Selecciona el Grupo Académico <span class="text-danger">*</span></label>
+                            <select id="select-grupo" name="grupo_id" class="form-select rounded-3 js-sae-select" data-search-placeholder="Buscar grupo o carrera..." required>
+                                <option value="" selected disabled>Elige un grupo académico</option>
                                 @foreach($grupos as $grupo)
-                                    <option value="{{ $grupo->id }}">
+                                    <option value="{{ $grupo->id }}"
+                                            data-title="{{ $grupo->nombre_grupo }} — {{ $grupo->carrera ?: 'Carrera general' }}"
+                                            data-badge="{{ $grupo->grado }}"
+                                            data-sub="Turno: {{ $grupo->turno }} | Periodo: {{ $grupo->periodo_lectivo }}">
                                         {{ $grupo->nombre_grupo }}{{ $grupo->carrera ? ' — ' . $grupo->carrera : '' }} ({{ $grupo->grado }} | {{ $grupo->turno }})
                                     </option>
                                 @endforeach
@@ -57,17 +47,17 @@
                         </div>
 
                         <div class="mb-3 d-none" id="bloque-buscador-materia">
-                            <label class="form-label fw-semibold small text-muted mb-1">Filtrar asignatura por nombre o clave (opcional)</label>
+                            <label class="form-label fw-semibold small text-muted mb-1">Filtrar asignatura por nombre o clave</label>
                             <div class="input-group input-group-sm">
                                 <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
-                                <input type="text" id="input-filtrar-materia" class="form-control" autocomplete="off" placeholder="Ej. Cálculo, ING-301...">
+                                <input type="text" id="input-filtrar-materia" class="form-control" autocomplete="off">
                             </div>
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label fw-semibold">2. Selecciona la Asignatura</label>
-                            <select id="select-materia" name="materia_id" class="form-select rounded-3" required disabled>
-                                <option id="placeholder-materia" value="" selected disabled>Primero selecciona un grupo...</option>
+                            <label class="form-label fw-semibold">2. Selecciona la Asignatura <span class="text-danger">*</span></label>
+                            <select id="select-materia" name="materia_id" class="form-select rounded-3 js-sae-select" data-searchable="true" data-search-placeholder="Buscar materia o profesor..." required disabled>
+                                <option id="placeholder-materia" value="" selected disabled>Primero selecciona un grupo</option>
                             </select>
                             <div id="ayuda-materia" class="form-text text-danger d-none mt-1">
                                 No se encontraron asignaturas disponibles en este grupo.
@@ -153,12 +143,19 @@
 
             let debounceTimer = null;
 
+            function refrescarSelectMateria() {
+                if (typeof window.inicializarSelectEnriquecido === 'function') {
+                    window.inicializarSelectEnriquecido(selectMateria);
+                }
+            }
+
             function cargarMaterias(grupoId, filtroTexto) {
                 if (!grupoId) return;
 
                 selectMateria.disabled = true;
                 btnEnviar.disabled = true;
-                selectMateria.innerHTML = '<option value="" selected disabled>Cargando asignaturas...</option>';
+                selectMateria.innerHTML = '<option value="" selected disabled>Cargando asignaturas</option>';
+                refrescarSelectMateria();
                 ayudaMateria.classList.add('d-none');
 
                 const url = baseUrl + '/' + encodeURIComponent(grupoId) + '/materias?q=' + encodeURIComponent(filtroTexto || '');
@@ -177,6 +174,7 @@
                             selectMateria.appendChild(optEmpty);
                             selectMateria.disabled = true;
                             ayudaMateria.classList.remove('d-none');
+                            refrescarSelectMateria();
                             return;
                         }
 
@@ -184,25 +182,32 @@
                         optDefault.value = '';
                         optDefault.disabled = true;
                         optDefault.selected = true;
-                        optDefault.textContent = 'Elige una asignatura de este grupo (' + materias.length + ')...';
+                        optDefault.textContent = 'Elige una asignatura de este grupo (' + materias.length + ')';
                         selectMateria.appendChild(optDefault);
 
                         materias.forEach(function (m) {
                             const opt = document.createElement('option');
                             opt.value = m.id;
-                            let texto = '[' + m.codigo_materia + '] ' + m.nombre_materia + ' — Prof. ' + m.profesor_nombre;
+                            let texto = m.nombre_materia + ' [' + m.codigo_materia + '] — Prof. ' + m.profesor_nombre;
+                            let subTexto = 'Prof. ' + m.profesor_nombre;
                             if (m.estado_matricula) {
                                 texto += ' (Ya solicitada: ' + m.estado_matricula.toUpperCase() + ')';
+                                subTexto += ' • Ya solicitada (' + m.estado_matricula.toUpperCase() + ')';
                                 opt.disabled = true;
                             }
                             opt.textContent = texto;
+                            opt.setAttribute('data-title', m.nombre_materia);
+                            opt.setAttribute('data-badge', m.codigo_materia);
+                            opt.setAttribute('data-sub', subTexto);
                             selectMateria.appendChild(opt);
                         });
 
                         selectMateria.disabled = false;
+                        refrescarSelectMateria();
                     })
                     .catch(function () {
                         selectMateria.innerHTML = '<option value="" selected disabled>Error al cargar asignaturas</option>';
+                        refrescarSelectMateria();
                     });
             }
 

@@ -24,13 +24,14 @@ class JustificanteController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        // Historial de justificantes enviados por el alumno
+        // Historial de justificantes enviados por el alumno (paginado de 10 en 10)
         $misJustificantes = Justificante::with(['registroAsistencia.sesion.materia'])
             ->whereHas('registroAsistencia', function ($q) use ($alumnoId) {
                 $q->where('user_id', $alumnoId);
             })
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->paginate(10)
+            ->withQueryString();
 
         return view('alumno.justificantes', compact('incidencias', 'misJustificantes', 'registroSeleccionado'));
     }
@@ -100,7 +101,8 @@ class JustificanteController extends Controller
             })
             ->orderByRaw("FIELD(estado_aprobacion, 'pendiente', 'aceptado', 'rechazado')")
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->paginate(10)
+            ->withQueryString();
 
         return view('profesor.justificantes', compact('justificantes'));
     }

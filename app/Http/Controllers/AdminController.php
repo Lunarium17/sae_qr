@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use App\Models\User;
@@ -16,17 +18,36 @@ use App\Models\SesionClase;
 
 class AdminController extends Controller
 {
+    private function asegurarColumnaProfesorEnGrupos(): void
+    {
+        if (Schema::hasTable('grupos') && !Schema::hasColumn('grupos', 'profesor_id')) {
+            Schema::table('grupos', function (Blueprint $table) {
+                $table->foreignId('profesor_id')
+                    ->nullable()
+                    ->after('periodo_lectivo')
+                    ->constrained('users')
+                    ->nullOnDelete();
+            });
+        }
+    }
+
     /**
      * Panel principal del Administrador Escolar (sin tabla de Alerta Escolar).
      */
     public function dashboard()
     {
+        $this->asegurarColumnaProfesorEnGrupos();
+
         $totalAlumnos    = User::where('rol', 'alumno')->count();
         $totalProfesores = User::where('rol', 'profesor')->count();
         $totalAdmins     = User::where('rol', 'admin')->count();
 
-        $grupos        = Grupo::with('materias')->orderBy('nombre_grupo')->get();
-        $totalGrupos   = $grupos->count();
+        $profesores    = User::where('rol', 'profesor')->orderBy('name')->get();
+        $totalGrupos   = Grupo::count();
+        $grupos        = Grupo::with(['materias', 'profesor'])
+            ->orderBy('nombre_grupo')
+            ->paginate(6, ['*'], 'grupos_page')
+            ->withQueryString();
         $totalMaterias = Materia::count();
         $totalSesiones = SesionClase::count();
 
@@ -53,6 +74,7 @@ class AdminController extends Controller
             'totalAlumnos',
             'totalProfesores',
             'totalAdmins',
+            'profesores',
             'grupos',
             'totalGrupos',
             'totalMaterias',
@@ -71,14 +93,15 @@ class AdminController extends Controller
     }
 
     /**
-     * Vista de gestión de Códigos de Acceso Docente (de un solo uso).
+     * Vista de gestión de Códigos de Acceso Docente (de un solo uso, paginada de 10 en 10).
      */
     public function codigosDocentes()
     {
         $codigos = CodigoDocente::with(['usadoPor', 'creadoPor'])
             ->orderBy('usado', 'asc')
             ->orderByDesc('created_at')
-            ->get();
+            ->paginate(10)
+            ->withQueryString();
 
         return view('admin.codigos', compact('codigos'));
     }
@@ -285,6 +308,8 @@ class AdminController extends Controller
      */
     public function storeGrupo(Request $request)
     {
+        $this->asegurarColumnaProfesorEnGrupos();
+
         $request->validate([
             'nombre_grupo' => [
                 'required',
@@ -298,6 +323,10 @@ class AdminController extends Controller
             'grado'           => 'required|string|max:50',
             'turno'           => 'required|string|max:30',
             'periodo_lectivo' => 'required|string|max:50',
+            'profesor_id'     => [
+                'required',
+                Rule::exists('users', 'id')->where(fn ($q) => $q->where('rol', 'profesor')),
+            ],
         ], [
             'nombre_grupo.required'    => 'El nombre del grupo oficial es obligatorio.',
             'nombre_grupo.unique'      => 'Ya existe el grupo "' . $request->nombre_grupo . '" en el turno ' . $request->turno . '.',
@@ -305,6 +334,8 @@ class AdminController extends Controller
             'grado.required'           => 'El semestre es obligatorio.',
             'turno.required'           => 'Debes seleccionar un turno.',
             'periodo_lectivo.required' => 'El periodo lectivo es obligatorio.',
+            'profesor_id.required'     => 'Debes asignar el profesor al que le corresponde este grupo.',
+            'profesor_id.exists'       => 'El profesor seleccionado no es válido.',
         ]);
 
         Grupo::create([
@@ -313,9 +344,10 @@ class AdminController extends Controller
             'grado'           => $request->grado,
             'turno'           => $request->turno,
             'periodo_lectivo' => trim($request->periodo_lectivo),
+            'profesor_id'     => $request->profesor_id,
         ]);
 
-        return back()->with('success', "Grupo oficial {$request->nombre_grupo} ({$request->carrera}) creado exitosamente.");
+        return back()->with('success', "Grupo oficial {$request->nombre_grupo} creado y asignado al profesor exitosamente.");
     }
 
     /**
@@ -323,6 +355,8 @@ class AdminController extends Controller
      */
     public function updateGrupo(Request $request, $id)
     {
+        $this->asegurarColumnaProfesorEnGrupos();
+
         $grupo = Grupo::findOrFail($id);
 
         $request->validate([
@@ -340,6 +374,10 @@ class AdminController extends Controller
             'grado'           => 'required|string|max:50',
             'turno'           => 'required|string|max:30',
             'periodo_lectivo' => 'required|string|max:50',
+            'profesor_id'     => [
+                'required',
+                Rule::exists('users', 'id')->where(fn ($q) => $q->where('rol', 'profesor')),
+            ],
         ], [
             'nombre_grupo.required'    => 'El nombre del grupo oficial es obligatorio.',
             'nombre_grupo.unique'      => 'Ya existe otro grupo "' . $request->nombre_grupo . '" en el turno ' . $request->turno . '.',
@@ -347,6 +385,8 @@ class AdminController extends Controller
             'grado.required'           => 'El semestre es obligatorio.',
             'turno.required'           => 'Debes seleccionar un turno.',
             'periodo_lectivo.required' => 'El periodo lectivo es obligatorio.',
+            'profesor_id.required'     => 'Debes asignar el profesor al que le corresponde este grupo.',
+            'profesor_id.exists'       => 'El profesor seleccionado no es válido.',
         ]);
 
         $grupo->update([
@@ -355,6 +395,7 @@ class AdminController extends Controller
             'grado'           => $request->grado,
             'turno'           => $request->turno,
             'periodo_lectivo' => trim($request->periodo_lectivo),
+            'profesor_id'     => $request->profesor_id,
         ]);
 
         return back()->with('success', "Grupo oficial {$grupo->nombre_grupo} actualizado correctamente.");

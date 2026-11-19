@@ -8,20 +8,18 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
 <body class="bg-light">
+    @include('partials.ui_helpers')
+
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ route('profesor.dashboard') }}">
-                <i class="bi bi-arrow-left-circle me-2"></i>Volver al Panel
+            <a class="navbar-brand fw-bold" href="{{ route('profesor.dashboard') }}"><i class="bi bi-envelope-paper me-2"></i>SAE QR | Revisión de Permisos y Justificantes</a>
+            <a href="{{ route('profesor.dashboard') }}" class="btn btn-light text-dark fw-semibold btn-sm rounded-3">
+                <i class="bi bi-arrow-left me-1"></i>Volver al Panel
             </a>
-            <span class="navbar-text text-white fw-bold">Revisión de Permisos y Justificantes</span>
         </div>
     </nav>
 
     <div class="container my-5">
-        @if(session('success'))
-            <div class="alert alert-success rounded-3 shadow-sm">{{ session('success') }}</div>
-        @endif
-
         <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
             <h4 class="fw-bold text-dark mb-4"><i class="bi bi-envelope-paper me-2 text-info"></i>Comprobantes Recibidos</h4>
 
@@ -105,7 +103,13 @@
                     </tbody>
                 </table>
             </div>
+            @if ($justificantes->hasPages())
+                <div class="pt-3 mt-3 border-top d-flex justify-content-center">
+                    {{ $justificantes->links() }}
+                </div>
+            @endif
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -8,48 +8,40 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
 <body class="bg-light">
+    @include('partials.ui_helpers')
+
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="{{ route('alumno.dashboard') }}">
-                <i class="bi bi-arrow-left-circle me-2"></i>Volver al Panel
+            <a class="navbar-brand fw-bold" href="{{ route('alumno.dashboard') }}"><i class="bi bi-file-earmark-medical me-2"></i>SAE QR | Carga Digital de Justificantes</a>
+            <a href="{{ route('alumno.dashboard') }}" class="btn btn-light text-primary fw-semibold btn-sm rounded-3">
+                <i class="bi bi-arrow-left me-1"></i>Volver al Panel
             </a>
-            <span class="navbar-text text-white fw-bold">Carga Digital de Justificantes</span>
         </div>
     </nav>
 
     <div class="container my-5">
-        @if(session('success'))
-            <div class="alert alert-success rounded-3 shadow-sm">{{ session('success') }}</div>
-        @endif
-
-        @if($errors->any())
-            <div class="alert alert-danger rounded-3 shadow-sm">
-                <ul class="mb-0">
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
         <div class="row g-4">
             <!-- Formulario para subir justificante -->
             <div class="col-lg-5">
                 <div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
-                    <h5 class="fw-bold text-dark mb-3"><i class="bi bi-upload me-2 text-primary"></i>Subir Comprobante</h5>
-                    <p class="text-muted small">Selecciona la inasistencia o retardo que deseas justificar y adjunta tu documento médico o institucional si aplica (PDF, JPG o PNG).</p>
+                    <h5 class="fw-bold text-dark mb-2"><i class="bi bi-upload me-2 text-primary"></i>Subir Comprobante</h5>
+                    <p class="text-muted small">Selecciona la inasistencia o retardo que deseas justificar y adjunta tu documento médico o institucional si aplica.</p>
 
                     <form id="form-justificante" action="{{ route('alumno.justificantes.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div id="alerta-archivo" class="alert alert-danger rounded-3 shadow-sm d-none mb-3"></div>
 
                         <div class="mb-3">
-                            <label class="form-label fw-semibold">Incidencia a justificar</label>
-                            <select name="registro_id" class="form-select" required>
-                                <option value="">-- Selecciona una sesión --</option>
+                            <label class="form-label fw-semibold">Incidencia a justificar <span class="text-danger">*</span></label>
+                            <select name="registro_id" class="form-select js-sae-select" data-search-placeholder="Buscar fecha o materia..." required>
+                                <option value="" data-title="Selecciona una sesión">Selecciona una sesión</option>
                                 @foreach($incidencias as $inc)
                                     @if(!$inc->justificante || $inc->justificante->estado_aprobacion !== 'aceptado')
-                                        <option value="{{ $inc->id }}" {{ (isset($registroSeleccionado) && (int) $registroSeleccionado === (int) $inc->id) ? 'selected' : '' }}>
+                                        <option value="{{ $inc->id }}"
+                                                data-title="{{ $inc->sesion->materia->nombre_materia }}"
+                                                data-badge="{{ strtoupper($inc->estado_incidencia) }}"
+                                                data-sub="Fecha de sesión: {{ $inc->sesion->fecha }}"
+                                                {{ (isset($registroSeleccionado) && (int) $registroSeleccionado === (int) $inc->id) ? 'selected' : '' }}>
                                             {{ $inc->sesion->fecha }} - {{ $inc->sesion->materia->nombre_materia }} ({{ strtoupper($inc->estado_incidencia) }})
                                         </option>
                                     @endif
@@ -58,12 +50,15 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label fw-semibold">Motivo de la inasistencia</label>
+                            <label class="form-label fw-semibold">Motivo de la inasistencia <span class="text-danger">*</span></label>
                             <textarea name="motivo" rows="3" class="form-control" placeholder="Describe brevemente el motivo médico o académico..." required>{{ old('motivo') }}</textarea>
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label fw-semibold">Subir Justificante <span class="text-muted fw-normal">(Opcional - PDF, JPG, JPEG, PNG | Máx. 5 MB)</span></label>
+                            <label class="form-label fw-semibold d-flex align-items-center">
+                                <span>Subir Justificante</span>
+                                <span class="info-circle-help" tabindex="0" data-bs-toggle="tooltip" data-bs-placement="right" title="Solo se acepta subir archivos PDF, JPG, JPEG o PNG | Máx. 5 MB">!</span>
+                            </label>
                             <input type="file" id="input-documento" name="documento" class="form-control" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png">
                         </div>
 
@@ -129,11 +124,17 @@
                             </tbody>
                         </table>
                     </div>
+                    @if ($misJustificantes->hasPages())
+                        <div class="pt-3 mt-3 border-top d-flex justify-content-center">
+                            {{ $misJustificantes->links() }}
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         const inputDocumento = document.getElementById('input-documento');
         const alertaArchivo = document.getElementById('alerta-archivo');

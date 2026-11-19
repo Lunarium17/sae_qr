@@ -8,36 +8,30 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
 <body class="bg-light">
+    @include('partials.ui_helpers')
 
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="#"><i class="bi bi-card-list me-2"></i>SAE QR | Gestión de Grupos y Materias</a>
-            <div class="d-flex align-items-center">
-                <a href="{{ url('/profesor/dashboard') }}" class="btn btn-outline-light btn-sm me-3">
+            <a class="navbar-brand fw-bold" href="{{ route('profesor.dashboard') }}"><i class="bi bi-card-list me-2"></i>SAE QR | Gestión de Grupos y Materias</a>
+            <div class="d-flex align-items-center gap-2">
+                <a href="{{ url('/profesor/dashboard') }}" class="btn btn-light text-dark fw-semibold btn-sm rounded-3">
                     <i class="bi bi-arrow-left me-1"></i>Volver al Panel
                 </a>
                 <form action="{{ route('logout') }}" method="POST" class="d-inline">
                     @csrf
-                    <button type="submit" class="btn btn-danger btn-sm">Cerrar Sesión</button>
+                    <button type="submit" class="btn btn-danger fw-semibold btn-sm rounded-3">Cerrar Sesión</button>
                 </form>
             </div>
         </div>
     </nav>
 
     <div class="container my-5">
-        @if (session('success'))
-            <div class="alert alert-success alert-dismissible fade show rounded-3 shadow-sm" role="alert">
-                <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
-
         <!-- Encabezado de la sección -->
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
+            <div class="d-flex align-items-center">
                 <h2 class="fw-bold text-dark mb-0">Mis Grupos Académicos</h2>
-                <p class="text-muted mt-1">Administra tus grupos asignados, sus materias impartidas, alumnos inscritos y rendimiento de asistencia.</p>
+                <span class="info-circle-help" tabindex="0" data-bs-toggle="tooltip" data-bs-placement="right" title="Administra tus grupos asignados, sus materias impartidas, alumnos inscritos y rendimiento de asistencia.">!</span>
             </div>
             <a href="{{ route('grupos.create') }}" class="btn btn-primary rounded-pill px-4 py-2 shadow-sm">
                 <i class="bi bi-plus-circle me-2"></i>Crear Nuevo Grupo
@@ -80,9 +74,7 @@
                                     <tr>
                                         <td class="ps-4 fw-bold text-secondary">{{ $grupo->id }}</td>
                                         <td>
-                                            <a href="{{ route('grupos.show', $grupo->id) }}" class="badge bg-primary bg-opacity-10 text-primary border border-primary rounded-pill px-3 py-2 fs-6 text-decoration-none">
-                                                {{ $grupo->nombre_grupo }}
-                                            </a>
+                                            <div class="fw-bold text-primary fs-6">{{ $grupo->nombre_grupo }}</div>
                                             @if ($grupo->carrera)
                                                 <div class="small text-muted mt-1"><i class="bi bi-mortarboard me-1"></i>{{ $grupo->carrera }}</div>
                                             @endif
